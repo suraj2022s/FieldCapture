@@ -121,3 +121,40 @@ The newest entry is at the bottom. Each entry records what was done, the decisio
 1. User: enable USB debugging and connect the phone. Then `installDebug`, run the end-to-end loop against the local back office (`adb reverse tcp:8000 tcp:8000`), and record the mock measurements in RESEARCH.md §5.
 2. M4: dataset mode (save every candidate frame + on-device metrics); labeling page; `eval/qc_thresholds.py` → `assets/thresholds.json`.
 3. User needs an Anthropic API key in `backend/.env` before M5 (extraction eval).
+
+---
+
+## 2026-11-25 — Session 1, continued: eval tooling, tests, CI, README (phone still not connected)
+
+### Done
+- **Dataset mode (app).** Every frame the quality gate judged during a capture is saved, not only the one kept: JPEG plus the phone's own metrics, verdict, OCR and the chosen flag. Output goes to `Android/data/app.fieldcapture/files/dataset/`. Turn it on in Settings (debug).
+- **Eval tooling (`eval/`):**
+  - `pull_dataset.ps1`
+  - `label_app.py`: local labelling page for frame labels, scene and condition per capture, and ground truth per scene.
+  - `qc_thresholds.py`: fits each threshold at ≤5% false retakes on tune scenes, tests on held-out scenes, writes app `assets/thresholds.json`.
+  - `run_extraction.py`:
+    - per-model strict scoring, where abstaining counts as correct if the field isn't printed, plus CER
+    - damage size error per method, including scaling with the tape-measured reference
+    - notes vs `labels/notes_truth.json`, with ASR WER
+    - responses cached in `eval/llm-cache` for key-free replay
+  - `calibrate.py`: logistic confidence fitted on tune scenes; AUROC/ECE reported on test scenes.
+  - `report.py`: generates `REPORT.md`, including an offline Haiku→Opus cascade simulation.
+  - `README.md` with the shot list; `notes_script.md` (20 lines).
+- **Instrumented tests** on Mock Device Kit. They compile, but haven't run yet because there's no device.
+  - `LifecycleTest`: L1 start/stream/photo/stop · L4 pause/resume · L5 doff/don · L6 fold/unfold · L7 power loss mid-walk → reconnect · L8 overheating · L9 outdated glasses app.
+  - `VoiceToCaptureTest`: inject "capture damage, kitchen, north wall" and a note into the real app graph; assert both are durable and queued.
+  - Synthetic H.265 test feed (`test_feed.mp4`: ffmpeg test pattern plus a fake label). It's test-only, never eval data, and is also in debug assets for the MockDevice MCP.
+- **CI** (`.github/workflows/ci.yml`): JVM tests, debug APK artifact, androidTest compile, backend pytest. `gradlew` was marked executable in git.
+- **README** rewritten: one mermaid diagram, setup under 10 min (CI APK + `uv run`), capture flow, decisions and cuts, models/cost (pointing to the report), limitations, two-more-weeks list, AI tools used, repo map.
+
+### Decisions
+- **The test set is built from frames the phone's gate actually saw** (dataset mode), labelled by a human. The thresholds then come from on-device numbers, not a re-implementation.
+- **Scene-level tune/test split** (hash of the scene id) to avoid leakage between frames of the same object.
+- **Cost stretch goal: simulate the cascade offline** from per-model results. No extra API spend, and the comparison is like-for-like.
+
+### Next (in order)
+1. Phone connected → `installDebug` → run `connectedDebugAndroidTest`. Record the mock's measured behaviour (timelines from the tests, first-frame ms, frame layout, `capturePhoto()` output) in RESEARCH.md §5.
+2. Pick the stream YUV layout from the debug dumps, then fix the `AppSettings.yuvLayout` default.
+3. User films the dataset per `eval/README.md` (daylight + evening low-light), then labels it.
+4. User adds an Anthropic API key to `backend/.env`. Then run `run_extraction.py`, `calibrate.py --write`, `report.py`.
+5. Three real walk-throughs (sample records), demo video (tag `demo-v1`), memo, final README numbers.
