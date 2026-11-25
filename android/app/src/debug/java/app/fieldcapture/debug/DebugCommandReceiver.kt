@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger
  *
  *   adb shell "am broadcast -n app.fieldcapture/.debug.DebugCommandReceiver --es cmd say --es text 'capture nameplate'"
  *
- * cmd = start | end | say (text) | offline | online | status | feed_test | feed_camera
+ * cmd = start | end | say (text) | mic_off | offline | online | status | feed_test | feed_camera
  */
 class DebugCommandReceiver : BroadcastReceiver() {
   override fun onReceive(context: Context, intent: Intent) {
@@ -37,6 +37,9 @@ class DebugCommandReceiver : BroadcastReceiver() {
         // A recogniser result with speech starting 1.2 s earlier, as a short spoken command would be.
         app.walk.simulateHeard(Heard(listOf(text), listOf(0.9f), true, now - 1200, now, utterance.incrementAndGet()))
       }
+      // Unattended runs: room speech must neither trigger commands nor end up in the log.
+      // Holds until the next job start or resume, which turn the mic back on.
+      "mic_off" -> app.listener.stop()
       "offline" -> app.settings.simulateOffline = true
       "online" -> {
         app.settings.simulateOffline = false
@@ -53,6 +56,8 @@ class DebugCommandReceiver : BroadcastReceiver() {
         )
       }
       // Takes effect at the next stream start (a running mock stream keeps its feed; measured).
+      // A timestamp on the phone's clock for something the script did on the PC ("route restored").
+      "mark" -> Unit
       "feed_test" -> {
         app.settings.mockTestFeed = true
         app.mock.useTestFeed()

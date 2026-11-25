@@ -663,7 +663,7 @@ class WalkController(
     kickUpload()
     speaker.success()
     speaker.say("Noted.")
-    log.log("note", "\"$textValue\" room=$room")
+    log.log("note", "${n.noteId.take(8)} \"$textValue\" room=$room")
     _ui.update { it.copy(notes = it.notes + 1, last = "Note: $textValue") }
   }
 

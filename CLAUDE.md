@@ -64,7 +64,8 @@ Run these from `android/` in PowerShell. `JAVA_HOME` is already set to the Andro
 | adb | `$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe` |
 | App logs | `adb logcat -s FieldCapture` |
 | App JVM tests (parser, job recovery) | `.\gradlew.bat :app:testDebugUnitTest` |
-| Drive a walk from adb (debug builds) | `adb shell "am broadcast -n app.fieldcapture/.debug.DebugCommandReceiver --es cmd say --es text 'capture nameplate'"`. `cmd` = `start`, `end`, `say` (+`text`), `offline`, `online`, `status`, `feed_test`, `feed_camera`. `feed_test` persists until `feed_camera`. |
+| Drive a walk from adb (debug builds) | `adb shell "am broadcast -n app.fieldcapture/.debug.DebugCommandReceiver --es cmd say --es text 'capture nameplate'"`. `cmd` = `start`, `end`, `say` (+`text`), `mic_off`, `mark` (+`text`), `offline`, `online`, `status`, `feed_test`, `feed_camera`. `feed_test` persists until `feed_camera`. |
+| Chaos run (~5 min, phone to itself) | From the repo root: `powershell -File tools\chaos_run.ps1 [-OutageSeconds 60]` → `eval/chaos/chaos-<ts>.json`. It runs its own back office on :8001 and refuses to start if the app heard speech recently, a job is open, or uploads are queued. |
 | SDK packages | `$env:LOCALAPPDATA\Android\Sdk\cmdline-tools\latest\bin\android.exe --no-metrics sdk install <pkg>` |
 
 **Before driving the phone from a script, check the user isn't using it.** On 2026-11-25 the user was speaking commands to the app while a scripted check started a job on the synthetic feed, so their captures went into the wrong job. Look for recent `[heard]` lines in logcat, and ask first.

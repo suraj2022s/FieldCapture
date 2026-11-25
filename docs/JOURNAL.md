@@ -269,3 +269,15 @@ The newest entry is at the bottom. Each entry records what was done, the decisio
 1. **User:** is job `4f6a8eef` yours to keep? Its captures are of the synthetic test pattern. Say "end job" and start a fresh one for real captures. Also tell me when the phone is free for an unattended run of about 5 minutes.
 2. Chaos run (`tools/chaos_run.ps1`, separate server on :8001 with its own data dir, synthetic feed): online baseline → back office unreachable → app killed with items queued → resume → route restored (measure time to drain) → glasses power-off mid-walk (refusal, note still saved, reconnect time) → end. Report captured vs received vs replays.
 3. Still waiting on the user: API key → reprocess `5482e66c`; the user's OK to put platform-tools on PATH for the MockDevice MCP; 11-26 filming.
+
+### Addendum: chaos-run script ready, not yet run
+- `tools/chaos_run.ps1` (+ `tools/chaos_counts.py`) does the six-phase run described above. Every duration is measured on the phone's clock (the receiver logs each command), so PC/phone clock skew doesn't enter.
+- Safety rails:
+  - **Preflight:** it refuses to start if the app heard speech in the last 2 min, a job is open, or real uploads are still queued.
+  - **Isolation:** its own back office on :8001 with a temp data dir; the synthetic feed; the mic off; no airplane mode.
+  - **Cleanup:** it ends and drains its own job, puts the feed back on the camera and restores `adb reverse` to :8000.
+- **Verified so far:**
+  - The script parses.
+  - `chaos_counts.py` reads the real finalized job `5482e66c` correctly (6 captures, finalized, nothing uploaded twice).
+  - The app builds, and the JVM tests pass after the `mic_off`/`mark` commands and note-id logging were added.
+- **Not run yet:** the user is using the phone. The new build is **not installed**, because installing would kill the user's running walk.
