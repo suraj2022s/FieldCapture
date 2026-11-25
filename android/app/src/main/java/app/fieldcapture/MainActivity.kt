@@ -79,14 +79,19 @@ class MainActivity : ComponentActivity() {
 
   private val actions =
       object : MainActions {
-        override fun startWalk() {
+        override fun startJob() {
           lifecycleScope.launch {
+            // The glasses camera permission is granted once in Meta AI ("allow always"), so
+            // reconnects later in the walk never need the phone again.
             val current = Wearables.checkPermissionStatus(Permission.CAMERA).getOrNull()
             val status = if (current == PermissionStatus.Granted) current else requestDatPermission(Permission.CAMERA)
             app.events.log("dat_permission", "camera=$status")
-            if (status == PermissionStatus.Granted) app.glasses.startWalk()
+            if (status == PermissionStatus.Granted) app.walk.startJob()
+            else app.speaker.say("Allow camera access in Meta AI to start.")
           }
         }
+
+        override fun endJob() = app.walk.endJob()
 
         override fun register() = Wearables.startRegistration(this@MainActivity)
 

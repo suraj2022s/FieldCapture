@@ -62,5 +62,11 @@
                 <data android:scheme="fieldcapture" />
             </intent-filter>
         </activity>
+
+        <!-- Keeps the walk alive with the screen off: glasses link + mock camera feed + phone mic -->
+        <service
+            android:name=".walk.WalkService"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice|camera|microphone" />
     </application>
 </manifest>

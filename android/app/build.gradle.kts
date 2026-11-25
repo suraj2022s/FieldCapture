@@ -77,6 +77,9 @@ dependencies {
   implementation(libs.androidx.work.runtime.ktx)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.kotlinx.coroutines.android)
+  // On-device OCR (bundled model, works offline): nameplate framing check + offline read-back
+  implementation(libs.mlkit.text.recognition)
+  implementation(libs.okhttp)
 
   // Meta Wearables Device Access Toolkit 1.1.0 (Maven Central)
   implementation(libs.mwdat.core)

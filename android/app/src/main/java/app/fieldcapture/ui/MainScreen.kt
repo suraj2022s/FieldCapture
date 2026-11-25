@@ -38,8 +38,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.fieldcapture.FieldCaptureApp
 import app.fieldcapture.core.AppEvent
 import app.fieldcapture.glasses.GlassesStatus
+import app.fieldcapture.glasses.PhotoCodec
 import app.fieldcapture.glasses.PhotoResult
 import app.fieldcapture.glasses.WalkPhase
+import app.fieldcapture.sync.UploadWorker
 import com.meta.wearable.dat.core.types.ThermalLevel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -47,7 +49,9 @@ import java.util.Locale
 import kotlinx.coroutines.launch
 
 interface MainActions {
-  fun startWalk()
+  fun startJob()
+
+  fun endJob()
 
   fun register()
 
@@ -62,8 +66,14 @@ fun MainScreen(app: FieldCaptureApp, actions: MainActions) {
   val status by app.glasses.status.collectAsStateWithLifecycle()
   val mock by app.mock.state.collectAsStateWithLifecycle()
   val events by app.events.events.collectAsStateWithLifecycle()
+  val walk by app.walk.ui.collectAsStateWithLifecycle()
+  val listen by app.listener.state.collectAsStateWithLifecycle()
+  val pending by app.store.pending.collectAsStateWithLifecycle()
   var lastPhoto by remember { mutableStateOf<PhotoResult?>(null) }
   var debugMsg by remember { mutableStateOf<String?>(null) }
+  var offline by remember { mutableStateOf(app.settings.simulateOffline) }
+  var photoEvidence by remember { mutableStateOf(app.settings.usePhotoEvidence) }
+  var yuv by remember { mutableStateOf(app.settings.yuvLayout) }
   val scope = rememberCoroutineScope()
 
   LazyColumn(
@@ -71,19 +81,63 @@ fun MainScreen(app: FieldCaptureApp, actions: MainActions) {
       verticalArrangement = Arrangement.spacedBy(10.dp),
   ) {
     item { PhaseBanner(status) }
+
+    item {
+      Section("Job") {
+        if (walk.jobId == null) {
+          Button(onClick = actions::startJob, modifier = Modifier.fillMaxWidth().height(64.dp)) {
+            Text("Start job", fontSize = 22.sp)
+          }
+          Text("Then everything is by voice: \"capture nameplate\", \"capture damage kitchen north wall\", \"note: …\", \"end job\".")
+        } else {
+          Text(
+              "${walk.room?.replaceFirstChar { it.uppercase() } ?: "No room yet"} · ${walk.captures} captures · ${walk.notes} notes",
+              fontSize = 20.sp,
+              fontWeight = FontWeight.Bold,
+          )
+          Text(if (pending == 0) "All uploaded" else "$pending waiting for signal", color = if (pending == 0) Color(0xFF81C784) else Color(0xFFFFB74D))
+          walk.busy?.let { Text(it, fontSize = 18.sp, color = MaterialTheme.colorScheme.primary) }
+          walk.last?.let { Text(it) }
+          Mono("mic ${if (listen.listening) "listening" else "idle"} (${listen.engine}) heard: \"${listen.lastPartial.ifEmpty { listen.lastFinal }}\"")
+          walk.lastThumb?.let { bytes ->
+            val bmp = remember(bytes) { BitmapFactory.decodeByteArray(bytes, 0, bytes.size) }
+            if (bmp != null) Image(bmp.asImageBitmap(), "Last capture", Modifier.fillMaxWidth().height(200.dp))
+          }
+          FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedButton(onClick = { app.glasses.pauseWalk() }) { Text("Pause") }
+            OutlinedButton(onClick = { app.glasses.resumeWalk() }) { Text("Resume") }
+            Button(onClick = actions::endJob) { Text("End job") }
+          }
+        }
+        if (status.registration?.name != "REGISTERED" && status.registration != null) {
+          OutlinedButton(onClick = actions::register) { Text("Register with Meta AI") }
+        }
+      }
+    }
+
     item { StatusCard(status) }
 
     item {
-      Section("Walk") {
+      Section("Settings (debug)") {
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-          Button(onClick = actions::startWalk, enabled = !app.glasses.isWalking) { Text("Start walk") }
-          OutlinedButton(onClick = { app.glasses.pauseWalk() }) { Text("Pause") }
-          OutlinedButton(onClick = { app.glasses.resumeWalk() }) { Text("Resume") }
-          OutlinedButton(onClick = { app.glasses.endWalk() }) { Text("End walk") }
-          if (status.registration?.name != "REGISTERED") {
-            OutlinedButton(onClick = actions::register) { Text("Register with Meta AI") }
+          OutlinedButton(onClick = {
+            offline = !offline
+            app.settings.simulateOffline = offline
+            app.events.log("settings", "simulated no-signal ${if (offline) "ON" else "off"}")
+            if (!offline) UploadWorker.kick(app)
+          }) {
+            Text(if (offline) "No-signal: ON" else "No-signal: off")
           }
+          OutlinedButton(onClick = { photoEvidence = !photoEvidence; app.settings.usePhotoEvidence = photoEvidence }) {
+            Text(if (photoEvidence) "Evidence: photo" else "Evidence: stream")
+          }
+          OutlinedButton(onClick = {
+            val all = PhotoCodec.YuvLayout.entries
+            yuv = all[(all.indexOf(yuv) + 1) % all.size]
+            app.settings.yuvLayout = yuv
+          }) { Text("YUV: ${yuv.name}") }
         }
+        Mono("thresholds ${app.settings.thresholdsVersion}: ${app.settings.thresholds}")
       }
     }
 
