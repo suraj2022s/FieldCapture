@@ -45,10 +45,15 @@ class WalkService : Service() {
             .setOngoing(true)
             .setContentIntent(open)
             .build()
-    var type = ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE
-    if (granted(Manifest.permission.CAMERA)) type = type or ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
-    if (granted(Manifest.permission.RECORD_AUDIO)) type = type or ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
-    startForeground(NOTIFICATION_ID, notification, type)
+    // start() only gets here when foregroundTypes() is non-zero. Android 14+ validates each type
+    // against a granted runtime permission, so claim exactly what is granted.
+    val type = foregroundTypes(this)
+    try {
+      startForeground(NOTIFICATION_ID, notification, if (type != 0) type else ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE)
+    } catch (e: Exception) {
+      // Nothing safe left to do: stopping before startForeground() is itself fatal on Android 12+.
+      android.util.Log.e("FieldCapture", "foreground service refused: ${e.message}")
+    }
     wakeLock =
         getSystemService(PowerManager::class.java)
             .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "fieldcapture:walk")
@@ -62,16 +67,31 @@ class WalkService : Service() {
     super.onDestroy()
   }
 
-  private fun granted(p: String) = checkSelfPermission(p) == PackageManager.PERMISSION_GRANTED
-
   companion object {
     private const val CHANNEL = "walk"
     private const val NOTIFICATION_ID = 42
     private const val MAX_WALK_MS = 4 * 60 * 60 * 1000L
 
+    /** Foreground-service types whose runtime permissions are currently granted. */
+    fun foregroundTypes(context: Context): Int {
+      fun granted(p: String) = context.checkSelfPermission(p) == PackageManager.PERMISSION_GRANTED
+      var type = 0
+      if (granted(Manifest.permission.BLUETOOTH_CONNECT)) type = type or ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE
+      if (granted(Manifest.permission.CAMERA)) type = type or ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
+      if (granted(Manifest.permission.RECORD_AUDIO)) type = type or ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
+      return type
+    }
+
+    /**
+     * Best effort: the walk works without the service (it only protects screen-off operation).
+     * Decide BEFORE startForegroundService(): once called, Android requires startForeground() within
+     * seconds, and a service that can't comply crashes the app (ForegroundServiceDidNotStartInTime).
+     */
     fun start(context: Context) {
-      // Android refuses foreground-service starts from the background (e.g. under instrumentation);
-      // the walk still runs, it just isn't protected from the screen turning off.
+      if (foregroundTypes(context) == 0) {
+        android.util.Log.w("FieldCapture", "foreground service skipped: no Bluetooth/camera/mic permission granted")
+        return
+      }
       runCatching { context.startForegroundService(Intent(context, WalkService::class.java)) }
           .onFailure { android.util.Log.w("FieldCapture", "foreground service not started: ${it.message}") }
     }

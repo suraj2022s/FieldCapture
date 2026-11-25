@@ -25,7 +25,8 @@ class MockGlassesRule(private val registered: Boolean = true) : ExternalResource
   override fun before() {
     val pkg = context.packageName
     for (p in listOf("BLUETOOTH_CONNECT", "CAMERA", "RECORD_AUDIO", "POST_NOTIFICATIONS")) {
-      instrumentation.uiAutomation.executeShellCommand("pm grant $pkg android.permission.$p").close()
+      // The platform API, not `pm grant` in a shell: ColorOS's permission monitoring can block the shell route.
+      runCatching { instrumentation.uiAutomation.grantRuntimePermission(pkg, "android.permission.$p") }
     }
     kit = MockDeviceKit.getInstance(context)
     kit.enable(MockDeviceKitConfig(registered, true, null))

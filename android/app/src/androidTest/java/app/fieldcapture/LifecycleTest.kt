@@ -60,7 +60,7 @@ class LifecycleTest {
 
   // L1
   @Test
-  fun startStreamsFramesThenStopsCleanly() = runBlocking {
+  fun startStreamsFramesThenStopsCleanly(): Unit = runBlocking {
     startActive()
     val s = controller.status.value
     assertTrue("first frame measured", (s.firstFrameMs ?: -1) >= 0)
@@ -72,7 +72,7 @@ class LifecycleTest {
 
   // L4
   @Test
-  fun pauseRefusesCapturesAndResumeComesBack() = runBlocking {
+  fun pauseRefusesCapturesAndResumeComesBack(): Unit = runBlocking {
     startActive()
     controller.pauseWalk()
     awaitPhase(WalkPhase.PAUSED)
@@ -85,7 +85,7 @@ class LifecycleTest {
 
   // L5
   @Test
-  fun takingGlassesOffSuspendsAndPuttingThemOnResumes() = runBlocking {
+  fun takingGlassesOffSuspendsAndPuttingThemOnResumes(): Unit = runBlocking {
     startActive()
     mock.glasses.doff()
     val s = awaitPhase(WalkPhase.SUSPENDED, WalkPhase.PAUSED, WalkPhase.RECONNECTING)
@@ -96,7 +96,7 @@ class LifecycleTest {
 
   // L6
   @Test
-  fun foldingSuspendsAndUnfoldingResumes() = runBlocking {
+  fun foldingSuspendsAndUnfoldingResumes(): Unit = runBlocking {
     startActive()
     mock.glasses.fold()
     val s = awaitPhase(WalkPhase.SUSPENDED, WalkPhase.PAUSED, WalkPhase.RECONNECTING)
@@ -108,7 +108,7 @@ class LifecycleTest {
 
   // L7: the device drops off halfway through a walk
   @Test
-  fun powerLossMidWalkReconnectsTheSameWalk() = runBlocking {
+  fun powerLossMidWalkReconnectsTheSameWalk(): Unit = runBlocking {
     startActive()
     mock.glasses.powerOff()
     awaitPhase(WalkPhase.RECONNECTING, timeoutMs = 30_000)
@@ -123,7 +123,7 @@ class LifecycleTest {
 
   // L8
   @Test
-  fun overheatingIsSurfacedToTheTech() = runBlocking {
+  fun overheatingIsSurfacedToTheTech(): Unit = runBlocking {
     startActive()
     mock.glasses.setThermalLevel(ThermalLevel.CRITICAL)
     val s = withTimeout(20_000) { controller.status.first { it.device?.thermal == ThermalLevel.CRITICAL } }
@@ -133,7 +133,7 @@ class LifecycleTest {
 
   // L9
   @Test
-  fun outdatedGlassesAppIsReportedNotLooped() = runBlocking {
+  fun outdatedGlassesAppIsReportedNotLooped(): Unit = runBlocking {
     mock.glasses.services.setDATAppUpdateRequirementEnabled(true)
     controller.startWalk()
     withTimeout(30_000) {

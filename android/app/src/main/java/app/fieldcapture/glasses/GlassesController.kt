@@ -178,6 +178,7 @@ class GlassesController(
             val best = list.minByOrNull { rank(it.second) }
             val snap = best?.let { (id, d) -> d.toSnapshot(id) }
             logDeviceChanges(previous, snap)
+            onWearChange(previous, snap)
             previous = snap
             _status.update { it.copy(device = snap) }
           }
@@ -232,6 +233,31 @@ class GlassesController(
     }
     if (old.compatibility != new.compatibility) {
       log.log("device", "compatibility ${old.compatibility} -> ${new.compatibility}")
+    }
+  }
+
+  /**
+   * Glasses off (or folded) = no capturing, whatever the stream does. On real glasses the SDK
+   * pauses the stream on doff; Mock Device Kit does not (measured: the stream keeps STREAMING
+   * after doff()), so the app reads the device's own don/hinge state instead. A capture taken
+   * while the glasses dangle from a collar would be evidence of the floor.
+   */
+  private fun glassesOff(): Boolean =
+      _status.value.device?.let { it.don == DonState.DOFFED || it.hinge == HingeState.CLOSED } ?: false
+
+  private fun onWearChange(old: DeviceSnapshot?, new: DeviceSnapshot?) {
+    if (supervisor?.isActive != true || new == null) return
+    val offNow = new.don == DonState.DOFFED || new.hinge == HingeState.CLOSED
+    val offBefore = old != null && (old.don == DonState.DOFFED || old.hinge == HingeState.CLOSED)
+    val phase = _status.value.phase
+    if (offNow && !offBefore && (phase == WalkPhase.ACTIVE || phase == WalkPhase.CONNECTING)) {
+      setPhase(
+          WalkPhase.SUSPENDED,
+          if (new.hinge == HingeState.CLOSED) "Glasses folded. Unfold them to keep capturing."
+          else "Glasses are off. Put them on to keep capturing.",
+      )
+    } else if (!offNow && offBefore && phase == WalkPhase.SUSPENDED && !userPaused) {
+      if (_status.value.streamState == StreamState.STREAMING) setPhase(WalkPhase.ACTIVE)
     }
   }
 
@@ -450,7 +476,12 @@ class GlassesController(
     _status.update { it.copy(streamState = st) }
     log.log("stream_state", st.name)
     when (st) {
-      StreamState.STREAMING -> setPhase(if (userPaused) WalkPhase.PAUSED else WalkPhase.ACTIVE)
+      StreamState.STREAMING ->
+          when {
+            userPaused -> setPhase(WalkPhase.PAUSED)
+            glassesOff() -> setPhase(WalkPhase.SUSPENDED, "Glasses are off. Put them on to keep capturing.")
+            else -> setPhase(WalkPhase.ACTIVE)
+          }
       StreamState.PAUSED ->
           if (!userPaused) setPhase(WalkPhase.SUSPENDED, _status.value.guidance ?: "The glasses paused the camera.")
       else -> Unit

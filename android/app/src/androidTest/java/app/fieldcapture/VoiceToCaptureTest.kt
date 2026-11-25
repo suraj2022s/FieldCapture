@@ -28,7 +28,7 @@ class VoiceToCaptureTest {
       SystemClock.elapsedRealtime().let { now -> Heard(listOf(text), listOf(0.9f), true, now - 1200, now, utterance) }
 
   @Test
-  fun spokenCommandsBecomeDurableQueuedCaptures() = runBlocking {
+  fun spokenCommandsBecomeDurableQueuedCaptures(): Unit = runBlocking {
     val app = mock.context.applicationContext as FieldCaptureApp
     app.settings.usePhotoEvidence = true
     app.initSdk(useMockGlasses = false) // the rule already set up the simulated pair + test feed
