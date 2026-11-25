@@ -320,3 +320,47 @@ The newest entry is at the bottom. Each entry records what was done, the decisio
 1. User adds credit → `POST :8002/v1/jobs/5482e66c…/reprocess` → check the damage types and line items on the real seepage photos.
 2. Phone free → install the new build → instrumented tests → `tools/chaos_run.ps1`.
 3. 11-26 filming per `eval/README.md`.
+
+---
+
+## 2026-11-25 — Session 2, evening: phone free; instrumented tests re-run; chaos run PASS
+
+### Phone link
+- The user turned developer options off, then back on, and restarted the phone.
+- **USB debugging doesn't come back on by itself:** Windows saw the phone only as a file-transfer device (WPD) until USB debugging was switched on again.
+- Afterwards the phone was re-authorized, the route set to :8002, and the app was still installed with 0 uploads waiting.
+
+### Instrumented tests after the Meta-skills audit
+- **8/8 Mock Device Kit tests pass on the phone** (24 s).
+- The phone's upload route was removed first, so the tests' synthetic captures couldn't upload into the real back-office data. The earlier sessions' job list on :8000 likely holds a few test jobs for exactly that reason; worth checking before samples are picked.
+- Reinstalled with `adb install -r -g`: all 4 runtime permissions were granted.
+
+### Chaos run (`tools/chaos_run.ps1 -OutageSeconds 60 -RestorePort 8002`)
+- **Run 1 (`eval/chaos/chaos-20261125-195142.json`, verdict ERROR) found a real bug.**
+  - After a reconnect the app never said "Glasses back." A reconnect goes RECONNECTING → **CONNECTING** → ACTIVE, and the line was only spoken when the phase before ACTIVE was RECONNECTING.
+  - The lifecycle test L7 checks the phase, not the spoken line, so it missed this.
+  - Data was still intact in that run (4 captures + 3 notes on both sides, finalized). Only the comparison step was skipped by the error.
+  - **Fix:** `WalkController` keeps an `interrupted` flag: set on RECONNECTING, SUSPENDED or NEEDS_*, and cleared with "Glasses back." on the next ACTIVE. The same flag says "Glasses disconnected" once per outage instead of on every reconnect cycle.
+- **Script fixes from run 1:**
+  - PowerShell 5.1 turned adb stderr (`find` on a fresh install's missing folder) into a fatal error.
+  - Marks were logged after the HTTP call instead of before.
+  - Reconnect is now measured to phase ACTIVE, and the spoken line is checked separately.
+  - `-RestorePort` added, because the everyday back office is on :8002 now.
+- **Run 2 (`eval/chaos/chaos-20261125-195606.json`): PASS.**
+  - The phone acknowledged **5 captures and 3 notes, and the server stored exactly those 5 + 3**: 0 missing, 0 extra, 0 captures/notes uploaded twice, finalized.
+  - Baseline: save → stored in 103–160 ms.
+  - Back office unreachable for 60.7 s: 3 failed attempts, 4 items queued.
+  - App killed with the 4 queued: resumed under **the same job id**, counts restored, nothing dropped from the outbox (kill → resumed 5.4 s, which includes the script's 3 s wait).
+  - Route restored → all 4 stored in 9.9–10.1 s.
+  - Glasses off: "Glasses disconnected" after 5.2 s (our 5 s link-loss grace); capture refused out loud; note saved.
+  - Power on → ACTIVE in 262 ms, "Glasses back." at 264 ms.
+  - **Caveat:** the JSON's `app_commit` is `de9895e`, but the installed build also carried the uncommitted "Glasses back" fix, which is committed together with this entry.
+- **Also measured:** `checkPermissionStatus(CAMERA)` *fails* (doesn't return Denied) while the glasses are off. The new permission gate treats a failed check as "unknown", so it doesn't nag (RESEARCH §5a).
+- **Not covered:**
+  - The phone fully offline: airplane mode is off-limits here, because the PC's internet runs through the phone.
+  - Outages longer than 60 s. WorkManager's exponential backoff means the wait after the route returns grows with the outage; measure with `-OutageSeconds 300` before claiming anything about long dead zones.
+
+### Next
+1. User adds API credit → reprocess `5482e66c` on :8002.
+2. Optional: a 5-minute outage run to measure the backoff tail.
+3. 11-26 filming per `eval/README.md`.

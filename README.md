@@ -85,6 +85,13 @@ flowchart LR
 4. **No fuss.** If nothing passes, the tech gets **one** specific prompt ("Too dark. Turn on your light.", "Hold still.", "Label is cut off. Step back a little.") and the app keeps watching. The first good frame is taken without repeating the command. After two prompts it keeps the least-bad frame and flags it for the back office. *"Capture anyway"* accepts immediately.
 5. **Durable before "Got it".** The evidence JPEG, its metadata and an outbox marker are each written, fsync'd and atomically renamed before the confirmation tone.
 6. **Upload when there's signal.** WorkManager drains the outbox under a network constraint. Each item's id is its idempotency key, so replays after a dropped connection are acknowledged rather than duplicated.
+7. **Proven with counts, not claimed.** [`tools/chaos_run.ps1`](tools/chaos_run.ps1) breaks a real walk on the phone. It makes the back office unreachable for 60 s, kills the app with uploads queued, and powers the glasses off mid-walk. Then it compares what the phone acknowledged with what the server stored. In the 2026-11-25 run ([`eval/chaos/chaos-20261125-195606.json`](eval/chaos/chaos-20261125-195606.json)):
+   - The phone acknowledged **5 captures and 3 notes, and the server holds exactly those**, with none missing, none extra and none uploaded twice.
+   - The killed walk resumed under the same job id.
+   - Queued items landed about 10 s after the route came back.
+   - The capture attempted with the glasses off was refused out loud, and the note was still saved.
+   - "Glasses back" was spoken 0.26 s after power-on.
+   - The first run ([`chaos-20261125-195142.json`](eval/chaos/chaos-20261125-195142.json)) caught a bug: "Glasses back" was never spoken after a reconnect. It's fixed.
 7. **Back office.** Claude extracts structured fields. Confidence is calibrated from independent signals: model self-report, agreement with the on-device OCR, format checks and quality. Deterministic rules turn observations into draft line items, each citing its evidence.
 
 ## Decisions (and what we cut)

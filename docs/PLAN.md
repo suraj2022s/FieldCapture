@@ -425,9 +425,9 @@ The brief arrived 2026-11-24 and is **due 2026-11-27**.
 - [ ] **M7 — Hardening** (~2 h): chaos runs (offline/kill/server down); pocket mode (compressed HEVC + MediaCodec) if time allows; prompt polish
   - [x] L11: a walk the OS killed resumes on relaunch under the same job id (30 min inactivity window); older open jobs are closed and finalized. JVM-tested; verified on device with a real job.
   - [x] Debug-only adb walk driver (`DebugCommandReceiver`) for scripted chaos runs and the failure drill
-  - [ ] Chaos run with counts (captured vs received vs replays), back-office-unreachable drain time, glasses power-off reconnect time
+  - [x] Chaos run with counts (captured vs received vs replays), back-office-unreachable drain time, glasses power-off reconnect time: PASS, `eval/chaos/chaos-20261125-195606.json`. Not covered: the phone fully offline (airplane mode), and outages longer than 60 s (backoff grows).
   - [x] Session supervisor audited against Meta's DAT skills + docs MCP: 5 gaps fixed (subscribe-before-start, failed attach/stream start, permission check, pause settling, stream restart)
-  - [ ] Re-run the 8 instrumented MDK tests on the phone after that audit (phone was in use)
+  - [x] Re-run the 8 instrumented MDK tests on the phone after that audit: 8/8 pass (24 s)
 - [ ] **M8 — Real walk-throughs** (~1.5 h): 3 sample job records; demo video from tag `demo-v1`
 - [ ] **M9 — Docs and submission** (~1.5 h)
   - [ ] README (setup < 10 min, diagram, two more weeks, tools used, limitations)

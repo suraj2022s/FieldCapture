@@ -103,6 +103,8 @@ class WalkController(
   @Volatile private var job: JobHeader? = null
   private var jobStartWall = 0L
   @Volatile private var priorEvents: List<EventRecord> = emptyList()
+  /** The glasses dropped, paused or needed something since the walk was last ACTIVE. */
+  @Volatile private var interrupted = false
   @Volatile private var room: String? = null
   private val captureMutex = Mutex()
   @Volatile private var capturing = false
@@ -122,7 +124,7 @@ class WalkController(
     scope.launch {
       var previous: WalkPhase? = null
       glasses.status.map { it.phase to it.guidance }.distinctUntilChanged().collect { (phase, guidance) ->
-        if (job != null && phase != previous) announcePhase(previous, phase, guidance)
+        if (job != null && phase != previous) announcePhase(phase, guidance)
         previous = phase
       }
     }
@@ -173,6 +175,7 @@ class WalkController(
     job = header
     jobStartWall = System.currentTimeMillis()
     priorEvents = prior
+    interrupted = false
     this.room = room
     roomTipGiven = false
     history.clear()
@@ -205,17 +208,37 @@ class WalkController(
               .filter { it.wallMs >= jobStartWall }
               .map { EventRecord(Instant.ofEpochMilli(it.wallMs).toString(), it.type, it.detail) }
 
-  private fun announcePhase(prev: WalkPhase?, phase: WalkPhase, guidance: String?) {
+  /**
+   * Speaks lifecycle changes once each. A reconnect goes RECONNECTING -> CONNECTING -> ACTIVE, so
+   * "Glasses back" keys off "was interrupted since the last ACTIVE", not the phase just before
+   * (the chaos run caught it never being said). The same flag stops "Glasses disconnected" from
+   * repeating while reconnect attempts cycle.
+   */
+  private fun announcePhase(phase: WalkPhase, guidance: String?) {
     when (phase) {
       WalkPhase.RECONNECTING -> {
-        speaker.failure()
-        speaker.say("Glasses disconnected. Notes still work.")
+        if (!interrupted) {
+          speaker.failure()
+          speaker.say("Glasses disconnected. Notes still work.")
+        }
+        interrupted = true
       }
-      WalkPhase.SUSPENDED -> speaker.say(guidance ?: "The glasses paused the camera.")
-      WalkPhase.ACTIVE ->
-          if (prev == WalkPhase.RECONNECTING || prev == WalkPhase.SUSPENDED) speaker.say("Glasses back.")
-      WalkPhase.NEEDS_REGISTRATION -> speaker.say("Open FieldCapture to connect to Meta AI.")
-      WalkPhase.NEEDS_PERMISSION -> speaker.say(guidance ?: "Allow camera access for FieldCapture in Meta AI.")
+      WalkPhase.SUSPENDED -> {
+        speaker.say(guidance ?: "The glasses paused the camera.")
+        interrupted = true
+      }
+      WalkPhase.ACTIVE -> {
+        if (interrupted) speaker.say("Glasses back.")
+        interrupted = false
+      }
+      WalkPhase.NEEDS_REGISTRATION -> {
+        speaker.say("Open FieldCapture to connect to Meta AI.")
+        interrupted = true
+      }
+      WalkPhase.NEEDS_PERMISSION -> {
+        speaker.say(guidance ?: "Allow camera access for FieldCapture in Meta AI.")
+        interrupted = true
+      }
       else -> Unit
     }
   }

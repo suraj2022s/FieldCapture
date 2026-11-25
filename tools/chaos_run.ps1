@@ -19,7 +19,7 @@
   It uses its own back office (port 8001, temp data dir, extraction off), the synthetic test feed
   (the camera films nothing) and the phone mic off (room speech can't interfere). It never touches
   airplane mode, mobile data or Wi-Fi: on this setup the PC's internet runs through the phone.
-  At the end, adb reverse goes back to tcp:8000 -> tcp:8000 and the feed to the phone camera.
+  At the end, adb reverse goes back to tcp:8000 -> tcp:<RestorePort> and the feed to the phone camera.
 
 .OUTPUTS
   eval/chaos/chaos-<timestamp>.json: counts, timings, verdict, and the app's event log for the run.
@@ -27,6 +27,8 @@
 param(
   [int]$Port = 8001,
   [int]$OutageSeconds = 60,
+  # Where the phone's tcp:8000 points afterwards (the port your everyday back office runs on).
+  [int]$RestorePort = 8000,
   # Skip the "is someone using the phone?" checks.
   [switch]$Force
 )
@@ -44,7 +46,14 @@ $phoneLog = Join-Path $work 'phone.log'
 $serverOut = Join-Path $work 'server.out.log'
 $serverErr = Join-Path $work 'server.err.log'
 
-function Adb { & $adb @args }
+# PowerShell 5.1 turns any stderr line from a native command into a terminating error under
+# ErrorActionPreference=Stop (e.g. `find` on a folder a fresh install doesn't have yet). adb's
+# stderr is noise here; results are checked from its stdout and the app's log.
+function Adb {
+  $eap = $ErrorActionPreference
+  $ErrorActionPreference = 'Continue'
+  try { & $adb @args 2>$null } finally { $ErrorActionPreference = $eap }
+}
 function Step([string]$s) { Write-Host ("[{0:HH:mm:ss}] {1}" -f (Get-Date), $s) -ForegroundColor Cyan }
 
 # ---------------------------------------------------------------- phone event log (phone clock)
@@ -240,23 +249,26 @@ try {
 
   # 5 -----------------------------------------------------------------
   Step '5/6 glasses powered off mid-walk'
-  Mock '/device/power-off'
+  # Marks go before the HTTP call: the phone may react before the call returns.
   $tOff = Mark 'power off'
-  $lost = Wait-Event 'say' 'Glasses disconnected' ($tOff - 2) 30
+  Mock '/device/power-off'
+  $lost = Wait-Event 'say' 'Glasses disconnected' $tOff 30
   $t = Cmd 'say' 'capture damage, hallway, wall'
   $refused = Wait-Event 'capture_refused' '.' $t 15
   $notes += Add-Note 'note: hallway carpet damp near the door'
   # As the tech would: power the glasses back on, open them, put them on (same as LifecycleTest L7).
-  Mock '/device/power-on'
   $tOn = Mark 'power on'
+  Mock '/device/power-on'
   Mock '/device/unfold'
   Mock '/device/don'
-  $back = Wait-Event 'say' 'Glasses back' $tOn 60
+  $active = Wait-Event 'phase' '-> ACTIVE' $tOn 60
+  $back = Wait-Event 'say' 'Glasses back' $tOn 15
   $caps += Add-Capture 'capture damage, hallway, wall'
   $result.phases.glasses_off = [ordered]@{
     off_to_spoken_ms = [math]::Round(($lost.t - $tOff) * 1000)
     capture_while_off = $refused.detail
-    on_to_glasses_back_ms = [math]::Round(($back.t - $tOn) * 1000)
+    on_to_active_ms = [math]::Round(($active.t - $tOn) * 1000)
+    on_to_glasses_back_spoken_ms = [math]::Round(($back.t - $tOn) * 1000)
   }
 
   # 6 -----------------------------------------------------------------
@@ -286,7 +298,7 @@ catch {
   Write-Host "chaos run failed: $_" -ForegroundColor Red
 }
 finally {
-  Step 'cleanup: chaos job ended and drained, feed back to the phone camera, route back to :8000'
+  Step "cleanup: chaos job ended and drained, feed back to the phone camera, route back to :$RestorePort"
   # A run that failed half-way must not leave its job open (the next launch would resume it) or
   # its uploads queued (they would go to the real back office once the route is restored).
   try { Cmd 'end' | Out-Null } catch { }
@@ -297,7 +309,7 @@ finally {
     Write-Host "WARNING: the phone still has chaos-run uploads queued; they will go to the :8000 back office." -ForegroundColor Yellow
   }
   try { Cmd 'feed_camera' | Out-Null } catch { }
-  Adb reverse "tcp:8000" "tcp:8000" | Out-Null
+  Adb reverse "tcp:8000" "tcp:$RestorePort" | Out-Null
   if ($server) { & taskkill /PID $server.Id /T /F 2>$null | Out-Null }
   if ($logcat) { Start-Sleep -Milliseconds 500; & taskkill /PID $logcat.Id /T /F 2>$null | Out-Null }
   # The run's event log, minus anything the phone mic heard (room speech is not data).
