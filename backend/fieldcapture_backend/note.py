@@ -76,6 +76,7 @@ COMPONENTS = [
 CONDITIONS = {
     "soft": "damage_observation", "spongy": "damage_observation", "wet": "moisture", "damp": "moisture",
     "soaked": "moisture", "saturated": "moisture", "swollen": "damage_observation", "warped": "damage_observation",
+    "seepage": "moisture", "peeling": "damage_observation", "flaking": "damage_observation",
     "stained": "damage_observation", "cracked": "damage_observation", "leaking": "moisture", "dripping": "moisture",
     "moldy": "mold_odor", "mold": "mold_odor", "musty": "mold_odor", "smell": "mold_odor", "rotten": "structural",
     "sagging": "structural", "rusted": "equipment", "corroded": "equipment", "exposed": "safety_hazard",

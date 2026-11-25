@@ -152,6 +152,11 @@ All measured 2026-11-25 from the app's event log (logcat tag `FieldCapture`).
 | `capturePhoto()` on the mock | Phone-camera feed: a **480×640 HEIC in 656 ms**, the same resolution as the stream, so no detail gain. Video-file feed with no `setCapturedImage`: a **1×1 HEIC placeholder (759 B) in 45 ms**. Treat mock stills as untrusted; the app now rejects stills under 120 px. |
 | `setCameraFeed(Uri)` while streaming | Did **not** switch the live stream; frames kept coming from the phone camera. Set the feed before starting the stream, or restart the stream. |
 | On-device speech | On this phone `SpeechRecognizer.isOnDeviceRecognitionAvailable` is true, but **en-US is not installed** on the on-device engine. The app requests the model (`triggerModelDownload`, API 33+) and falls back to Google's recognition service (`GoogleTTSRecognitionService`, the system default). |
+| Recognizer confidence score | Google's service reports **0.00 for every result** on this phone, so 0 must be read as "no score" rather than "wrong". `ERROR_CLIENT` follows almost every result: a restart race, not a failure. |
+| First natural voice walk (user, 6 captures) | **Speech start → command understood: 2.6–5.1 s** (includes speaking time). **Command → durable save: 0.6–1.2 s**, including `capturePhoto()` at 544–802 ms (480×640 HEIC, 70–110 KB). **Upload to the back office: <0.3 s** over USB. One dark capture got 2 "Too dark" prompts, then the app accepted a good frame by itself after 4.2 s. |
+| How a first-time user phrases commands | Every command was natural: "**Please** capture the broken wall", "capture the seepage on wall", "capture the floor is not good". No room was ever named. This drove a forgiving parser and a one-time room tip. |
+| Instrumented lifecycle tests | **8/8 pass on device**: start/stop, pause/resume, power loss → reconnect same walk, overheat, doff/don, fold/unfold, outdated glasses app, voice → durable queued capture. |
+| Mock `doff()` | Does **not** pause the stream (it keeps STREAMING), unlike real glasses per the 1.1 changelog. The app therefore suspends capture from the device's `donState`/`hingeState`. |
 
 ## 5. Open questions to measure on our build (→ memo "[ours]")
 

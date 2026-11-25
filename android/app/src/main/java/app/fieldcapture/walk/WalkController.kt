@@ -108,6 +108,7 @@ class WalkController(
   @Volatile private var forceAccept = false
   @Volatile private var lastActedUtterance = -1
   @Volatile private var lastHintAt = 0L
+  @Volatile private var roomTipGiven = false
   private val history = ArrayDeque<Any>()
   private var lastCaptureRequest: Triple<Purpose, String?, String?>? = null
 
@@ -141,6 +142,7 @@ class WalkController(
     job = header
     jobStartWall = System.currentTimeMillis()
     room = null
+    roomTipGiven = false
     history.clear()
     _ui.value = WalkUi(jobId = header.jobId)
     log.log("job", "started ${header.jobId}")
@@ -507,7 +509,7 @@ class WalkController(
           override -> "Saved, but ${v.issues.firstOrNull()?.let { issueWord(it.name) } ?: "it's not great"}. Say retake to try again."
           purpose == Purpose.NAMEPLATE -> "Nameplate saved." + (serial?.let { " Serial ends ${spell(it.takeLast(4))}." } ?: "")
           else -> "Damage saved" + listOfNotNull(room, surface).joinToString(", ", prefix = ", ").takeIf { room != null || surface != null }.orEmpty() + "."
-        }
+        } + roomTip(purpose, room)
     speaker.say(confirmation)
     log.log(
         "capture",
@@ -655,6 +657,16 @@ class WalkController(
         "NO_TEXT" -> "I couldn't read a label"
         else -> "it's not great"
       }
+
+  /**
+   * Day-1 finding: a natural first walk named no rooms at all ("please capture the broken wall"),
+   * so every capture landed in the back office as room_missing. One tip per job, never a nag.
+   */
+  private fun roomTip(purpose: Purpose, room: String?): String {
+    if (purpose != Purpose.DAMAGE || room != null || roomTipGiven) return ""
+    roomTipGiven = true
+    return " Say the room too, like: capture damage, kitchen."
+  }
 
   /** "4417" -> "4 4 1 7" so TTS reads digits, not a number. */
   private fun spell(s: String) = s.toCharArray().joinToString(" ")

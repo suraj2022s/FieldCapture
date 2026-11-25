@@ -199,6 +199,10 @@ class SpeechListener(
               runCatching { recognizer?.cancel() }
               restart(400)
             }
+            // Measured on the test phone: CLIENT fires after nearly every result and after our own
+            // cancel() when TTS mutes us. It's a restart race, not a broken recogniser, so it must
+            // not count toward abandoning the offline engine.
+            SpeechRecognizer.ERROR_CLIENT -> restart(400)
             SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> {
               log.log("asr", "microphone permission missing; listening stopped")
               _state.update { it.copy(lastError = "microphone permission missing") }

@@ -154,6 +154,51 @@ The newest entry is at the bottom. Each entry records what was done, the decisio
 
 ### Next (in order)
 1. Phone connected → `installDebug` → run `connectedDebugAndroidTest`. Record the mock's measured behaviour (timelines from the tests, first-frame ms, frame layout, `capturePhoto()` output) in RESEARCH.md §5.
+
+---
+
+## 2026-11-25 — Session 1, evening: phone connected, all on-device tests pass, first real voice walk
+
+### Phone setup gotchas
+- The phone was connected in **USB tethering** mode, and the PC's only internet ran through it, so switching USB mode would have cut this session. USB debugging works alongside tethering. The PC later moved to Wi-Fi.
+- `adb reverse tcp:8000 tcp:8000` is lost on every USB disconnect; re-run it.
+- **`connectedDebugAndroidTest` uninstalls the app afterwards.** Reinstall with `adb install -r -g` before manual use.
+
+### Measured (details in RESEARCH.md §5a)
+- Mock registration works without the Meta AI app.
+- First frame 1.8–2.6 s after `createSession`.
+- The phone-camera feed is **480×640 @ ~30 fps whatever we request**.
+- Raw frames are **tight I420**.
+- `capturePhoto()` gives a 480×640 HEIC with the phone feed, but a **1×1 placeholder** with a video feed.
+- Mock `doff()` does not pause the stream.
+- `setCameraFeed(Uri)` does not switch a running stream.
+
+### Tests
+- **8/8 instrumented tests pass on the OPPO.** Two real bugs were found by them and fixed:
+  1. Stopping a foreground service before `startForeground()` crashes the app on Android 12+. The service is now only started when a matching permission is granted.
+  2. Doff wasn't suspending capture on the mock. Capture is now suspended from don/hinge state.
+- Parser tests 14/14 and backend 7/7. CI green on GitHub.
+
+### First natural voice walk
+- The user ignored the script and spoke naturally, which was the best test. 6 damage captures, all uploaded, and the back-office record is schema-valid.
+- The dark-floor capture got "Too dark…" twice, then auto-accepted a good frame: the demo's caught failure.
+- Speech→command 2.6–5.1 s; command→saved 0.6–1.2 s.
+- The house has **real seepage damage** (peeling, flaking paint at a wall/ceiling junction), so no staging is needed.
+- Fixes it drove:
+  - forgiving parser (fillers, loose "capture X", spoken hint when not understood)
+  - recognizer confidence 0.00 treated as unknown
+  - ERROR_CLIENT no longer triggers the engine fallback
+  - a one-time room tip
+
+### Privacy notes for filming
+- A debug frame caught the laptop screen showing the user's email, and an evidence photo caught a framed portrait. Neither is in git: `backend/data` and the scratchpad are ignored.
+- For the dataset and demo: no screens, documents or people (including framed photos).
+
+### Next
+1. User: Anthropic API key → `backend/.env`. Then restart the back office with extraction on, `POST /v1/jobs/{id}/reprocess` for today's job, and check damage type + line items on the real seepage photos.
+2. Tomorrow (11-26): film the dataset with **Dataset: ON** (shot list in `eval/README.md`), label, then run the eval.
+3. Optional OK from the user: install Meta's `mwdat-android` Claude Code plugin.
+4. Perf note: frequent GCs (~20 MB large objects per cycle) from per-frame copies in `FrameScorer`. Pool buffers if frame drops show up.
 2. Pick the stream YUV layout from the debug dumps, then fix the `AppSettings.yuvLayout` default.
 3. User films the dataset per `eval/README.md` (daylight + evening low-light), then labels it.
 4. User adds an Anthropic API key to `backend/.env`. Then run `run_extraction.py`, `calibrate.py --write`, `report.py`.
