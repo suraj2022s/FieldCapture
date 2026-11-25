@@ -70,7 +70,10 @@ class WalkService : Service() {
     private const val MAX_WALK_MS = 4 * 60 * 60 * 1000L
 
     fun start(context: Context) {
-      context.startForegroundService(Intent(context, WalkService::class.java))
+      // Android refuses foreground-service starts from the background (e.g. under instrumentation);
+      // the walk still runs, it just isn't protected from the screen turning off.
+      runCatching { context.startForegroundService(Intent(context, WalkService::class.java)) }
+          .onFailure { android.util.Log.w("FieldCapture", "foreground service not started: ${it.message}") }
     }
 
     fun stop(context: Context) {

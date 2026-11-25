@@ -185,6 +185,10 @@ class WalkController(
 
   // ------------------------------------------------------------------ voice
 
+  /** Instrumented tests inject recognition results here (the same path the microphone uses). */
+  @androidx.annotation.VisibleForTesting
+  fun simulateHeard(h: Heard) = onHeard(h)
+
   private fun onHeard(h: Heard) {
     _ui.update { it.copy(heard = h.hypotheses.firstOrNull().orEmpty()) }
     if (job == null || h.utterance == lastActedUtterance) return
