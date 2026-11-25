@@ -3,6 +3,7 @@ package app.fieldcapture
 import android.Manifest
 import android.os.Build
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -20,6 +21,8 @@ import java.io.File
 import kotlin.coroutines.resume
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
@@ -75,6 +78,15 @@ class MainActivity : ComponentActivity() {
     enableEdgeToEdge()
     setContent { FieldCaptureTheme { MainScreen(app, actions) } }
     androidPermissionLauncher.launch(androidPermissions)
+    // DAT pauses raw (decoded) streams when the app leaves the foreground (Meta's BirdSpotter
+    // sample), so until pocket mode (compressed stream + own decoder) lands, the screen stays on
+    // for the length of a job. The phone can ride in a shirt pocket; nobody has to touch it.
+    lifecycleScope.launch {
+      app.walk.ui.map { it.jobId != null }.distinctUntilChanged().collect { active ->
+        if (active) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        else window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+      }
+    }
   }
 
   private val actions =

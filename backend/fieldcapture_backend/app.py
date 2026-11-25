@@ -73,6 +73,18 @@ def create_app(data_dir: Path | None = None, extract: bool | None = None) -> Fas
                 processor.finalize_later(job_id)
         return JSONResponse({"status": status, "id": item_id}, status_code=201 if status == "created" else 200)
 
+    @app.post("/v1/jobs/{job_id}/reprocess")
+    def reprocess(job_id: str):
+        """Re-run extraction for every live capture/note (e.g. after adding an API key or new calibration)."""
+        submitted = 0
+        for it in store.items(job_id):
+            if it.kind in ("capture", "note") and not it.meta.get("deleted"):
+                processor.submit(it.id)
+                submitted += 1
+        if any(it.kind == "finalize" for it in store.items(job_id)):
+            processor.finalize_later(job_id)
+        return {"submitted": submitted, "extract_enabled": s.extract}
+
     @app.get("/v1/jobs")
     def jobs():
         return [{"job_id": j, "first_seen": t} for j, t in store.job_ids()]
