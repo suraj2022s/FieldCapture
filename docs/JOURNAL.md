@@ -199,6 +199,26 @@ The newest entry is at the bottom. Each entry records what was done, the decisio
 2. Tomorrow (11-26): film the dataset with **Dataset: ON** (shot list in `eval/README.md`), label, then run the eval.
 3. Optional OK from the user: install Meta's `mwdat-android` Claude Code plugin.
 4. Perf note: frequent GCs (~20 MB large objects per cycle) from per-frame copies in `FrameScorer`. Pool buffers if frame drops show up.
+
+---
+
+## 2026-11-25 — Session 1, late evening: kits installed; hand-over to a new session
+
+### Done
+- With the user's OK, installed **Meta's `mwdat-android` Claude Code plugin 1.1.0** at project scope (`.claude/settings.json`, committed): 18 skills, the `wearables` docs MCP and the `mockdevice` MCP. `python3` resolves to Microsoft Store Python 3.13, which is fine for the MCP.
+- The user asked to "search for any other kit and use it". Findings:
+  - **Google's official Android skills** were the useful find. Installed five locally in `.claude/skills/` (gitignored, reinstall steps in CLAUDE.md).
+  - Skipped `android-profiler` because it bundles a native binary.
+  - Skipped community plugins: unofficial.
+  - Meta's other kits are iOS / display-only.
+
+### For the NEW session (the user is opening a fresh conversation so the plugin and skills load)
+1. **Re-arm the phone link.** Check `adb devices`, then run `adb reverse tcp:8000 tcp:8000`.
+2. **Start the back office.** From `backend/`, run `uv run fieldcapture-server`. Set `$env:FIELDCAPTURE_EXTRACT='0'` until `backend/.env` holds `ANTHROPIC_API_KEY`.
+3. **Check the MockDevice MCP.** Launch the app with `adb shell am start -n app.fieldcapture/.MainActivity --ez mwdat_ui_testing true`, then call `mock_connect(bundle_id="app.fieldcapture", platform="android")`.
+4. **When the user adds the API key**, restart the server with extraction on, then `POST /v1/jobs/5482e66c-f4fe-4ff7-88fc-c1d5c3616ba3/reprocess`. That is today's 6 real captures, including the seepage wall. Inspect the fields and line items, and fix the prompts if needed.
+5. **11-26 filming:** dataset mode ON, shot list in `eval/README.md`, then labelling → `qc_thresholds.py --write-app` → `run_extraction.py` → `calibrate.py --write` → `report.py`.
+6. **11-27:** 3 walk-throughs (sample records), demo video from the `demo-v1` tag, `docs/MEMO.md`, final README numbers, then the repo goes public (ask the user first).
 2. Pick the stream YUV layout from the debug dumps, then fix the `AppSettings.yuvLayout` default.
 3. User films the dataset per `eval/README.md` (daylight + evening low-light), then labels it.
 4. User adds an Anthropic API key to `backend/.env`. Then run `run_extraction.py`, `calibrate.py --write`, `report.py`.

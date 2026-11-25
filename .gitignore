@@ -1,5 +1,7 @@
 # --- Secrets & local-only files ---
 .claude/settings.local.json
+# Google's official Android skills, installed locally (see CLAUDE.md "Tools used" for how to reinstall)
+.claude/skills/
 .env
 .env.*
 !.env.example

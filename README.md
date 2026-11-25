@@ -150,6 +150,14 @@ These are the ones we know about; the full list is in [docs/MEMO.md](docs/MEMO.m
   - the MockDevice MCP, which drives the simulated glasses (launch the debug app with `--ez mwdat_ui_testing true`)
 
   Before the plugin was installed, its skills and `AGENTS.md` were read straight from the SDK repo.
+- **Google's official Android skills** ([android/skills](https://github.com/android/skills), Apache-2.0), installed locally in `.claude/skills`:
+  - `android-cli`
+  - `testing-setup`
+  - `anr-audit-and-fix`
+  - `android-permissions-security`
+  - `android-intent-security`
+
+  They're used for device automation, test setup, and the permission and intent audit.
 - SDK signatures were verified with `javap` against the 1.1.0 AARs, never assumed.
 - The author reviewed every change. The [journal](docs/JOURNAL.md) records each decision and why.
 - **Claude models** (Haiku/Sonnet/Opus 5.5) run inside the product, for extraction.

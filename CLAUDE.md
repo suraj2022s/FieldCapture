@@ -133,3 +133,7 @@ Commit-message tip for PowerShell 5.1: messages containing double quotes break `
   2. Call `mock_connect(bundle_id="app.fieldcapture", platform="android")`.
   3. Then use `mock_power_off`, `mock_doff`, `mock_set_camera_feed(resource_name="test_feed", ext="mp4")` and so on.
 - **Windows note:** the MCP is launched with `python3`. Here that resolves to the Microsoft Store Python 3.13 (works).
+- **Google's official Android skills** (android/skills v1.0.24, Apache-2.0) are installed **locally** in `.claude/skills/`, which is gitignored: `android-cli`, `testing-setup`, `anr-audit-and-fix`, `android-permissions-security`, `android-intent-security`.
+  - `android-profiler` was skipped on purpose: it bundles a native `trace_processor` binary.
+  - The normal install is `android --no-metrics skills add --project . --agent claude <id>`. On this network the Android CLI's Java HTTP client times out, so the release zip was downloaded with curl and the skill folders copied in.
+- **Searched and skipped:** community Android plugins (unofficial, unknown provenance). Meta's iOS and display/Web-App kits don't apply to Android camera capture.
