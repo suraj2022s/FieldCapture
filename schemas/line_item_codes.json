@@ -1,0 +1,21 @@
+{
+  "version": "2026-11-25",
+  "note": "FieldCapture's own draft line-item codes (not Xactimate). Quantities are drafts for estimator review.",
+  "codes": [
+    {"code": "WTR-EXT", "description": "Water extraction, floor surface", "unit": "SF"},
+    {"code": "WTR-DRY", "description": "Structural drying equipment (air movers + dehumidifier), per day", "unit": "DAY"},
+    {"code": "MST-MAP", "description": "Moisture mapping and documentation, per room", "unit": "EA"},
+    {"code": "ANT-APP", "description": "Apply antimicrobial agent", "unit": "SF"},
+    {"code": "DRY-RR", "description": "Wall drywall remove and replace (hang, tape, finish)", "unit": "SF"},
+    {"code": "DRY-FC2", "description": "Flood cut wall drywall 2 ft above floor", "unit": "LF"},
+    {"code": "CLG-RR", "description": "Ceiling drywall remove and replace", "unit": "SF"},
+    {"code": "PNT-SPR", "description": "Stain-block prime and paint, 2 coats", "unit": "SF"},
+    {"code": "INS-RR", "description": "Insulation remove and replace", "unit": "SF"},
+    {"code": "BSB-RR", "description": "Baseboard remove and replace", "unit": "LF"},
+    {"code": "SBF-RR", "description": "Subfloor remove and replace", "unit": "SF"},
+    {"code": "FLC-RR", "description": "Floor covering (vinyl, laminate or tile) remove and replace", "unit": "SF"},
+    {"code": "CAB-DR", "description": "Base cabinet detach and reset", "unit": "LF"},
+    {"code": "MLD-REM", "description": "Mold remediation (containment, HEPA, removal)", "unit": "SF"},
+    {"code": "WH-RR", "description": "Water heater remove and replace (size and fuel from nameplate)", "unit": "EA"}
+  ]
+}

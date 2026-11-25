@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/suraj2022s/FieldCapture/schemas/job_record.schema.json",
+  "title": "FieldCapture job record",
+  "description": "One walk-through: evidence, extracted fields with confidence, notes, timeline and draft line items. Produced by the back office from items uploaded by the phone.",
+  "type": "object",
+  "required": ["schema_version", "job_id", "status", "created_at", "device", "session", "rooms", "captures", "notes", "line_items", "review", "processing"],
+  "$defs": {
+    "field": {
+      "type": "object",
+      "required": ["value", "confidence"],
+      "properties": {
+        "value": {},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "source": {"type": ["string", "null"], "description": "voice | vision_model | language_model | device_ocr | keyword_rules | context | reference_scaling | model_estimate"},
+        "evidence": {"type": ["string", "null"], "description": "verbatim text the value was read from"}
+      }
+    },
+    "fields": {"type": "object", "additionalProperties": {"$ref": "#/$defs/field"}},
+    "flags": {"type": "array", "items": {"type": "string"}}
+  },
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "job_id": {"type": "string"},
+    "status": {"enum": ["in_progress", "complete"]},
+    "created_at": {"type": ["string", "null"]},
+    "ended_at": {"type": ["string", "null"]},
+    "device": {
+      "type": "object",
+      "properties": {
+        "glasses": {"type": ["string", "null"]},
+        "mock_device_kit": {"type": "boolean"},
+        "dat_sdk": {"type": ["string", "null"]},
+        "phone": {"type": ["string", "null"]},
+        "app_version": {"type": ["string", "null"]}
+      }
+    },
+    "session": {
+      "type": "object",
+      "required": ["events", "disconnects"],
+      "properties": {
+        "events": {"type": "array", "items": {"type": "object", "required": ["at", "type"], "properties": {"at": {"type": "string"}, "type": {"type": "string"}, "detail": {"type": "string"}}}},
+        "disconnects": {"type": "integer", "minimum": 0},
+        "retake_prompts": {"type": "integer", "minimum": 0}
+      }
+    },
+    "rooms": {
+      "type": "array",
+      "items": {"type": "object", "required": ["name", "captures", "notes"], "properties": {"name": {"type": "string"}, "captures": {"type": "array", "items": {"type": "string"}}, "notes": {"type": "array", "items": {"type": "string"}}}}
+    },
+    "captures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["capture_id", "type", "captured_at", "command", "evidence", "quality", "extraction_status", "fields", "review_flags"],
+        "properties": {
+          "capture_id": {"type": "string"},
+          "type": {"enum": ["nameplate", "damage"]},
+          "captured_at": {"type": "string"},
+          "room": {"type": ["string", "null"]},
+          "surface": {"type": ["string", "null"]},
+          "command": {"type": "object", "required": ["transcript"], "properties": {"transcript": {"type": "string"}, "asr_confidence": {"type": "number"}}},
+          "evidence": {"type": "object", "required": ["url", "source"], "properties": {"url": {"type": ["string", "null"]}, "source": {"enum": ["glasses_photo", "stream_frame"]}}},
+          "quality": {"type": "object", "required": ["passed", "issues", "prompts", "override"]},
+          "extraction_status": {"enum": ["done", "pending", "error", "disabled"]},
+          "fields": {"$ref": "#/$defs/fields"},
+          "review_flags": {"$ref": "#/$defs/flags"}
+        }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["note_id", "recorded_at", "text", "fields", "review_flags", "extraction_status"],
+        "properties": {
+          "note_id": {"type": "string"},
+          "recorded_at": {"type": "string"},
+          "room": {"type": ["string", "null"]},
+          "text": {"type": "string"},
+          "fields": {"$ref": "#/$defs/fields"},
+          "review_flags": {"$ref": "#/$defs/flags"},
+          "extraction_status": {"enum": ["done", "pending", "error", "disabled"]}
+        }
+      }
+    },
+    "line_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["line_id", "code", "description", "unit", "quantity", "needs_measurement", "confidence", "basis", "evidence", "status"],
+        "properties": {
+          "code": {"enum": ["WTR-EXT", "WTR-DRY", "MST-MAP", "ANT-APP", "DRY-RR", "DRY-FC2", "CLG-RR", "PNT-SPR", "INS-RR", "BSB-RR", "SBF-RR", "FLC-RR", "CAB-DR", "MLD-REM", "WH-RR"]},
+          "unit": {"enum": ["SF", "LF", "EA", "DAY"]},
+          "quantity": {"type": ["number", "null"], "minimum": 0},
+          "needs_measurement": {"type": "boolean"},
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "evidence": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+          "status": {"const": "draft"}
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "required": ["needs_review", "flags"],
+      "properties": {"needs_review": {"type": "boolean"}, "flags": {"type": "array", "items": {"type": "object", "required": ["item", "flag"]}}}
+    },
+    "processing": {"type": "object"}
+  }
+}
