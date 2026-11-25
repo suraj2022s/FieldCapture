@@ -107,6 +107,7 @@ class WalkController(
   @Volatile private var capturing = false
   @Volatile private var forceAccept = false
   @Volatile private var lastActedUtterance = -1
+  @Volatile private var lastHintAt = 0L
   private val history = ArrayDeque<Any>()
   private var lastCaptureRequest: Triple<Purpose, String?, String?>? = null
 
@@ -192,7 +193,17 @@ class WalkController(
   private fun onHeard(h: Heard) {
     _ui.update { it.copy(heard = h.hypotheses.firstOrNull().orEmpty()) }
     if (job == null || h.utterance == lastActedUtterance) return
-    val parsed = CommandParser.parseBest(h.hypotheses, h.confidences) ?: return
+    val parsed = CommandParser.parseBest(h.hypotheses, h.confidences)
+    if (parsed == null) {
+      // Silence after a real attempt is the fastest way to lose a tech. One short hint, rate-limited.
+      val now = SystemClock.elapsedRealtime()
+      if (h.isFinal && h.hypotheses.any { CommandParser.looksLikeCommand(it) } && now - lastHintAt > HINT_GAP_MS) {
+        lastHintAt = now
+        log.log("command", "not understood: \"${h.hypotheses.firstOrNull()}\"")
+        speaker.say("Say capture nameplate, capture damage and the room, or note.")
+      }
+      return
+    }
     // Partial results only fire commands that can't grow more words; damage/note wait for the final.
     val oneShot =
         when (parsed.command) {
@@ -659,5 +670,6 @@ class WalkController(
     const val MAX_WAIT_MS = 9_000L
     const val PHOTO_TIMEOUT_MS = 6_000L
     const val MIN_PHOTO_EDGE = 120
+    const val HINT_GAP_MS = 10_000L
   }
 }

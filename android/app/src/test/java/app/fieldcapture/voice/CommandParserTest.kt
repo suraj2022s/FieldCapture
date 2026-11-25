@@ -85,6 +85,32 @@ class CommandParserTest {
   }
 
   @Test
+  fun realFirstAttemptsFromDayOne() {
+    // Verbatim transcripts from the first on-device voice test (2026-11-25).
+    val wall = cmd("Please capture the broken wall") as Command.CaptureDamage
+    assertEquals("wall", wall.surface)
+    assertEquals("broken wall", wall.unparsed)
+    assertTrue(cmd("Please capture the broken wire") is Command.CaptureDamage)
+  }
+
+  @Test
+  fun politeAndLooseVariants() {
+    assertEquals(Command.CaptureNameplate, cmd("can you capture the nameplate please"))
+    assertEquals(Command.CaptureNameplate, cmd("take a photo of the label on the water heater"))
+    assertEquals(Command.CaptureNameplate, cmd("okay click the rating plate"))
+    val stain = cmd("take a picture of the stain on the ceiling in the bathroom") as Command.CaptureDamage
+    assertEquals("bathroom", stain.room)
+    assertEquals("ceiling", stain.surface)
+    assertEquals(Command.CaptureAnyway, cmd("capture anyway"))
+    assertTrue(CommandParser.looksLikeCommand("uh capture um"))
+  }
+
+  @Test
+  fun zeroConfidenceMeansUnknown() {
+    assertEquals(0.8, CommandParser.parse("capture nameplate", 0.0)!!.confidence, 1e-9)
+  }
+
+  @Test
   fun bestHypothesisIsTheFirstThatParses() {
     val p = CommandParser.parseBest(listOf("captain name plate", "capture name plate"), listOf(0.6f, 0.3f))
     assertEquals(Command.CaptureNameplate, p?.command)

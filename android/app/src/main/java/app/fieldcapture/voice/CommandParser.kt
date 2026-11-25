@@ -41,16 +41,14 @@ object CommandParser {
 
   private class IntentSpec(val name: String, val pattern: Regex, val build: (MatchResult) -> Command?)
 
-  private val VERB = "(?:capture|captured|capturing|take|snap|grab|shoot)"
+  private val VERB = "(?:capture|captured|capturing|take|snap|grab|shoot|click|photograph|record)"
+  private val NAMEPLATE_WORD =
+      "(?:name ?plates?|nameplates?|data ?plate|rating ?plate|serial (?:plate|tag|label|number)|spec (?:plate|label)|model number|label|sticker)"
 
   private val intents: List<IntentSpec> =
       listOf(
-          IntentSpec(
-              "nameplate",
-              Regex("^$VERB (?:the |a |that )?(?:name ?plate|nameplate|name plates?|data ?plate|rating ?plate|serial (?:plate|tag|label)|spec (?:plate|label)|label)\\b.*"),
-          ) {
-            Command.CaptureNameplate
-          },
+          // "capture nameplate", "take a photo of the label on the heater", "click the rating plate"
+          IntentSpec("nameplate", Regex("^$VERB\\b.*\\b$NAMEPLATE_WORD\\b.*")) { Command.CaptureNameplate },
           IntentSpec("damage", Regex("^$VERB (?:the |some )?damage[sd]?\\b(.*)$")) { m ->
             val rest = m.groupValues[1].trim()
             val room = Vocabulary.findRoom(rest)
@@ -79,7 +77,24 @@ object CommandParser {
             Command.StartJob
           },
           IntentSpec("status", Regex("^(?:status|job status|how many|what'?s left|queue status)\\b.*")) { Command.Status },
+          // Loose capture, measured on day 1: a real user said "please capture the broken wall".
+          // Any other "capture/take/click (a photo of) <thing>" is a damage capture; the room and
+          // surface are still parsed out of <thing>, and the words are kept for the back office.
+          IntentSpec(
+              "damage_loose",
+              Regex("^$VERB (?:a |an )?(?:photo |picture |pic |shot |image |snap )?(?:of )?(?:the |this |that |these |some |a )?(.+)$"),
+          ) { m ->
+            val rest = m.groupValues[1].trim()
+            if (rest.isEmpty() || rest == "anyway") null
+            else Command.CaptureDamage(Vocabulary.findRoom(rest), Vocabulary.findSurface(rest), rest)
+          },
       )
+
+  /** Words that mean the tech was trying to give a command, even if it didn't parse. */
+  private val COMMAND_HINT = Regex("\\b(capture|nameplate|name plate|damage|note|photo|picture)\\b")
+
+  /** True when [transcript] looks like a failed attempt at a command (worth a spoken hint). */
+  fun looksLikeCommand(transcript: String): Boolean = COMMAND_HINT.containsMatchIn(normalize(transcript))
 
   /** Parses one transcript, or returns null if it isn't a command (chatter is ignored, not an error). */
   fun parse(transcript: String, asrConfidence: Double = 1.0): Parsed? {
@@ -94,7 +109,9 @@ object CommandParser {
                 (if (cmd.room == null) 0.15 else 0.0) + (if (cmd.surface == null) 0.15 else 0.0)
             else -> 0.0
           }
-      val conf = (if (asrConfidence < 0) 0.8 else asrConfidence) * (1.0 - slotPenalty)
+      // Recognisers report -1 or 0.0 when they have no score (Google's service on the test phone
+      // returns 0.00 for every result), so <= 0 means "unknown", not "certainly wrong".
+      val conf = (if (asrConfidence <= 0) UNKNOWN_ASR_CONFIDENCE else asrConfidence) * (1.0 - slotPenalty)
       return Parsed(cmd, transcript, conf.coerceIn(0.0, 1.0))
     }
     return null
@@ -109,20 +126,31 @@ object CommandParser {
         parse(h, confidences?.getOrNull(i)?.toDouble() ?: -1.0)
       }
 
-  internal fun normalize(raw: String): String =
-      raw.lowercase()
-          .replace(Regex("[’']"), "'")
-          .replace(Regex("[^a-z0-9': .-]"), " ")
-          .replace(Regex("(?<=[a-z])[.,:;](?=\\s|$)"), " ")
-          .replace(":", " ")
-          .replace(Regex("\\s+"), " ")
-          .trim()
-          .removePrefix("okay ")
-          .removePrefix("ok ")
-          .removePrefix("um ")
-          .removePrefix("uh ")
-          .removePrefix("so ")
-          .trim()
+  private const val UNKNOWN_ASR_CONFIDENCE = 0.8
+
+  /** Polite or filler openers people put in front of a command. Stripped repeatedly. */
+  private val FILLER =
+      Regex(
+          "^(?:please|pls|kindly|can you|could you|would you|will you|hey|hi|okay|ok|um|uh|so|now|and|then|" +
+              "alright|right|let's|lets|go ahead and|i want to|i'd like to|i would like to|i need to|just|also)\\b\\s*",
+      )
+
+  internal fun normalize(raw: String): String {
+    var s =
+        raw.lowercase()
+            .replace(Regex("[’']"), "'")
+            .replace(Regex("[^a-z0-9': .-]"), " ")
+            .replace(Regex("(?<=[a-z])[.,:;](?=\\s|$)"), " ")
+            .replace(":", " ")
+            .replace(Regex("\\s+"), " ")
+            .trim()
+    while (true) {
+      val next = s.replace(FILLER, "").trim()
+      if (next == s) break
+      s = next
+    }
+    return s.removeSuffix(" please").trim()
+  }
 }
 
 /** Rooms and surfaces a restoration tech names, with the variants speech recognisers produce. */
