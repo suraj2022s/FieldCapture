@@ -18,6 +18,14 @@ class AppSettings(context: Context) {
     get() = prefs.getBoolean("simulateOffline", false)
     set(v) = prefs.edit().putBoolean("simulateOffline", v).apply()
 
+  /**
+   * Eval data collection: every candidate frame the gate judged during a capture is saved (JPEG +
+   * on-device metrics + verdict + OCR) to external storage for labelling. See eval/README.md.
+   */
+  var datasetMode: Boolean
+    get() = prefs.getBoolean("datasetMode", false)
+    set(v) = prefs.edit().putBoolean("datasetMode", v).apply()
+
   /** Prefer the glasses' capturePhoto() still as evidence when it passes QC. */
   var usePhotoEvidence: Boolean
     get() = prefs.getBoolean("usePhotoEvidence", true)

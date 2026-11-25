@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.SystemClock
 import app.fieldcapture.BuildConfig
+import app.fieldcapture.capture.DatasetRecorder
 import app.fieldcapture.capture.FrameScorer
 import app.fieldcapture.capture.ScoredFrame
 import app.fieldcapture.capture.TextDetector
@@ -91,6 +92,8 @@ class WalkController(
     private val thresholdsVersion: () -> String,
     private val streamYuvLayout: () -> PhotoCodec.YuvLayout,
     private val usePhotoEvidence: () -> Boolean,
+    private val datasetMode: () -> Boolean,
+    private val dataset: DatasetRecorder,
     private val kickUpload: () -> Unit,
     private val onJobActive: (Boolean) -> Unit,
 ) {
@@ -305,6 +308,8 @@ class WalkController(
     val windowStart = (h.speechStartMs ?: tCmd) - REACH_BACK_MS
     val evaluated = mutableListOf<Candidate<Eval>>()
     val seen = HashSet<Long>()
+    val allSeen = mutableListOf<ScoredFrame>()
+    var photoBytes: ByteArray? = null
     var prompts = 0
     var lastPromptAt = 0L
     var chosen: Eval? = null
@@ -312,6 +317,7 @@ class WalkController(
 
     while (true) {
       val fresh = scorer.keepersSince(windowStart).filter { seen.add(it.seq) }
+      allSeen += fresh
       // OCR is the slow part (~100-300 ms): only run it on the most promising nameplate frames.
       val toJudge = if (purpose == Purpose.NAMEPLATE) fresh.sortedByDescending { it.verdict.score }.take(2) else fresh
       for (sf in toJudge) {
@@ -367,6 +373,7 @@ class WalkController(
       when (val photo = glasses.capturePhoto(PHOTO_TIMEOUT_MS)) {
         is PhotoResult.Ok -> {
           photoLatency = photo.latencyMs
+          photoBytes = photo.jpeg
           val pj = judgePhoto(photo, purpose)
           // The head may have moved during the transfer: only prefer the still if it also passes.
           if (pj.first.ok) {
@@ -451,6 +458,27 @@ class WalkController(
         }
     history.addLast(saved)
     kickUpload()
+
+    if (datasetMode()) {
+      // Every frame the gate saw for this capture, judged ones with their purpose-specific verdict.
+      val judged = evaluated.associateBy { it.payload.frame.seq }
+      val cands =
+          allSeen.map { sf ->
+            val j = judged[sf.seq]?.payload
+            DatasetRecorder.Cand(sf, j?.verdict ?: sf.verdict, j?.ocr, sf.seq == e.frame.seq)
+          }
+      val photo = photoBytes
+      scope.launch(Dispatchers.IO) {
+        runCatching {
+              dataset.record(
+                  captureId, jobHeader.jobId, label, p.transcript, room, surface, saved.createdAt,
+                  thresholdsVersion(), streamYuvLayout(), prompts, override, source, tCmd, cands, photo,
+              )
+            }
+            .onSuccess { log.log("dataset", "${cands.size} frames -> ${it.absolutePath}") }
+            .onFailure { log.log("dataset", "save failed: ${it.message}") }
+      }
+    }
 
     speaker.success()
     val confirmation =

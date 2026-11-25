@@ -34,6 +34,8 @@ backend/data/
 
 # --- Eval scratch (results that matter are committed explicitly) ---
 eval/.cache/
+# Raw pulls from the phone (every candidate frame). The curated, labelled test set lives in eval/dataset/.
+eval/raw/
 
 # --- OS / editors ---
 .DS_Store

@@ -74,6 +74,7 @@ fun MainScreen(app: FieldCaptureApp, actions: MainActions) {
   var offline by remember { mutableStateOf(app.settings.simulateOffline) }
   var photoEvidence by remember { mutableStateOf(app.settings.usePhotoEvidence) }
   var yuv by remember { mutableStateOf(app.settings.yuvLayout) }
+  var dataset by remember { mutableStateOf(app.settings.datasetMode) }
   val scope = rememberCoroutineScope()
 
   LazyColumn(
@@ -127,6 +128,13 @@ fun MainScreen(app: FieldCaptureApp, actions: MainActions) {
             if (!offline) UploadWorker.kick(app)
           }) {
             Text(if (offline) "No-signal: ON" else "No-signal: off")
+          }
+          OutlinedButton(onClick = {
+            dataset = !dataset
+            app.settings.datasetMode = dataset
+            app.events.log("settings", "dataset mode ${if (dataset) "ON" else "off"}")
+          }) {
+            Text(if (dataset) "Dataset: ON" else "Dataset: off")
           }
           OutlinedButton(onClick = { photoEvidence = !photoEvidence; app.settings.usePhotoEvidence = photoEvidence }) {
             Text(if (photoEvidence) "Evidence: photo" else "Evidence: stream")

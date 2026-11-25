@@ -1,6 +1,7 @@
 package app.fieldcapture
 
 import android.app.Application
+import app.fieldcapture.capture.DatasetRecorder
 import app.fieldcapture.capture.FrameScorer
 import app.fieldcapture.capture.TextDetector
 import app.fieldcapture.core.AppSettings
@@ -60,6 +61,8 @@ class FieldCaptureApp : Application() {
         thresholdsVersion = { settings.thresholdsVersion },
         streamYuvLayout = { settings.yuvLayout },
         usePhotoEvidence = { settings.usePhotoEvidence },
+        datasetMode = { settings.datasetMode },
+        dataset = DatasetRecorder(File(getExternalFilesDir(null), "dataset"), store.json),
         kickUpload = { UploadWorker.kick(this) },
         onJobActive = { active -> if (active) WalkService.start(this) else WalkService.stop(this) },
     )
