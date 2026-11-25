@@ -124,4 +124,12 @@ Commit-message tip for PowerShell 5.1: messages containing double quotes break `
 ## Tools used (keep this current for the README's "AI tools" section)
 
 - Claude Code (Claude Fable 5.2 / Opus 5.5) for research, competitor scan, planning, code and docs.
-- Meta's `mwdat-android` Claude Code plugin (skills, docs MCP, MockDevice MCP). Planned for M1; install only with the user's OK.
+- **Meta's `mwdat-android` Claude Code plugin 1.1.0.** Installed 2026-11-25 with the user's OK, at **project scope** (`.claude/settings.json`). It provides:
+  - 18 DAT skills, e.g. `session-lifecycle`, `mockdevice-testing`, `camera-streaming`, `debugging`
+  - the `wearables` docs MCP (`search_dat_docs`)
+  - the `mockdevice` MCP, which drives the simulated glasses
+- **Using the MockDevice MCP:**
+  1. Launch the debug app with `adb shell am start -n app.fieldcapture/.MainActivity --ez mwdat_ui_testing true`. That starts the test server on 8237.
+  2. Call `mock_connect(bundle_id="app.fieldcapture", platform="android")`.
+  3. Then use `mock_power_off`, `mock_doff`, `mock_set_camera_feed(resource_name="test_feed", ext="mp4")` and so on.
+- **Windows note:** the MCP is launched with `python3`. Here that resolves to the Microsoft Store Python 3.13 (works).

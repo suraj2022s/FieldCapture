@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "mwdat-android-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "facebook/meta-wearables-dat-android"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "mwdat-android@mwdat-android-marketplace": true
+  }
+}

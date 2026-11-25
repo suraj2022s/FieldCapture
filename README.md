@@ -144,7 +144,12 @@ These are the ones we know about; the full list is in [docs/MEMO.md](docs/MEMO.m
   - the prior-art scan
   - architecture and planning
   - most of the code, the tests and the docs
-- It read Meta's `mwdat-android` Claude Code skills and `AGENTS.md` straight from the SDK repo.
+- **Meta's official `mwdat-android` Claude Code plugin** (1.1.0) is installed at project scope in [`.claude/settings.json`](.claude/settings.json), so it loads for anyone who opens this repo in Claude Code. It provides:
+  - Meta's 18 DAT skills
+  - the DAT docs MCP
+  - the MockDevice MCP, which drives the simulated glasses (launch the debug app with `--ez mwdat_ui_testing true`)
+
+  Before the plugin was installed, its skills and `AGENTS.md` were read straight from the SDK repo.
 - SDK signatures were verified with `javap` against the 1.1.0 AARs, never assumed.
 - The author reviewed every change. The [journal](docs/JOURNAL.md) records each decision and why.
 - **Claude models** (Haiku/Sonnet/Opus 5.5) run inside the product, for extraction.
