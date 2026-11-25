@@ -1,0 +1,570 @@
+package app.fieldcapture.glasses
+
+import android.os.SystemClock
+import app.fieldcapture.core.EventLog
+import com.meta.wearable.dat.camera.Camera
+import com.meta.wearable.dat.camera.addCamera
+import com.meta.wearable.dat.camera.types.CameraState
+import com.meta.wearable.dat.camera.types.StreamConfiguration
+import com.meta.wearable.dat.camera.types.StreamError
+import com.meta.wearable.dat.camera.types.StreamState
+import com.meta.wearable.dat.camera.types.VideoFrame
+import com.meta.wearable.dat.camera.types.VideoQuality
+import com.meta.wearable.dat.core.Wearables
+import com.meta.wearable.dat.core.selectors.SpecificDeviceSelector
+import com.meta.wearable.dat.core.session.DeviceSession
+import com.meta.wearable.dat.core.session.DeviceSessionState
+import com.meta.wearable.dat.core.types.Device
+import com.meta.wearable.dat.core.types.DeviceCompatibility
+import com.meta.wearable.dat.core.types.DeviceIdentifier
+import com.meta.wearable.dat.core.types.DeviceSessionError
+import com.meta.wearable.dat.core.types.DonState
+import com.meta.wearable.dat.core.types.HingeState
+import com.meta.wearable.dat.core.types.LinkState
+import com.meta.wearable.dat.core.types.RegistrationState
+import com.meta.wearable.dat.core.types.ThermalLevel
+import java.util.Collections
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.transformWhile
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
+
+/** App-level walk state. The job stays open in every phase except ENDED. */
+enum class WalkPhase {
+  IDLE,
+  NEEDS_REGISTRATION,
+  WAITING_FOR_GLASSES,
+  CONNECTING,
+  ACTIVE,
+  /** The tech said "pause job". */
+  PAUSED,
+  /** The glasses paused us: taken off, folded, too hot, cap-touch tap... */
+  SUSPENDED,
+  /** The glasses dropped off mid-walk; we are re-creating the session. */
+  RECONNECTING,
+  ENDED,
+}
+
+data class DeviceSnapshot(
+    val id: String,
+    val name: String,
+    val link: LinkState,
+    val don: DonState,
+    val hinge: HingeState,
+    val battery: Int,
+    val thermal: ThermalLevel,
+    val compatibility: DeviceCompatibility,
+)
+
+data class GlassesStatus(
+    val phase: WalkPhase = WalkPhase.IDLE,
+    val registration: RegistrationState? = null,
+    val sessionState: DeviceSessionState? = null,
+    val streamState: StreamState? = null,
+    val device: DeviceSnapshot? = null,
+    val framesReceived: Long = 0,
+    val fps: Double = 0.0,
+    val frameWidth: Int = 0,
+    val frameHeight: Int = 0,
+    val frameBytes: Int = 0,
+    val firstFrameMs: Long? = null,
+    val reconnects: Int = 0,
+    /** One short sentence the tech should hear/see about the glasses, if any. */
+    val guidance: String? = null,
+    val lastError: String? = null,
+)
+
+sealed interface PhotoResult {
+  data class Ok(
+      val jpeg: ByteArray,
+      val width: Int,
+      val height: Int,
+      val sourceFormat: String,
+      val latencyMs: Long,
+  ) : PhotoResult
+
+  data class Failed(val reason: String, val latencyMs: Long) : PhotoResult
+}
+
+/**
+ * Owns the DAT device session for one walk-through and keeps it alive.
+ *
+ * Design (see docs/PLAN.md §5 and docs/RESEARCH.md §2–3):
+ * - A supervisor loop creates a [DeviceSession] on a *named* device ([SpecificDeviceSelector];
+ *   building an AutoDeviceSelector at tap time races and fails NO_ELIGIBLE_DEVICE).
+ * - `state`/`errors` are collected before `start()` (start is fire-and-forget).
+ * - The camera is attached once, at STARTED; PAUSED -> STARTED keeps it.
+ * - STOPPED is terminal: the loop makes a new session, same walk, with back-off.
+ * - A watchdog ends a session stuck in STARTING (Mock Device Kit issue #237), and link loss or an
+ *   unexpected camera stop ends the session so it can be rebuilt instead of hanging.
+ */
+@OptIn(ExperimentalCoroutinesApi::class)
+class GlassesController(
+    private val scope: CoroutineScope,
+    private val log: EventLog,
+    /** Re-subscribe to the SDK's device/registration flows when Mock Device Kit is switched on/off. */
+    private val providerChanges: Flow<Boolean>,
+    private val streamConfig: StreamConfiguration =
+        StreamConfiguration(videoQuality = VideoQuality.HIGH, frameRate = 15),
+) {
+  private val _status = MutableStateFlow(GlassesStatus())
+  val status: StateFlow<GlassesStatus> = _status.asStateFlow()
+
+  val frames = FrameRingBuffer()
+
+  /** Called on the frame thread for every raw frame (quality scoring hooks in here). */
+  @Volatile var frameListener: ((VideoFrame, Long) -> Unit)? = null
+
+  @Volatile private var session: DeviceSession? = null
+  @Volatile private var camera: Camera? = null
+  @Volatile private var userPaused = false
+  private var supervisor: Job? = null
+  private var observersStarted = false
+  private val cameraJobs: MutableList<Job> = Collections.synchronizedList(mutableListOf())
+  private val captureMutex = Mutex()
+  private val frameDispatcher = Dispatchers.Default.limitedParallelism(1)
+
+  // frame stats (frame thread only)
+  @Volatile private var sessionStartMs = 0L
+  @Volatile private var firstFrameAt: Long? = null
+  private var frameCount = 0L
+  private var fpsWindowStart = 0L
+  private var fpsWindowFrames = 0
+  private var lastStatusPush = 0L
+
+  // ---------------------------------------------------------------- observation
+
+  /** Start mirroring registration and device state. Call after Wearables.initialize. */
+  fun onSdkReady() {
+    if (observersStarted) return
+    observersStarted = true
+    scope.launch {
+      providerChanges
+          .flatMapLatest { Wearables.registrationState }
+          .collect { st ->
+            if (_status.value.registration != st) log.log("registration", st.name)
+            _status.update { it.copy(registration = st) }
+          }
+    }
+    scope.launch {
+      var previous: DeviceSnapshot? = null
+      providerChanges
+          .flatMapLatest { deviceReadings() }
+          .collect { list ->
+            val best = list.minByOrNull { rank(it.second) }
+            val snap = best?.let { (id, d) -> d.toSnapshot(id) }
+            logDeviceChanges(previous, snap)
+            previous = snap
+            _status.update { it.copy(device = snap) }
+          }
+    }
+  }
+
+  private fun deviceReadings(): Flow<List<Pair<DeviceIdentifier, Device>>> =
+      Wearables.devices.flatMapLatest { ids ->
+        val flows = ids.mapNotNull { id -> Wearables.devicesMetadata[id]?.map { id to it } }
+        if (flows.isEmpty()) flowOf(emptyList()) else combine(flows) { it.toList() }
+      }
+
+  /** Worn + connected first, then connected. */
+  private fun rank(d: Device): Int =
+      when {
+        d.linkState == LinkState.CONNECTED && d.donState == DonState.DONNED -> 0
+        d.linkState == LinkState.CONNECTED -> 1
+        else -> 9
+      }
+
+  private fun Device.toSnapshot(id: DeviceIdentifier) =
+      DeviceSnapshot(
+          id = id.toString(),
+          name = name.ifBlank { "Meta glasses" },
+          link = linkState,
+          don = donState,
+          hinge = hingeState,
+          battery = batteryLevel,
+          thermal = thermalLevel,
+          compatibility = compatibility,
+      )
+
+  private fun logDeviceChanges(old: DeviceSnapshot?, new: DeviceSnapshot?) {
+    if (new == null) {
+      if (old != null) log.log("device", "no glasses visible")
+      return
+    }
+    if (old == null || old.id != new.id) {
+      log.log(
+          "device",
+          "${new.name}: link=${new.link} don=${new.don} hinge=${new.hinge} " +
+              "battery=${new.battery} thermal=${new.thermal} compat=${new.compatibility}",
+      )
+      return
+    }
+    if (old.link != new.link) log.log("device", "link ${old.link} -> ${new.link}")
+    if (old.don != new.don) log.log("device", "don ${old.don} -> ${new.don}")
+    if (old.hinge != new.hinge) log.log("device", "hinge ${old.hinge} -> ${new.hinge}")
+    if (old.thermal != new.thermal) log.log("device", "thermal ${old.thermal} -> ${new.thermal}")
+    if (old.battery != new.battery && (new.battery <= 20 || old.battery <= 20)) {
+      log.log("device", "battery ${old.battery}% -> ${new.battery}%")
+    }
+    if (old.compatibility != new.compatibility) {
+      log.log("device", "compatibility ${old.compatibility} -> ${new.compatibility}")
+    }
+  }
+
+  // ---------------------------------------------------------------- walk control
+
+  fun startWalk() {
+    if (supervisor?.isActive == true) {
+      log.log("walk", "already running")
+      return
+    }
+    userPaused = false
+    _status.update {
+      it.copy(phase = WalkPhase.WAITING_FOR_GLASSES, reconnects = 0, guidance = null, lastError = null)
+    }
+    log.log("walk", "started")
+    supervisor = scope.launch { superviseWalk() }
+  }
+
+  /** "pause job": DAT 1.1 DeviceSession.pause(). The job and the session stay open. */
+  fun pauseWalk() {
+    val s = session
+    userPaused = true
+    log.log("walk", "pause requested (session=${s?.state?.value})")
+    s?.pause()
+    setPhase(WalkPhase.PAUSED, "Paused. Say \"resume job\" to continue.")
+  }
+
+  /** "resume job": DAT 1.1 DeviceSession.resume(). */
+  fun resumeWalk() {
+    val s = session
+    userPaused = false
+    log.log("walk", "resume requested (session=${s?.state?.value})")
+    s?.resume()
+    if (s == null) setPhase(WalkPhase.RECONNECTING, "Reconnecting to the glasses.")
+  }
+
+  /** "end job": stop camera and session; the supervisor's finally-block does the teardown. */
+  fun endWalk() {
+    val job = supervisor ?: return
+    supervisor = null
+    log.log("walk", "end requested")
+    scope.launch {
+      job.cancelAndJoin()
+      _status.update {
+        it.copy(phase = WalkPhase.ENDED, sessionState = null, streamState = null, fps = 0.0, guidance = null)
+      }
+      log.log("walk", "ended")
+    }
+  }
+
+  val isWalking: Boolean
+    get() = supervisor?.isActive == true
+
+  private fun setPhase(phase: WalkPhase, guidance: String? = null) {
+    val before = _status.value.phase
+    _status.update { it.copy(phase = phase, guidance = guidance) }
+    if (before != phase) log.log("phase", "$before -> $phase${guidance?.let { " ($it)" } ?: ""}")
+  }
+
+  // ---------------------------------------------------------------- supervisor
+
+  private suspend fun superviseWalk() {
+    var attempt = 0
+    while (currentCoroutineContext().isActive) {
+      if (Wearables.registrationState.value != RegistrationState.REGISTERED) {
+        setPhase(WalkPhase.NEEDS_REGISTRATION, "Connect FieldCapture to Meta AI first.")
+        Wearables.registrationState.first { it == RegistrationState.REGISTERED }
+      }
+      if (attempt == 0) setPhase(WalkPhase.WAITING_FOR_GLASSES, "Waiting for the glasses.")
+      else setPhase(WalkPhase.RECONNECTING, "Glasses disconnected. Reconnecting.")
+
+      val deviceId = awaitUsableDevice()
+      val ranMs = runSession(deviceId)
+
+      // A session that ran for a while resets the back-off; quick failures back off harder.
+      attempt = if (ranMs > STABLE_SESSION_MS) 1 else attempt + 1
+      _status.update { it.copy(reconnects = it.reconnects + 1) }
+      val backoff = (500L shl (attempt - 1).coerceIn(0, 5)).coerceAtMost(MAX_BACKOFF_MS)
+      log.log("reconnect", "session ended after ${ranMs} ms; next attempt in $backoff ms (#$attempt)")
+      setPhase(WalkPhase.RECONNECTING, "Glasses disconnected. Reconnecting.")
+      delay(backoff)
+    }
+  }
+
+  private suspend fun awaitUsableDevice(): DeviceIdentifier =
+      deviceReadings()
+          .map { list ->
+            list.filter { it.second.linkState == LinkState.CONNECTED }.minByOrNull { rank(it.second) }?.first
+          }
+          .filterNotNull()
+          .first()
+
+  /** Runs one DeviceSession until it stops. Returns how long it lived (ms). */
+  private suspend fun runSession(deviceId: DeviceIdentifier): Long = coroutineScope {
+    val t0 = SystemClock.elapsedRealtime()
+    val created = Wearables.createSession(SpecificDeviceSelector(deviceId))
+    val s = created.getOrNull()
+    if (s == null) {
+      val err = created.errorOrNull()
+      log.log("session", "createSession failed: ${err?.name} ${err?.description ?: ""}")
+      err?.let { onSessionError(it) }
+      return@coroutineScope 0L
+    }
+    session = s
+    sessionStartMs = t0
+    setPhase(WalkPhase.CONNECTING, "Connecting to the glasses.")
+    log.log("session", "created on $deviceId")
+
+    val jobs = mutableListOf<Job>()
+    // Failures of start() arrive here, not as a return value.
+    jobs += launch { s.errors.collect { onSessionError(it) } }
+    // Watchdog: Mock Device Kit sessions can hang in STARTING with no error (issue #237).
+    jobs += launch {
+      delay(STARTING_WATCHDOG_MS)
+      val st = s.state.value
+      if (st == DeviceSessionState.IDLE || st == DeviceSessionState.STARTING) {
+        log.log("watchdog", "session stuck in $st for ${STARTING_WATCHDOG_MS / 1000}s; recreating")
+        s.stop()
+      }
+    }
+    // Link loss: if the device stays disconnected, end the session so the loop can rebuild it.
+    jobs += launch {
+      val meta = Wearables.devicesMetadata[deviceId] ?: return@launch
+      meta
+          .map { it.linkState == LinkState.CONNECTED }
+          .distinctUntilChanged()
+          .collectLatest { connected ->
+            if (!connected) {
+              delay(LINK_LOSS_GRACE_MS)
+              log.log("link", "glasses link lost for ${LINK_LOSS_GRACE_MS} ms; ending session")
+              s.stop()
+            }
+          }
+    }
+
+    try {
+      s.start()
+      s.state
+          .transformWhile {
+            emit(it)
+            it != DeviceSessionState.STOPPED
+          }
+          .collect { st -> onSessionState(this, s, st) }
+    } finally {
+      jobs.forEach { it.cancel() }
+      synchronized(cameraJobs) {
+        cameraJobs.forEach { it.cancel() }
+        cameraJobs.clear()
+      }
+      camera?.let { runCatching { it.stop() } }
+      camera = null
+      runCatching { s.stop() }
+      session = null
+      frames.clear()
+      _status.update { it.copy(sessionState = DeviceSessionState.STOPPED, streamState = null, fps = 0.0) }
+      log.log("session", "ended after ${SystemClock.elapsedRealtime() - t0} ms")
+    }
+    SystemClock.elapsedRealtime() - t0
+  }
+
+  private fun onSessionState(scope: CoroutineScope, s: DeviceSession, st: DeviceSessionState) {
+    _status.update { it.copy(sessionState = st) }
+    log.log("session_state", st.name)
+    when (st) {
+      DeviceSessionState.STARTED -> {
+        // Capabilities can only be attached at STARTED, and only once per session.
+        if (camera == null) scope.attachCamera(s)
+        if (userPaused) s.pause()
+      }
+      DeviceSessionState.PAUSED ->
+          if (userPaused) setPhase(WalkPhase.PAUSED, "Paused. Say \"resume job\" to continue.")
+          else setPhase(WalkPhase.SUSPENDED, _status.value.guidance ?: "The glasses paused the camera.")
+      else -> Unit
+    }
+  }
+
+  private fun CoroutineScope.attachCamera(s: DeviceSession) {
+    val result = s.addCamera(streamConfig)
+    val cam = result.getOrNull()
+    if (cam == null) {
+      log.log("camera", "attach failed: ${result.errorOrNull()?.name}")
+      return
+    }
+    camera = cam
+    firstFrameAt = null
+    frameCount = 0
+    fpsWindowStart = 0
+    fpsWindowFrames = 0
+    val stream = cam.stream
+    // Subscribe before start() so the first transitions aren't missed.
+    cameraJobs += launch(frameDispatcher) { stream.videoStream.collect { onFrame(it) } }
+    cameraJobs += launch { stream.state.collect { onStreamState(it) } }
+    cameraJobs += launch { stream.errorStream.collect { onStreamError(s, it) } }
+    cameraJobs += launch {
+      // CameraState replays STOPPED to a new collector; only a stop *after* a start means the
+      // glasses went away under us.
+      var started = false
+      cam.state.collect { cs ->
+        log.log("camera_state", cs.name)
+        if (cs == CameraState.STARTED) started = true
+        else if (started && cs == CameraState.STOPPED) {
+          log.log("camera", "stopped unexpectedly; ending session to reconnect")
+          s.stop()
+        }
+      }
+    }
+    stream.start().onFailure { e, _ -> log.log("stream", "start failed: ${e.name}") }
+    log.log(
+        "camera",
+        "attached: ${streamConfig.videoQuality} @ ${streamConfig.frameRate} fps, " +
+            "compressed=${streamConfig.compressVideo}",
+    )
+  }
+
+  private fun onStreamState(st: StreamState) {
+    _status.update { it.copy(streamState = st) }
+    log.log("stream_state", st.name)
+    when (st) {
+      StreamState.STREAMING -> setPhase(if (userPaused) WalkPhase.PAUSED else WalkPhase.ACTIVE)
+      StreamState.PAUSED ->
+          if (!userPaused) setPhase(WalkPhase.SUSPENDED, _status.value.guidance ?: "The glasses paused the camera.")
+      else -> Unit
+    }
+  }
+
+  private fun onStreamError(s: DeviceSession, e: StreamError) {
+    log.log("stream_error", e.name)
+    val guidance =
+        when (e) {
+          StreamError.HINGE_CLOSED -> "Glasses folded. Unfold them to keep capturing."
+          StreamError.THERMAL_HOT -> "Glasses are hot. Camera paused to cool down."
+          StreamError.BATTERY_LOW -> "Glasses battery is low."
+          StreamError.PEAK_POWER_LIMIT -> "Glasses hit their power limit. Camera paused."
+          StreamError.PERMISSIONS_DENIED -> "Camera access was denied in Meta AI."
+          StreamError.TIMEOUT -> "Glasses camera timed out. Reconnecting."
+          StreamError.CRITICAL_STREAM_ERROR -> "Glasses camera failed. Reconnecting."
+          else -> null // STREAM_ERROR is informational and doesn't stop the stream
+        }
+    _status.update { it.copy(lastError = e.name, guidance = guidance ?: it.guidance) }
+    if (e == StreamError.CRITICAL_STREAM_ERROR || e == StreamError.TIMEOUT) s.stop()
+  }
+
+  private fun onSessionError(e: DeviceSessionError) {
+    log.log("session_error", "${e.name}: ${e.description}")
+    val guidance =
+        when (e) {
+          DeviceSessionError.DAT_APP_ON_THE_GLASSES_UPDATE_REQUIRED ->
+              "The glasses need an app update in Meta AI."
+          DeviceSessionError.INSUFFICIENT_SDK_VERSION -> "This FieldCapture build is too old for these glasses."
+          DeviceSessionError.NOT_REGISTERED -> "FieldCapture isn't connected to Meta AI."
+          DeviceSessionError.THERMAL_CRITICAL,
+          DeviceSessionError.THERMAL_EMERGENCY -> "The glasses overheated."
+          DeviceSessionError.BATTERY_CRITICAL -> "Glasses battery is critical."
+          DeviceSessionError.DEVICE_DISCONNECTED,
+          DeviceSessionError.SESSION_ENDED_BY_DEVICE -> "Glasses disconnected."
+          else -> null
+        }
+    _status.update { it.copy(lastError = e.name, guidance = guidance ?: it.guidance) }
+  }
+
+  // ---------------------------------------------------------------- frames
+
+  private fun onFrame(f: VideoFrame) {
+    if (f.isCompressed) return
+    val now = SystemClock.elapsedRealtime()
+    val bytes = f.buffer.remaining()
+    frames.push(f.buffer, f.width, f.height, f.presentationTimeUs, now)
+    frameListener?.invoke(f, now)
+    frameCount++
+    if (firstFrameAt == null) {
+      firstFrameAt = now
+      val sinceStart = now - sessionStartMs
+      log.log(
+          "first_frame",
+          "$sinceStart ms after createSession; ${f.width}x${f.height}, $bytes bytes " +
+              "(tight 4:2:0 would be ${f.width * f.height * 3 / 2})",
+      )
+      _status.update { it.copy(firstFrameMs = sinceStart) }
+    }
+    if (fpsWindowStart == 0L) fpsWindowStart = now
+    fpsWindowFrames++
+    if (now - lastStatusPush >= 500) {
+      val fps = fpsWindowFrames * 1000.0 / maxOf(1L, now - fpsWindowStart)
+      if (now - fpsWindowStart > 3000) {
+        fpsWindowStart = now
+        fpsWindowFrames = 0
+      }
+      lastStatusPush = now
+      _status.update {
+        it.copy(framesReceived = frameCount, fps = fps, frameWidth = f.width, frameHeight = f.height, frameBytes = bytes)
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------- photos
+
+  /**
+   * One still through the running stream. Serialised (the SDK allows one capture in flight) and
+   * time-boxed: a transfer that dies mid-air must not strand the tech.
+   */
+  suspend fun capturePhoto(timeoutMs: Long = PHOTO_TIMEOUT_MS): PhotoResult =
+      captureMutex.withLock {
+        val t0 = SystemClock.elapsedRealtime()
+        val stream = camera?.stream ?: return@withLock PhotoResult.Failed("no camera attached", 0)
+        if (stream.state.value != StreamState.STREAMING) {
+          return@withLock PhotoResult.Failed("stream is ${stream.state.value}", 0)
+        }
+        val result = withTimeoutOrNull(timeoutMs) { stream.capturePhoto() }
+        val ms = SystemClock.elapsedRealtime() - t0
+        if (result == null) {
+          log.log("photo", "timed out after $ms ms")
+          return@withLock PhotoResult.Failed("timeout", ms)
+        }
+        val data = result.getOrNull()
+        if (data == null) {
+          val reason = result.errorOrNull()?.description ?: "unknown"
+          log.log("photo", "failed after $ms ms: $reason")
+          return@withLock PhotoResult.Failed(reason, ms)
+        }
+        val jpeg = withContext(Dispatchers.Default) { runCatching { PhotoCodec.toJpeg(data) }.getOrNull() }
+        if (jpeg == null) {
+          log.log("photo", "could not decode ${data::class.simpleName}")
+          return@withLock PhotoResult.Failed("decode failed", ms)
+        }
+        log.log("photo", "${jpeg.width}x${jpeg.height} from ${jpeg.sourceFormat}, ${jpeg.bytes.size} B, $ms ms")
+        PhotoResult.Ok(jpeg.bytes, jpeg.width, jpeg.height, jpeg.sourceFormat, ms)
+      }
+
+  companion object {
+    const val STARTING_WATCHDOG_MS = 15_000L
+    const val LINK_LOSS_GRACE_MS = 5_000L
+    const val STABLE_SESSION_MS = 30_000L
+    const val MAX_BACKOFF_MS = 10_000L
+    const val PHOTO_TIMEOUT_MS = 15_000L
+  }
+}

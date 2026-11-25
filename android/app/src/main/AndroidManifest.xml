@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- DAT: talk to the glasses over Bluetooth -->
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Mock Device Kit uses the phone camera as the "glasses" feed (setCameraFeed(CameraFacing)) -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Voice commands: phone microphone (the mock has no glasses audio path; see README) -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
+    <!-- Package visibility: lets SpeechRecognizer find the on-device recognition service -->
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
+
+    <application
+        android:name=".FieldCaptureApp"
+        android:allowBackup="false"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.FieldCapture">
+
+        <!-- Meta Wearables DAT attestation. "0"/"0" = Developer Mode (set via local.properties) -->
+        <meta-data
+            android:name="com.meta.wearable.mwdat.APPLICATION_ID"
+            android:value="${mwdat_application_id}" />
+        <meta-data
+            android:name="com.meta.wearable.mwdat.CLIENT_TOKEN"
+            android:value="${mwdat_client_token}" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- Meta AI calls back into the app on this scheme after registration -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="fieldcapture" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

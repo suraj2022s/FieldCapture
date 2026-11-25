@@ -12,7 +12,7 @@ The original brief is in `private/BRIEF.md` (local only, gitignored). The requir
 A take-home assignment: build **FieldCapture**, an Android app on Meta's Wearables Device Access Toolkit (DAT). It runs on Mock Device Kit instead of real glasses and turns a technician's voice-driven walk-through into a structured JSON job record plus draft estimate line items.
 
 - **Scoring (100):** works end-to-end 20 · extraction & evaluation with honest numbers 20 · SDK depth 15 · research memo & hardware judgment 15 · capture quality 10 · product judgment 10 · code & README 10.
-- **Timing:** brief received 2026-11-25 (assumed; update if the user corrects it). Deadline is 72 h after receipt. Target effort is ~20 h.
+- **Timing:** brief received **2026-11-24**. Work started 2026-11-25. **Submit by 2026-11-27.** The dated schedule is in PLAN.md §13.
 - **Hard rules from the brief:**
   - No fake data. Every frame in the test set and demo comes from our own captures.
   - Don't film people, or property without permission.
@@ -54,7 +54,18 @@ private/        local-only (brief) — gitignored
 
 ## Commands
 
-Not created yet. Fill this in when the Gradle project and backend exist (M1/M3).
+Run these from `android/` in PowerShell. `JAVA_HOME` is already set to the Android Studio JBR.
+
+| What | Command |
+|---|---|
+| QC unit tests | `.\gradlew.bat :quality-core:test` |
+| Build debug APK | `.\gradlew.bat :app:assembleDebug` (output: `app/build/outputs/apk/debug/app-debug.apk`) |
+| Install on phone | `.\gradlew.bat :app:installDebug` (USB debugging on) |
+| adb | `$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe` |
+| App logs | `adb logcat -s FieldCapture` |
+| SDK packages | `$env:LOCALAPPDATA\Android\Sdk\cmdline-tools\latest\bin\android.exe --no-metrics sdk install <pkg>` |
+
+`sdkmanager` is deprecated and only forwards to the new `android` CLI. Pass `--no-metrics` to it. Package names use slashes, for example `platforms/android-36`.
 
 ## DAT SDK gotchas (details and sources in docs/RESEARCH.md)
 
@@ -89,10 +100,14 @@ Not created yet. Fill this in when the Gradle project and backend exist (M1/M3).
 
 - Windows 11, with PowerShell 5.1 and Git Bash.
 - Android Studio (Narwhal, JBR 21) is at `C:\Program Files\Android\Android Studio`.
-- **The Android SDK is not installed yet.** `%LOCALAPPDATA%\Android` is empty. Install platform 36, build-tools and platform-tools in M1.
+- **Android SDK** is installed at `%LOCALAPPDATA%\Android\Sdk` (2026-11-25): platform 36, build-tools 35.0.0 and 36.0.0, platform-tools 37.0.3. The licenses were accepted on the user's behalf for the unattended install.
 - Installed: `uv` (use uv-managed Python 3.12; system Python is 3.10), Node, ffmpeg, `gh` (authenticated as `suraj2022s`), git.
 - Not available: docker; `adb` isn't on PATH until platform-tools is installed.
-- The user runs the app on an **Android phone** and records all test captures themselves.
+- **Test phone: OPPO A6x 5G (CPH2823).** ColorOS 16.0.5 (Android 16, API 36), MediaTek Dimensity 6300, 4 GB RAM (+8 GB virtual). The user records all test captures on it. Implications:
+  - ColorOS kills background apps aggressively. The user must allow background activity for FieldCapture, and we need a foreground service.
+  - With only 4 GB of RAM, keep frame buffers pooled and small.
+  - It's a MediaTek phone, and Meta's CameraAccess sample blocks the `c2.mtk.hevc.decoder` hardware decoder because it corrupts the DAT stream. Any HEVC decoding we do must use a software decoder.
+  - USB debugging setup: Settings → About device → Version → tap *Build number* 7 times. Then Additional settings → Developer options → USB debugging, plus *Disable permission monitoring* so adb installs and permission grants work.
 
 ## Tools used (keep this current for the README's "AI tools" section)
 

@@ -124,6 +124,20 @@ Third-party note: the GemGlasses README reports **"the first frame takes ~5 s"**
 - **Hands-free wearables:** RealWear HMT + IBM Inspector Wearable (voice control, noise-robust, gloves) and Zuper Glass.
 - **The gap none of them fill:** consumer AI glasses with an offline-first, quality-gated capture loop.
 
+### 4.4 More findings while building (2026-11-25)
+
+- **MediaTek hardware HEVC decoder is blocked by Meta.** Meta's own CameraAccess decoder (`samples/CameraAccess/.../stream/HevcDecoder.kt`) blocks `OMX.Exynos.hevc.dec` and **`c2.mtk.hevc.decoder`**. The reason given is that they "corrupt this stream into fragments/trash; the SDK's own decoder skips them too". Our test phone (Dimensity 6300) is MediaTek, so decoding falls back to a software decoder (CPU cost on a 4 GB phone). [sample]
+- **The raw frame format is undocumented.**
+  - What is documented: `VideoFrame(buffer, width, height, presentationTimeUs, isCompressed, isCodecConfig)`, and the docs say only "YUV pixel data".
+  - What is missing: the plane layout (I420, NV12 or NV21) and the row stride. The internal `VideoDecoder` configures a MediaCodec `color-format`, but nothing public exposes it. [ours: javap of mwdat-camera 1.1.0]
+  - How we'll settle it: the app logs bytes vs `w*h*1.5` for the first frame, and writes the frame under each candidate layout.
+- **The public API surface was confirmed with `javap`** against the 1.1.0 AARs from Maven Central.
+  - `Stream.capturePhoto()` returns `DatResult<PhotoData, CaptureError>`.
+  - `DeviceSessionError` has 19 values, including `DWA_UNAVAILABLE` and `UNEXPECTED_ERROR`.
+  - `StreamError` adds `PERMISSIONS_DENIED` and `TIMEOUT`.
+  - Mock Device Kit additions: `MockDevice.setBatteryLevel/setChargingState/setThermalLevel`, `MockSpeechKit.setTranscriptionSource(INJECTED | LIVE_DEVICE_ASR)`, and `getLiveSourceDiagnostic()`.
+- **Tooling change.** As of command-line tools 16111833, `sdkmanager` is deprecated and forwards to a new "Android CLI". It collects usage metrics unless you pass `--no-metrics`, and it uses slash package names (`platforms/android-36`). Not DAT-specific, but it affects "setup in under 10 minutes".
+
 ## 5. Open questions to measure on our build (→ memo "[ours]")
 
 - [ ] Time to first frame after `session.start()` on MDK, phone-camera feed vs file feed

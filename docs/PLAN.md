@@ -391,6 +391,14 @@ Results are broken down by light, by model (Haiku, Sonnet, Opus) and by evidence
 
 ## 13. Milestones (≈ 20 h; tick as done)
 
+The brief arrived 2026-11-24 and is **due 2026-11-27**.
+
+| Day | Target |
+|---|---|
+| **Wed 11-25** | M0–M2: plan; app running on the phone with lifecycle, voice, quality gate and offline store |
+| **Thu 11-26** | M3–M5: backend loop. You film the data set: daylight scenes plus an evening low-light session. Then extraction and eval numbers. |
+| **Fri 11-27** | M6–M9: stretch numbers, 3 walk-throughs, demo video, report, memo, README, submit |
+
 - [x] **M0 — Plan, research, repo, journal** (~1.5 h). Research notes, competitor scan, this plan, `CLAUDE.md`, private GitHub repo.
 - [ ] **M1 — Android foundation** (~4 h)
   - [ ] Install Android SDK (platform 36, build-tools, platform-tools); with the user's OK, install Meta's `mwdat-android` Claude Code plugin (skills, docs MCP, MockDevice MCP)
