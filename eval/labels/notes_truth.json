@@ -1,0 +1,23 @@
+{
+  "_about": "Ground truth for eval/notes_script.md. Lists accept any of several phrasings. Scoring: category must be in 'category'; component/condition/location are correct when an accepted token appears in the prediction (case-insensitive); null means the note doesn't state it, so the right answer is null.",
+  "1": {"text": "subfloor soft by the cabinet", "category": ["damage_observation", "structural"], "component": ["subfloor"], "condition": ["soft"], "location": ["cabinet"]},
+  "2": {"text": "musty smell in the hallway closet", "category": ["mold_odor"], "component": null, "condition": ["musty", "smell"], "location": ["closet", "hallway"]},
+  "3": {"text": "water heater pan has standing water", "category": ["moisture", "equipment"], "component": ["water heater", "pan"], "condition": ["standing water", "water"], "location": null},
+  "4": {"text": "ceiling stain about two feet wide above the tub", "category": ["damage_observation", "moisture"], "component": ["ceiling"], "condition": ["stain"], "location": ["tub"], "measurement": {"value": 2, "unit": ["ft", "feet", "foot"]}},
+  "5": {"text": "baseboard swollen along the north wall", "category": ["damage_observation"], "component": ["baseboard"], "condition": ["swollen"], "location": ["north wall"]},
+  "6": {"text": "drywall wet up to about eighteen inches", "category": ["moisture", "damage_observation"], "component": ["drywall"], "condition": ["wet"], "location": null, "measurement": {"value": 18, "unit": ["in", "inch", "inches"]}},
+  "7": {"text": "customer says the leak started last tuesday", "category": ["customer_info"], "component": null, "condition": null, "location": null},
+  "8": {"text": "outlet near the sink is not working possible water in the box", "category": ["safety_hazard", "equipment"], "component": ["outlet"], "condition": ["not working", "water"], "location": ["sink"]},
+  "9": {"text": "mold on the back of the vanity", "category": ["mold_odor"], "component": ["vanity"], "condition": ["mold"], "location": ["vanity", "back"]},
+  "10": {"text": "carpet pad soaked by the patio door", "category": ["moisture", "damage_observation"], "component": ["carpet pad", "pad", "carpet"], "condition": ["soaked"], "location": ["patio door"]},
+  "11": {"text": "moisture reading twenty two percent at the bottom of the wall", "category": ["measurement", "moisture"], "component": ["wall"], "condition": null, "location": ["bottom", "wall"], "measurement": {"value": 22, "unit": ["%", "percent"]}},
+  "12": {"text": "pipe under the kitchen sink is dripping", "category": ["moisture", "equipment", "damage_observation"], "component": ["pipe"], "condition": ["dripping", "leak"], "location": ["sink"]},
+  "13": {"text": "laminate cupping in front of the dishwasher", "category": ["damage_observation"], "component": ["laminate"], "condition": ["cupping"], "location": ["dishwasher"]},
+  "14": {"text": "access to the attic is through the bedroom closet", "category": ["access"], "component": null, "condition": null, "location": ["bedroom closet", "closet"]},
+  "15": {"text": "no visible damage in the guest room", "category": ["other", "damage_observation"], "component": null, "condition": ["no visible damage", "no damage", "none"], "location": null},
+  "16": {"text": "paint bubbling on the bathroom ceiling", "category": ["damage_observation", "moisture"], "component": ["paint", "ceiling"], "condition": ["bubbling"], "location": ["ceiling", "bathroom"]},
+  "17": {"text": "toilet base is loose and the floor feels spongy", "category": ["structural", "damage_observation"], "component": ["toilet", "floor"], "condition": ["loose", "spongy"], "location": ["toilet"]},
+  "18": {"text": "crack in the tile next to the shower", "category": ["damage_observation"], "component": ["tile"], "condition": ["crack"], "location": ["shower"]},
+  "19": {"text": "insulation in the attic looks wet above the hallway", "category": ["moisture"], "component": ["insulation"], "condition": ["wet"], "location": ["attic", "hallway"]},
+  "20": {"text": "need to move the fridge to check behind it", "category": ["access", "other", "equipment"], "component": ["fridge", "refrigerator"], "condition": null, "location": ["behind", "fridge"]}
+}
