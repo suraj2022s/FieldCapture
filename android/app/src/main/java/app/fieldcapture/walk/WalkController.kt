@@ -102,6 +102,7 @@ class WalkController(
 
   @Volatile private var job: JobHeader? = null
   private var jobStartWall = 0L
+  @Volatile private var priorEvents: List<EventRecord> = emptyList()
   @Volatile private var room: String? = null
   private val captureMutex = Mutex()
   @Volatile private var capturing = false
@@ -139,17 +140,46 @@ class WalkController(
             app = mapOf("app" to "FieldCapture", "version" to BuildConfig.VERSION_NAME, "dat_sdk" to "1.1.0"),
             device = mapOf("phone" to "${Build.MANUFACTURER} ${Build.MODEL}", "android" to Build.VERSION.RELEASE),
         )
+    begin(header, WalkUi(jobId = header.jobId), room = null, prior = emptyList())
+    log.log("job", "started ${header.jobId}")
+    speaker.say("Job started.")
+  }
+
+  /**
+   * The OS killed the app mid-walk (ColorOS does, even with a foreground service). On the next
+   * launch the walk carries on under the same job id with no taps: same record, counts and room
+   * restored, the timeline kept. "Undo" only reaches captures made after the restart.
+   */
+  fun resumeOpenJob() {
+    if (job != null) return
+    val open =
+        store.recoverOpenJobs(RESUME_WINDOW_MS) { closed ->
+          log.log("job", "closed ${closed.jobId} (started ${closed.createdAt}, never ended, idle too long to resume)")
+          kickUpload()
+        } ?: return
+    val h = open.header
+    begin(
+        h,
+        WalkUi(jobId = h.jobId, room = open.room, captures = open.captures, notes = open.notes, last = "Resumed job"),
+        room = open.room,
+        prior = open.events,
+    )
+    roomTipGiven = true
+    log.log("job", "resumed ${h.jobId} after an app restart (${open.captures} captures, ${open.notes} notes)")
+    speaker.say("Resumed your job. ${open.captures} captures, ${open.notes} notes so far.")
+  }
+
+  private fun begin(header: JobHeader, ui: WalkUi, room: String?, prior: List<EventRecord>) {
     job = header
     jobStartWall = System.currentTimeMillis()
-    room = null
+    priorEvents = prior
+    this.room = room
     roomTipGiven = false
     history.clear()
-    _ui.value = WalkUi(jobId = header.jobId)
-    log.log("job", "started ${header.jobId}")
+    _ui.value = ui
     onJobActive(true)
     glasses.startWalk()
     listener.start()
-    speaker.say("Job started.")
     kickUpload()
   }
 
@@ -159,6 +189,7 @@ class WalkController(
     glasses.endWalk()
     listener.stop()
     val ended = store.endJob(h, timeline())
+    priorEvents = emptyList()
     log.log("job", "ended ${ended.jobId}")
     kickUpload()
     val u = _ui.value
@@ -167,10 +198,12 @@ class WalkController(
     onJobActive(false)
   }
 
+  /** Events saved before an app restart, then everything logged in this process since the job began. */
   private fun timeline(): List<EventRecord> =
-      log.events.value
-          .filter { it.wallMs >= jobStartWall }
-          .map { EventRecord(Instant.ofEpochMilli(it.wallMs).toString(), it.type, it.detail) }
+      priorEvents +
+          log.events.value
+              .filter { it.wallMs >= jobStartWall }
+              .map { EventRecord(Instant.ofEpochMilli(it.wallMs).toString(), it.type, it.detail) }
 
   private fun announcePhase(prev: WalkPhase?, phase: WalkPhase, guidance: String?) {
     when (phase) {
@@ -683,5 +716,10 @@ class WalkController(
     const val PHOTO_TIMEOUT_MS = 6_000L
     const val MIN_PHOTO_EDGE = 120
     const val HINT_GAP_MS = 10_000L
+    /**
+     * A job killed mid-walk is resumed if it saw activity this recently; otherwise it is closed.
+     * A tech notices a dead app within minutes; hours later they may be at another address.
+     */
+    const val RESUME_WINDOW_MS = 30 * 60 * 1000L
   }
 }

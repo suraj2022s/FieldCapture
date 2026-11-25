@@ -91,8 +91,9 @@ class FieldCaptureApp : Application() {
         "dat",
         "SDK ready (mock glasses=$useMockGlasses, thresholds=${settings.thresholdsVersion})",
     )
-    if (useMockGlasses) mock.quickSetup()
+    if (useMockGlasses) mock.quickSetup(testFeed = BuildConfig.DEBUG && settings.mockTestFeed)
     glasses.onSdkReady()
-    walk // create the controller so it starts listening to state
+    // Creates the controller (it starts listening to state) and carries on a walk the OS killed.
+    walk.resumeOpenJob()
   }
 }

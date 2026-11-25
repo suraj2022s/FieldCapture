@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Debug builds talk to a local back office over plain HTTP (adb reverse / LAN). -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <application android:usesCleartextTraffic="true" />
+    <application android:usesCleartextTraffic="true">
+        <!-- adb-driven walks for chaos runs and the failure drill (tools/chaos_run.ps1).
+             DUMP is held by adb's shell user and not grantable to ordinary apps. -->
+        <receiver
+            android:name="app.fieldcapture.debug.DebugCommandReceiver"
+            android:exported="true"
+            android:permission="android.permission.DUMP" />
+    </application>
 </manifest>

@@ -67,6 +67,59 @@ class JobStore(private val root: File) {
     enqueue(OutboxItem("events-$jobId", "events", jobId, "jobs/$jobId/events.json", null, now()))
   }
 
+  fun loadEvents(jobId: String): List<EventRecord> =
+      runCatching { json.decodeFromString<List<EventRecord>>(File(jobDir(jobId), "events.json").readText()) }
+          .getOrDefault(emptyList())
+
+  /**
+   * Jobs that were started but never ended: the OS killed the app mid-walk (ColorOS does this).
+   * The most recently active one is returned if its last activity is within [resumeWindowMs], so
+   * the walk carries on under the same job id. The rest are closed, so their record is still
+   * finalized; nothing is deleted. A short window matters: a job resumed hours later, at another
+   * house, would file captures under the wrong address.
+   */
+  @Synchronized
+  fun recoverOpenJobs(
+      resumeWindowMs: Long,
+      nowMs: Long = System.currentTimeMillis(),
+      onClosed: (JobHeader) -> Unit = {},
+  ): OpenJob? {
+    val open =
+        (File(root, "jobs").listFiles() ?: emptyArray())
+            .mapNotNull { dir -> runCatching { json.decodeFromString<JobHeader>(File(dir, "job.json").readText()) }.getOrNull() }
+            .filter { it.endedAt == null }
+            .map { snapshot(it) }
+            .sortedByDescending { it.lastActivityMs }
+    val resumable = open.firstOrNull()?.takeIf { nowMs - it.lastActivityMs in 0 until resumeWindowMs }
+    for (j in open) {
+      if (j === resumable) continue
+      endJob(j.header, j.events + EventRecord(now(), "job", "closed automatically: the app stopped mid-walk and the job was not resumed in time"))
+      onClosed(j.header)
+    }
+    return resumable
+  }
+
+  private fun snapshot(h: JobHeader): OpenJob {
+    val captures = summaries(File(jobDir(h.jobId), "captures"))
+    val notes = summaries(File(jobDir(h.jobId), "notes"))
+    val events = loadEvents(h.jobId)
+    val times = listOf(h.createdAt) + (captures + notes).map { it.createdAt } + events.map { it.at }
+    return OpenJob(
+        header = h,
+        captures = captures.size,
+        notes = notes.size,
+        room = (captures + notes).filter { it.room != null }.maxByOrNull { epochMs(it.createdAt) }?.room,
+        events = events,
+        lastActivityMs = times.maxOf { epochMs(it) },
+    )
+  }
+
+  /** Live (not undone) records in a captures/ or notes/ folder, read just far enough to count them. */
+  private fun summaries(dir: File): List<RecordSummary> =
+      (dir.listFiles { f -> f.name.endsWith(".json") && !f.name.startsWith(".") } ?: emptyArray())
+          .mapNotNull { f -> runCatching { json.decodeFromString<RecordSummary>(f.readText()) }.getOrNull() }
+          .filter { !it.deleted }
+
   /** Writes evidence, then metadata, then the outbox marker, each fsync'd. */
   @Synchronized
   fun saveCapture(record: CaptureRecord, evidenceJpeg: ByteArray, streamJpeg: ByteArray?): CaptureRecord {
@@ -150,6 +203,9 @@ class JobStore(private val root: File) {
 
   companion object {
     private val KIND_ORDER = listOf("job", "capture", "note", "events", "finalize")
+
+    /** ISO-8601 strings from Instant.toString() drop trailing zeros, so they don't sort as text. */
+    private fun epochMs(iso: String): Long = runCatching { Instant.parse(iso).toEpochMilli() }.getOrDefault(0L)
 
     fun sha256(bytes: ByteArray): String =
         MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }

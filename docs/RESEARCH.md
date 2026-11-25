@@ -157,6 +157,9 @@ All measured 2026-11-25 from the app's event log (logcat tag `FieldCapture`).
 | How a first-time user phrases commands | Every command was natural: "**Please** capture the broken wall", "capture the seepage on wall", "capture the floor is not good". No room was ever named. This drove a forgiving parser and a one-time room tip. |
 | Instrumented lifecycle tests | **8/8 pass on device**: start/stop, pause/resume, power loss → reconnect same walk, overheat, doff/don, fold/unfold, outdated glasses app, voice → durable queued capture. |
 | Mock `doff()` | Does **not** pause the stream (it keeps STREAMING), unlike real glasses per the 1.1 changelog. The app therefore suspends capture from the device's `donState`/`hingeState`. |
+| Video-file feed (our 8 s, 540×960, 24 fps H.265 clip) | Delivered at **540×960, 15.0 fps** (435 frames in ~29 s, requested 15 fps), and frames **kept flowing past the clip's end**; we didn't check whether it loops or holds the last frame. So the mock honours the requested frame rate for a file feed but not for the phone-camera feed (~30 fps). `capturePhoto()` again returned the 1×1 placeholder (21 ms). |
+| App killed mid-walk (OS kill / reinstall) | Before 2026-11-25 evening, a killed walk stayed open forever on the phone: no `finalize`, and the next "start job" opened a new job id. Both of the user's real jobs from the afternoon were still open. The app now resumes the most recently active open job on launch if it saw activity in the last 30 min (counts, room and timeline restored) and closes older ones. Verified on the real job `5482e66c`: resumed with 6 captures; the other job was closed and finalized. |
+| MockDevice MCP on Windows | `mock_connect` needs `adb` on PATH (it ignores `ANDROID_HOME`). The app's test server can be driven directly over HTTP after `adb forward tcp:8237 tcp:8237`; `GET /capabilities` lists 55 routes (contract version 1). |
 
 ## 5. Open questions to measure on our build (→ memo "[ours]")
 

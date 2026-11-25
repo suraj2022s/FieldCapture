@@ -120,6 +120,21 @@ data class NoteRecord(
 @Serializable
 data class EventRecord(val at: String, val type: String, val detail: String)
 
+/** The fields of a capture or note that resuming a job needs (unknown keys are ignored). */
+@Serializable
+data class RecordSummary(val createdAt: String, val room: String? = null, val deleted: Boolean = false)
+
+/** A job the app was killed in the middle of, as found on disk at the next launch. */
+data class OpenJob(
+    val header: JobHeader,
+    val captures: Int,
+    val notes: Int,
+    val room: String?,
+    val events: List<EventRecord>,
+    /** Newest of: job start, any capture or note, any saved timeline event (epoch ms). */
+    val lastActivityMs: Long,
+)
+
 @Serializable
 data class OutboxItem(
     /** Idempotency key: the server upserts by this id, so a replay can never duplicate. */

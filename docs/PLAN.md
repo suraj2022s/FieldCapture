@@ -36,7 +36,7 @@ We beat both with five things:
 | # | Brief requirement | Our design (section) | Proof reviewers can check |
 |---|---|---|---|
 | C1 | Registration, permissions, start/pause/resume/stop, recovery when the device drops mid-walk | `WalkSessionManager` over DAT 1.1 `DeviceSession` (§5). Uses `pause()`/`resume()`, a reconnect supervisor and a STARTING watchdog. | MDK instrumented test matrix (§5.3) in CI logs. The demo shows a power-off mid-walk. |
-| C2 | Voice commands `capture nameplate`, `capture damage [room] [surface]`, `note: [text]`. Phone-mic fallback, with the reason stated. | On-device `SpeechRecognizer` feeds an intent-registry parser (§4). DAT Speech sits behind a flag, with the reason in README. | Parser unit tests, scripted-utterance accuracy, demo |
+| C2 | Voice commands `capture nameplate`, `capture damage [room] [surface]`, `note: [text]`. Phone-mic fallback, with the reason stated. | On-device `SpeechRecognizer` feeds an intent-registry parser (§4). DAT Speech is not built (cut list; reason in README). | Parser unit tests, scripted-utterance accuracy, demo |
 | C3 | On-device check for blurry, dark and badly framed frames, a retake prompt, and the thresholds with how we chose them | `quality-core` (pure Kotlin) handles best-frame selection, auto-retake and specific prompts (§6) | ROC and threshold report on held-out scenes. The thresholds JSON is versioned. |
 | C4 | Extraction: nameplate (make/model/serial/date), damage (room/surface/type/size), note → structured fields, all with confidence | Backend extractors use Claude vision with validators, an OCR cross-check and calibrated confidence (§7) | Per-field accuracy, AUROC/ECE, risk-coverage (§10) |
 | C5 | One JSON job record against our own schema, plus 10–15 self-defined line-item codes | JSON Schema 2020-12 and a rules engine with 15 codes (§8) | Schema validation tests and 3 real sample records |
@@ -60,7 +60,7 @@ flowchart LR
   subgraph P["Android phone — FieldCapture (foreground service)"]
     SES["WalkSessionManager<br/>DeviceSession · Camera · Stream<br/>pause/resume · watchdog · reconnect"]
     RB["FrameRingBuffer<br/>last ~2 s of frames"]
-    VOI["Voice<br/>on-device SpeechRecognizer<br/>(DAT Speech behind flag)"]
+    VOI["Voice<br/>on-device SpeechRecognizer<br/>(phone mic)"]
     CMD["CommandParser<br/>intent registry + slots"]
     ORC["CaptureOrchestrator"]
     QC["QualityGate<br/>quality-core (pure Kotlin)"]
@@ -423,6 +423,9 @@ The brief arrived 2026-11-24 and is **due 2026-11-27**.
   - [ ] Eval harness + calibration + report generator; model comparison (Haiku/Sonnet/Opus)
 - [ ] **M6 — Stretch** (~2.5 h): size without depth (A vs B vs tape); cost and latency (instrument → 2× cut)
 - [ ] **M7 — Hardening** (~2 h): chaos runs (offline/kill/server down); pocket mode (compressed HEVC + MediaCodec) if time allows; prompt polish
+  - [x] L11: a walk the OS killed resumes on relaunch under the same job id (30 min inactivity window); older open jobs are closed and finalized. JVM-tested; verified on device with a real job.
+  - [x] Debug-only adb walk driver (`DebugCommandReceiver`) for scripted chaos runs and the failure drill
+  - [ ] Chaos run with counts (captured vs received vs replays), back-office-unreachable drain time, glasses power-off reconnect time
 - [ ] **M8 — Real walk-throughs** (~1.5 h): 3 sample job records; demo video from tag `demo-v1`
 - [ ] **M9 — Docs and submission** (~1.5 h)
   - [ ] README (setup < 10 min, diagram, two more weeks, tools used, limitations)

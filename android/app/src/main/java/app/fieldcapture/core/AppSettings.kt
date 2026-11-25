@@ -26,6 +26,14 @@ class AppSettings(context: Context) {
     get() = prefs.getBoolean("datasetMode", false)
     set(v) = prefs.edit().putBoolean("datasetMode", v).apply()
 
+  /**
+   * Debug: the simulated glasses play the bundled synthetic clip instead of the phone camera.
+   * Persisted so a scripted run that kills the app comes back to the same feed (and films nothing).
+   */
+  var mockTestFeed: Boolean
+    get() = prefs.getBoolean("mockTestFeed", false)
+    set(v) = prefs.edit().putBoolean("mockTestFeed", v).apply()
+
   /** Prefer the glasses' capturePhoto() still as evidence when it passes QC. */
   var usePhotoEvidence: Boolean
     get() = prefs.getBoolean("usePhotoEvidence", true)

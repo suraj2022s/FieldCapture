@@ -66,13 +66,13 @@ class MockGlassesController(context: Context, private val log: EventLog) {
   }
 
   /** One tap to a streamable mock: enable, pair, power on, unfold, don, phone back camera as feed. */
-  fun quickSetup() {
+  fun quickSetup(testFeed: Boolean = false) {
     enable()
     if (!pair()) return
     powerOn()
     unfold()
     don()
-    usePhoneCamera(back = true)
+    if (testFeed) useTestFeed() else usePhoneCamera(back = true)
   }
 
   fun powerOn() = act("power on") {

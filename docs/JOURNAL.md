@@ -223,3 +223,49 @@ The newest entry is at the bottom. Each entry records what was done, the decisio
 3. User films the dataset per `eval/README.md` (daylight + evening low-light), then labels it.
 4. User adds an Anthropic API key to `backend/.env`. Then run `run_extraction.py`, `calibrate.py --write`, `report.py`.
 5. Three real walk-throughs (sample records), demo video (tag `demo-v1`), memo, final README numbers.
+
+---
+
+## 2026-11-25 — Session 2 (new conversation, plugin loaded): resume after app kill, adb walk driver
+
+### Re-armed (per the hand-over)
+- Phone on USB; `adb reverse tcp:8000 tcp:8000` re-run. It was lost again on reinstall, so re-run it after every `installDebug`.
+- The back office from session 1 was still running on :8000 with extraction off. `backend/.env` doesn't exist yet, so there's no API key and no reprocess.
+- **The MockDevice MCP can't connect here:** it shells out to plain `adb`, and platform-tools isn't on PATH. Workaround: `adb forward tcp:8237 tcp:8237` and call the test server's HTTP routes directly (health OK, 55 routes). The real fix (PATH + VS Code restart) needs the user's OK.
+- The stale "fix the `yuvLayout` default" item was already done (I420).
+
+### Found and fixed: a walk killed by the OS was never resumed or finalized
+- **Symptom.** Both of the user's real jobs from this afternoon were still open on the phone (`endedAt: null`). Any process death (ColorOS kill, crash, reinstall) left the job open forever, with no `finalize`. The tech's next "start job" would have opened a *new* job id and split the record.
+- **Fix.**
+  - `JobStore.recoverOpenJobs`: the most recently active open job is resumed on launch, under the same id. Counts, current room and the saved timeline are restored; "Resumed your job. 6 captures, 0 notes so far." is spoken.
+  - Any other open job is closed and finalized, with a timeline event saying why. Nothing is deleted.
+  - `WalkController.timeline()` now keeps the events saved before the restart, which used to be lost.
+- **Decision: a 30-minute *inactivity* window, not "since job start".** My first draft used 12 h since start. That would file captures under the wrong address if the tech reopens the app hours later at another house. A killed app is noticed within minutes. Activity is the newest of job start, any capture or note, and any saved event, so a long walk with recent captures still resumes.
+- **Known limit.** "Undo" only reaches captures made after the restart, because the in-memory history is gone.
+- **Verified.**
+  - 5 new JVM tests (`JobStoreRecoveryTest`), 19/19 app JVM tests pass; androidTest still compiles.
+  - On device with real data: job `5482e66c` was resumed with its 6 captures; `c9d5eded` was closed and finalized. Both finalizes reached the back office and the outbox drained to 0.
+- **Side finding.** The route was restored at 18:41:36, but the upload only went at 18:41:56. WorkManager's exponential backoff (10 s, 20 s, 40 s…) had grown, and `kick()` with `APPEND_OR_REPLACE` queues *behind* the waiting retry. After a long dead zone, the wait could be minutes. The chaos run will measure it before anything is changed.
+
+### Added: debug-only adb driver (`src/debug/.../DebugCommandReceiver`)
+- `am broadcast … --es cmd start|end|say|offline|online|status|feed_test|feed_camera`.
+- `say` enters through `WalkController.simulateHeard`, the same path the mic and VoiceToCaptureTest use.
+- It's protected by `android.permission.DUMP`: adb's shell holds it, ordinary apps can't get it. It's in the debug source set only, so it's absent from release builds.
+- `feed_test` (the synthetic clip) is persisted, so a scripted run that kills the app comes back to the same feed and never films the room.
+- Purpose: repeatable chaos runs and the live-session failure drill without anyone speaking.
+
+### Mistake to learn from
+- I ran a short scripted check while **the user was talking to the app**: "Please capture the wearing of paint" was heard and saved.
+- My script had started job `4f6a8eef` on the synthetic test feed, so the user's live captures went into that job and show a test pattern.
+- I reverted the feed setting to the phone camera at once and stopped driving the phone.
+- Rule added to CLAUDE.md: check logcat for recent `[heard]` lines and ask before any scripted phone run.
+
+### Also found
+- **The PC's internet runs through the phone's Wi-Fi hotspot** (`ap0`). So the chaos run must never use real airplane mode or toggle data/Wi-Fi; it uses `adb reverse --remove`, the app's offline switch, a stopped server and process kills. The "no network at all" path (WorkManager's CONNECTED constraint) therefore stays untested on device, and that will be flagged.
+- **Docs corrected.** CLAUDE.md and PLAN.md said "DAT Speech sits behind a flag", but it was never built; `mwdat-speech` isn't a dependency. The README was already accurate.
+- **Mock video feed.** Our 8 s, 540×960 clip arrives at the requested 15 fps and keeps flowing past 8 s (RESEARCH §5a).
+
+### Next
+1. **User:** is job `4f6a8eef` yours to keep? Its captures are of the synthetic test pattern. Say "end job" and start a fresh one for real captures. Also tell me when the phone is free for an unattended run of about 5 minutes.
+2. Chaos run (`tools/chaos_run.ps1`, separate server on :8001 with its own data dir, synthetic feed): online baseline → back office unreachable → app killed with items queued → resume → route restored (measure time to drain) → glasses power-off mid-walk (refusal, note still saved, reconnect time) → end. Report captured vs received vs replays.
+3. Still waiting on the user: API key → reprocess `5482e66c`; the user's OK to put platform-tools on PATH for the MockDevice MCP; 11-26 filming.

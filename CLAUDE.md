@@ -34,7 +34,7 @@ A take-home assignment: build **FieldCapture**, an Android app on Meta's Wearabl
 
 - **Android stack:** Kotlin + Jetpack Compose. **DAT 1.1.0** from Maven Central (`com.meta.wearable:mwdat-*`). minSdk 31, compileSdk 36, AGP 8.11.x, Kotlin 2.2.x, Gradle 8.14.x (match `samples/CameraAccess`).
 - **Glasses stand-in:** Mock Device Kit fed by the phone camera (`setCameraFeed(CameraFacing.BACK)`), or by HEVC files for repeatable runs.
-- **Voice:** phone mic → Android on-device `SpeechRecognizer`. DAT Speech is experimental, so it sits behind a flag and in tests (MockSpeechKit INJECTED).
+- **Voice:** phone mic → Android on-device `SpeechRecognizer`. DAT Speech is experimental (can't be published) and is **not built**: `mwdat-speech` isn't a dependency. Tests inject recogniser results into `WalkController.simulateHeard` instead (VoiceToCaptureTest, and the debug adb hook below).
 - **Backend:** Python 3.12 + FastAPI + SQLite, managed with `uv`. Claude is called through the official `anthropic` Python SDK. The model per task is chosen by our eval among Haiku 5.5, Sonnet 5.5 and Opus 5.5; Opus 5.5 is the default until measured. The user approved benchmarking all three.
 - **Stretch goals:** size without depth, plus cost & latency.
 - **GitHub:** `suraj2022s/FieldCapture`, **private** until submission. At submission, make it public or add the reviewers, and ask the user first.
@@ -63,7 +63,13 @@ Run these from `android/` in PowerShell. `JAVA_HOME` is already set to the Andro
 | Install on phone | `.\gradlew.bat :app:installDebug` (USB debugging on) |
 | adb | `$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe` |
 | App logs | `adb logcat -s FieldCapture` |
+| App JVM tests (parser, job recovery) | `.\gradlew.bat :app:testDebugUnitTest` |
+| Drive a walk from adb (debug builds) | `adb shell "am broadcast -n app.fieldcapture/.debug.DebugCommandReceiver --es cmd say --es text 'capture nameplate'"`. `cmd` = `start`, `end`, `say` (+`text`), `offline`, `online`, `status`, `feed_test`, `feed_camera`. `feed_test` persists until `feed_camera`. |
 | SDK packages | `$env:LOCALAPPDATA\Android\Sdk\cmdline-tools\latest\bin\android.exe --no-metrics sdk install <pkg>` |
+
+**Before driving the phone from a script, check the user isn't using it.** On 2026-11-25 the user was speaking commands to the app while a scripted check started a job on the synthetic feed, so their captures went into the wrong job. Look for recent `[heard]` lines in logcat, and ask first.
+
+**Never toggle airplane mode, mobile data or Wi-Fi on the phone.** This PC's internet runs through the phone's Wi-Fi hotspot (`ap0`, gateway 172.30.136.250), so doing that cuts the session. Simulate "no signal" with `adb reverse --remove tcp:8000` (back office unreachable), the app's `offline` switch, or by stopping the server.
 
 `sdkmanager` is deprecated and only forwards to the new `android` CLI. Pass `--no-metrics` to it. Package names use slashes, for example `platforms/android-36`.
 
@@ -133,6 +139,7 @@ Commit-message tip for PowerShell 5.1: messages containing double quotes break `
   2. Call `mock_connect(bundle_id="app.fieldcapture", platform="android")`.
   3. Then use `mock_power_off`, `mock_doff`, `mock_set_camera_feed(resource_name="test_feed", ext="mp4")` and so on.
 - **Windows note:** the MCP is launched with `python3`. Here that resolves to the Microsoft Store Python 3.13 (works).
+- **The MockDevice MCP needs `adb` on PATH.** It shells out to plain `adb` and ignores `ANDROID_HOME`, and platform-tools isn't on PATH here, so `mock_connect` fails with "command not found: adb". The fix is to add `%LOCALAPPDATA%\Android\Sdk\platform-tools` to the user PATH and restart VS Code; ask the user first. Workaround in the meantime: `adb forward tcp:8237 tcp:8237`, then call the test server's HTTP routes directly (`GET http://127.0.0.1:8237/capabilities` lists them; device routes take `{"deviceId": ...}`).
 - **Google's official Android skills** (android/skills v1.0.24, Apache-2.0) are installed **locally** in `.claude/skills/`, which is gitignored: `android-cli`, `testing-setup`, `anr-audit-and-fix`, `android-permissions-security`, `android-intent-security`.
   - `android-profiler` was skipped on purpose: it bundles a native `trace_processor` binary.
   - The normal install is `android --no-metrics skills add --project . --agent claude <id>`. On this network the Android CLI's Java HTTP client times out, so the release zip was downloaded with curl and the skill folders copied in.
