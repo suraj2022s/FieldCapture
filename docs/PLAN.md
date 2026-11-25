@@ -401,19 +401,20 @@ The brief arrived 2026-11-24 and is **due 2026-11-27**.
 
 - [x] **M0 — Plan, research, repo, journal** (~1.5 h). Research notes, competitor scan, this plan, `CLAUDE.md`, private GitHub repo.
 - [ ] **M1 — Android foundation** (~4 h)
-  - [ ] Install Android SDK (platform 36, build-tools, platform-tools); with the user's OK, install Meta's `mwdat-android` Claude Code plugin (skills, docs MCP, MockDevice MCP)
-  - [ ] Gradle project (`android/`) pinned to CameraAccess versions + DAT 1.1.0; `Wearables.initialize`; registration and permission flows
-  - [ ] MDK debug panel (pair / power / don / fold / feed / chaos) + `startTestServer` for the MockDevice MCP
-  - [ ] `WalkSessionManager` (state machine, watchdog, reconnect, pause/resume) + `FrameRingBuffer`
-  - [ ] Instrumented tests L1–L8; measure mock behaviour (time to first frame, frame size per quality, `capturePhoto()` latency and output)
+  - [x] Install Android SDK (platform 36, build-tools, platform-tools). The Meta Claude Code plugin is still pending the user's OK; its skills were read directly from the repo.
+  - [x] Gradle project (`android/`) pinned to CameraAccess versions + DAT 1.1.0; `Wearables.initialize`; registration and permission flows
+  - [x] MDK debug panel (pair / power / don / fold / feed / chaos) + `startTestServer` for the MockDevice MCP
+  - [x] `GlassesController` (state machine, watchdog, reconnect, pause/resume) + frame buffer
+  - [ ] Run on the phone; instrumented tests L1–L8; measure mock behaviour (time to first frame, frame size per quality, `capturePhoto()` latency and output)
 - [ ] **M2 — Voice, capture, QC v0, persistence** (~4 h)
-  - [ ] On-device `SpeechRecognizer` loop + `CommandParser` (+ unit tests) + TTS/earcons
-  - [ ] `quality-core` metrics + seed thresholds + best-frame selection + auto-retake UX
-  - [ ] Room schema, write-ahead capture store, outbox, foreground service; ML Kit OCR read-back
-  - [ ] Tests L9–L12
+  - [x] Phone `SpeechRecognizer` loop + `CommandParser` (+ unit tests) + TTS/earcons
+  - [x] `quality-core` metrics + seed thresholds + best-frame selection + auto-retake UX
+  - [x] File-based write-ahead store (instead of Room), outbox, foreground service; ML Kit OCR read-back
+  - [ ] Verify on the phone; tests L9–L12
 - [ ] **M3 — Backend and end-to-end loop** (~3 h)
-  - [ ] FastAPI ingest (idempotent), SQLite, file store; job-record JSON Schema + assembler + validation tests
-  - [ ] Line-item rules + tests; back-office HTML view; `UploadWorker` → loop works with a stub extractor
+  - [x] FastAPI ingest (idempotent), SQLite, file store; job-record JSON Schema + assembler + validation tests
+  - [x] Line-item rules + tests; back-office HTML view; Claude extractors (nameplate, damage, note)
+  - [ ] End-to-end on the phone: voice → capture → upload → record
 - [ ] **M4 — Dataset round 1 and thresholds** (~2.5 h, mostly the user filming)
   - [ ] Dataset mode in the app; labeling page; capture session per §12
   - [ ] `quality-core` CLI → `qc_thresholds.py` → thresholds v1 shipped in the app

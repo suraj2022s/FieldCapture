@@ -67,6 +67,18 @@ Run these from `android/` in PowerShell. `JAVA_HOME` is already set to the Andro
 
 `sdkmanager` is deprecated and only forwards to the new `android` CLI. Pass `--no-metrics` to it. Package names use slashes, for example `platforms/android-36`.
 
+Back office commands run from `backend/` (uv-managed Python 3.12):
+
+| What | Command |
+|---|---|
+| Install deps | `uv sync` |
+| Tests | `uv run pytest -q` |
+| Run server | `uv run fieldcapture-server` → http://127.0.0.1:8000. Set `FIELDCAPTURE_HOST=0.0.0.0` for LAN access. |
+| Phone → PC over USB | `adb reverse tcp:8000 tcp:8000`. The app's default `BACKEND_URL` is `http://127.0.0.1:8000`. |
+| API key | `backend/.env` (gitignored; template in `.env.example`) |
+
+Commit-message tip for PowerShell 5.1: messages containing double quotes break `-m @'...'@`. Write the message to a file in the scratchpad and use `git commit -F <file>`.
+
 ## DAT SDK gotchas (details and sources in docs/RESEARCH.md)
 
 **Session**
