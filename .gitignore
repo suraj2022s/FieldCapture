@@ -1,0 +1,43 @@
+# --- Secrets & local-only files ---
+.env
+.env.*
+!.env.example
+local.properties
+*.keystore
+*.jks
+secrets/
+private/
+
+# --- Android / Gradle / IntelliJ ---
+.gradle/
+**/build/
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.iml
+.idea/
+.kotlin/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# --- Backend runtime data (job uploads, sqlite) ---
+backend/data/
+
+# --- Eval scratch (results that matter are committed explicitly) ---
+eval/.cache/
+
+# --- OS / editors ---
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/*
+!.vscode/extensions.json

@@ -1,0 +1,18 @@
+# Normalise line endings so the repo clones cleanly on macOS, Linux and Windows.
+* text=auto eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+gradlew text eol=lf
+*.sh text eol=lf
+
+# Binary assets (test-set frames, mock feeds, evidence)
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.webp binary
+*.heic binary
+*.mp4 binary
+*.mov binary
+*.wav binary
+*.jar binary
