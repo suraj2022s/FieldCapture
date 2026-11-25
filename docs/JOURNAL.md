@@ -281,3 +281,42 @@ The newest entry is at the bottom. Each entry records what was done, the decisio
   - `chaos_counts.py` reads the real finalized job `5482e66c` correctly (6 captures, finalized, nothing uploaded twice).
   - The app builds, and the JVM tests pass after the `mic_off`/`mark` commands and note-id logging were added.
 - **Not run yet:** the user is using the phone. The new build is **not installed**, because installing would kill the user's running walk.
+
+---
+
+## 2026-11-25 — Session 2, continued: Meta's DAT skills used for real; API key; README tool table
+
+### The user asked: "are we using Meta SDK skills?"
+- Honest answer at the time: **only partly.**
+  - The plugin was installed, but this session had loaded none of its skills and hadn't used the docs MCP.
+  - The MockDevice MCP had been tried, but it fails here because it needs `adb` on PATH.
+  - In session 1 the skills were read from the SDK repo, not loaded.
+- The user asked for the AI tools to be used, and for the README to say which tools were used and where.
+
+### Done
+- **Loaded `dat-conventions`, `session-lifecycle`, `camera-streaming` and `mockdevice-testing`** and audited `GlassesController` against their checklists. Five gaps, all fixed:
+  1. **Collectors subscribe before `start()`.** They now use `CoroutineStart.UNDISPATCHED`; a plain `launch` only schedules the collector, so an early `errors` emission could be missed. The session `state` collector previously ran *after* `start()`. The same fix applies to the stream's flows before `stream.start()`.
+  2. **A failed `addCamera` or `stream.start()` ends the session** so the supervisor retries. Before, the walk sat in CONNECTING forever with no camera and no guidance.
+  3. **Camera permission is checked before every session**, with a new `NEEDS_PERMISSION` phase and spoken guidance, re-checked every 5 s. A walk resumed after an app kill, or a reconnect, never went through the Activity's permission flow.
+  4. **pause/resume settling.** A "resume job" that arrives before the device confirms PAUSED is ignored by the SDK, so it's now re-issued when PAUSED is observed.
+  5. **A stream that stops under a started camera is restarted**, as the docs say a started camera's stream can be. It's capped at 3 restarts per session, then the session is rebuilt. It never restarts while the session is pausing or stopping, or after a user pause.
+- **Docs MCP (`search_dat_docs`)**: cross-checked our measured mock behaviours against docs v1.1 (RESEARCH §5b).
+  - Undocumented, so they stay as "[ours]" memo claims: the I420 layout, doff not pausing the mock stream, the in-stream 1×1 placeholder photo, and the phone feed ignoring the requested quality and fps.
+  - Implied by the docs: mid-stream `setCameraFeed` is ignored.
+  - New documented fact for the memo: the mock "does not model Stream and Photo contention" and its transfer timing "is not representative".
+- **Google's `android-intent-security` skill**: audited the exported components. No code changes. One debug-only risk is documented in the README: the `mwdat_ui_testing` extra on the exported launcher starts the loopback test server. DUMP was kept for the receiver, because a custom signature permission would block adb's shell, its only intended sender.
+- **README "AI tools used"** is now a table of tool → what it was used for → where it shows. It corrects the earlier unverified claim that Google's skills were "used for device automation, test setup…": only `android-intent-security` has been used. The README's limitations also gain the resume window, the offline-test scope and the debug-only surfaces.
+
+### API key and funding
+- The user created `backend/.env` from the template and added a key. It's valid: Anthropic authenticated it.
+- The account has **no credit**. All 6 reprocess calls returned HTTP 400 "credit balance is too low". Nothing was billed, and errors are raised before the response cache is written, so a re-run will call the model.
+- **The user asked how much to add.** Recommended **$25**: about $0.30 for today's re-run, about $9–10 per full three-model eval pass over ~120 frames, a second pass for prompt tuning, and about $3 for walk-throughs. These are estimates from `config.py` prices and my token assumptions; the eval measures the real cost. That stays under the brief's $50 cap. Auto-reload off; receipt into `private/`.
+- **Back office:** I wasn't allowed to stop the old :8000 server (extraction off). So a second server runs on **:8002 with extraction on**, sharing the same `backend/data`, and the phone is routed to it (`adb reverse tcp:8000 tcp:8002`). The old server sits idle.
+
+### Not verified yet
+- **The 8 instrumented MDK tests have not been re-run after the `GlassesController` changes**, because the user is using the phone. The build compiles, androidTest compiles and the JVM tests pass. Run `connectedDebugAndroidTest` before tagging `demo-v1`. It uninstalls the app afterwards, so reinstall with `adb install -r -g`.
+
+### Next
+1. User adds credit → `POST :8002/v1/jobs/5482e66c…/reprocess` → check the damage types and line items on the real seepage photos.
+2. Phone free → install the new build → instrumented tests → `tools/chaos_run.ps1`.
+3. 11-26 filming per `eval/README.md`.

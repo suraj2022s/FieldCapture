@@ -161,6 +161,23 @@ All measured 2026-11-25 from the app's event log (logcat tag `FieldCapture`).
 | App killed mid-walk (OS kill / reinstall) | Before 2026-11-25 evening, a killed walk stayed open forever on the phone: no `finalize`, and the next "start job" opened a new job id. Both of the user's real jobs from the afternoon were still open. The app now resumes the most recently active open job on launch if it saw activity in the last 30 min (counts, room and timeline restored) and closes older ones. Verified on the real job `5482e66c`: resumed with 6 captures; the other job was closed and finalized. |
 | MockDevice MCP on Windows | `mock_connect` needs `adb` on PATH (it ignores `ANDROID_HOME`). The app's test server can be driven directly over HTTP after `adb forward tcp:8237 tcp:8237`; `GET /capabilities` lists 55 routes (contract version 1). |
 
+## 5b. Checked against Meta's DAT docs MCP (`search_dat_docs`, docs v1.1, 2026-11-25)
+
+Which of our "[ours]" mock findings the docs already cover, so the memo only claims what is new:
+
+| Our finding | What the docs say | Verdict |
+|---|---|---|
+| Raw frames are tight I420 | `VideoFrame.buffer` holds "decoded YUV pixel data"; no plane layout or stride (Android). iOS names `420v`. | **Not documented** for Android |
+| Mock `doff()` keeps the stream STREAMING | Nothing on mock don/doff and stream state | **Not documented** |
+| `setCameraFeed(Uri)` mid-stream is ignored | "*Before* starting a stream, you can configure Mock Device Kit with…" a feed | Implied, not stated |
+| In-stream `capturePhoto()` gives a 1×1 placeholder with a video feed | Only covers standalone `MockCameraCaptureKit`: without `setCapturedPhoto` "the mock reports that no capture is available". The in-stream placeholder isn't mentioned. | **Not documented** |
+| Phone-camera feed ignores requested quality/fps | Nothing | **Not documented** |
+
+Docs facts we hadn't used yet:
+- "The camera stays started while its stream is stopped… If the camera is started, call `start()` on its stream again. If it is stopping or stopped, add a new camera." Our app didn't handle a stream stop under a started camera; fixed on 2026-11-25.
+- Mock Device Kit "does not model Stream and Photo hardware contention, and its transfer progress is not representative of a real device". Real-glasses photo timing (issues #199/#215) can't be judged on the mock; say so in the memo.
+- `checkPermissionStatus` is a suspend function returning `DatResult`; check it before starting a stream.
+
 ## 5. Open questions to measure on our build (→ memo "[ours]")
 
 - [ ] Time to first frame after `session.start()` on MDK, phone-camera feed vs file feed

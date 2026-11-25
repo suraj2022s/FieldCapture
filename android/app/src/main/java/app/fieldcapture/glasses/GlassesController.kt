@@ -24,7 +24,10 @@ import com.meta.wearable.dat.core.types.LinkState
 import com.meta.wearable.dat.core.types.RegistrationState
 import com.meta.wearable.dat.core.types.ThermalLevel
 import java.util.Collections
+import com.meta.wearable.dat.core.types.Permission
+import com.meta.wearable.dat.core.types.PermissionStatus
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -57,6 +60,8 @@ import kotlinx.coroutines.withTimeoutOrNull
 enum class WalkPhase {
   IDLE,
   NEEDS_REGISTRATION,
+  /** The glasses camera permission isn't granted in Meta AI (checked before every session). */
+  NEEDS_PERMISSION,
   WAITING_FOR_GLASSES,
   CONNECTING,
   ACTIVE,
@@ -116,11 +121,22 @@ sealed interface PhotoResult {
  * Design (see docs/PLAN.md §5 and docs/RESEARCH.md §2–3):
  * - A supervisor loop creates a [DeviceSession] on a *named* device ([SpecificDeviceSelector];
  *   building an AutoDeviceSelector at tap time races and fails NO_ELIGIBLE_DEVICE).
- * - `state`/`errors` are collected before `start()` (start is fire-and-forget).
- * - The camera is attached once, at STARTED; PAUSED -> STARTED keeps it.
+ * - The camera permission is checked before every session (a resumed or reconnecting walk never
+ *   went through the Activity's permission flow).
+ * - `state`/`errors` collectors are subscribed before `start()` (start is fire-and-forget, and
+ *   its failures only arrive on `errors`); same for the stream's flows before `stream.start()`.
+ * - The camera is attached once, at STARTED; PAUSED -> STARTED keeps it. A failed `addCamera`
+ *   or `stream.start()` ends the session so the loop retries, instead of idling with no camera.
  * - STOPPED is terminal: the loop makes a new session, same walk, with back-off.
+ * - A stream that stops while its camera is still started is started again (the camera can't be
+ *   reused once stopped, but its stream can).
  * - A watchdog ends a session stuck in STARTING (Mock Device Kit issue #237), and link loss or an
  *   unexpected camera stop ends the session so it can be rebuilt instead of hanging.
+ * - pause()/resume() only take effect once the device confirms; a "resume job" that arrives before
+ *   the pause settled is re-issued when PAUSED is observed.
+ *
+ * These rules follow Meta's DAT skills (dat-conventions, session-lifecycle, camera-streaming) and
+ * the DAT docs ("Handle stream stops and errors"), checked against this code on 2026-11-25.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class GlassesController(
@@ -142,6 +158,11 @@ class GlassesController(
   @Volatile private var session: DeviceSession? = null
   @Volatile private var camera: Camera? = null
   @Volatile private var userPaused = false
+  /** We called pause() and the device hasn't confirmed PAUSED yet. */
+  @Volatile private var pauseInFlight = false
+  @Volatile private var cameraStarted = false
+  @Volatile private var streamedOnce = false
+  @Volatile private var streamRestarts = 0
   private var supervisor: Job? = null
   private var observersStarted = false
   private val cameraJobs: MutableList<Job> = Collections.synchronizedList(mutableListOf())
@@ -281,6 +302,7 @@ class GlassesController(
     val s = session
     userPaused = true
     log.log("walk", "pause requested (session=${s?.state?.value})")
+    if (s?.state?.value == DeviceSessionState.STARTED) pauseInFlight = true
     s?.pause()
     setPhase(WalkPhase.PAUSED, "Paused. Say \"resume job\" to continue.")
   }
@@ -326,6 +348,7 @@ class GlassesController(
         setPhase(WalkPhase.NEEDS_REGISTRATION, "Connect FieldCapture to Meta AI first.")
         Wearables.registrationState.first { it == RegistrationState.REGISTERED }
       }
+      awaitCameraPermission()
       if (attempt == 0) setPhase(WalkPhase.WAITING_FOR_GLASSES, "Waiting for the glasses.")
       else setPhase(WalkPhase.RECONNECTING, "Glasses disconnected. Reconnecting.")
 
@@ -339,6 +362,33 @@ class GlassesController(
       log.log("reconnect", "session ended after ${ranMs} ms; next attempt in $backoff ms (#$attempt)")
       setPhase(WalkPhase.RECONNECTING, "Glasses disconnected. Reconnecting.")
       delay(backoff)
+    }
+  }
+
+  /**
+   * Streaming needs the glasses camera permission (granted in Meta AI). Granting it needs an
+   * Activity, so here we only check, say what to do, and re-check until it is granted. A failed
+   * check (we can't tell) lets the session try; the stream then reports PERMISSIONS_DENIED.
+   */
+  private suspend fun awaitCameraPermission() {
+    var asked = false
+    while (true) {
+      val granted =
+          Wearables.checkPermissionStatus(Permission.CAMERA)
+              .fold(
+                  onSuccess = { it == PermissionStatus.Granted },
+                  onFailure = { e, _ ->
+                    log.log("permission", "camera check failed: ${e.description}; trying anyway")
+                    true
+                  },
+              )
+      if (granted) return
+      if (!asked) {
+        log.log("permission", "glasses camera not granted")
+        setPhase(WalkPhase.NEEDS_PERMISSION, "Allow camera access for FieldCapture in Meta AI.")
+        asked = true
+      }
+      delay(PERMISSION_RECHECK_MS)
     }
   }
 
@@ -367,8 +417,10 @@ class GlassesController(
     log.log("session", "created on $deviceId")
 
     val jobs = mutableListOf<Job>()
-    // Failures of start() arrive here, not as a return value.
-    jobs += launch { s.errors.collect { onSessionError(it) } }
+    val sessionScope = this
+    // Failures of start() arrive here, not as a return value. UNDISPATCHED subscribes right now,
+    // on this thread; a plain launch only schedules it, and an early error could be missed.
+    jobs += launch(start = CoroutineStart.UNDISPATCHED) { s.errors.collect { onSessionError(it) } }
     // Watchdog: Mock Device Kit sessions can hang in STARTING with no error (issue #237).
     jobs += launch {
       delay(STARTING_WATCHDOG_MS)
@@ -394,13 +446,17 @@ class GlassesController(
     }
 
     try {
-      s.start()
-      s.state
-          .transformWhile {
-            emit(it)
-            it != DeviceSessionState.STOPPED
+      val states =
+          launch(start = CoroutineStart.UNDISPATCHED) {
+            s.state
+                .transformWhile {
+                  emit(it)
+                  it != DeviceSessionState.STOPPED
+                }
+                .collect { st -> onSessionState(sessionScope, s, st) }
           }
-          .collect { st -> onSessionState(this, s, st) }
+      s.start()
+      states.join()
     } finally {
       jobs.forEach { it.cancel() }
       synchronized(cameraJobs) {
@@ -427,9 +483,19 @@ class GlassesController(
         if (camera == null) scope.attachCamera(s)
         if (userPaused) s.pause()
       }
-      DeviceSessionState.PAUSED ->
-          if (userPaused) setPhase(WalkPhase.PAUSED, "Paused. Say \"resume job\" to continue.")
-          else setPhase(WalkPhase.SUSPENDED, _status.value.guidance ?: "The glasses paused the camera.")
+      DeviceSessionState.PAUSED -> {
+        val ours = pauseInFlight
+        pauseInFlight = false
+        when {
+          userPaused -> setPhase(WalkPhase.PAUSED, "Paused. Say \"resume job\" to continue.")
+          // "resume job" came before the device confirmed our pause, so the SDK ignored it.
+          ours -> {
+            log.log("walk", "resume arrived before the pause settled; resuming now")
+            s.resume()
+          }
+          else -> setPhase(WalkPhase.SUSPENDED, _status.value.guidance ?: "The glasses paused the camera.")
+        }
+      }
       else -> Unit
     }
   }
@@ -438,33 +504,40 @@ class GlassesController(
     val result = s.addCamera(streamConfig)
     val cam = result.getOrNull()
     if (cam == null) {
-      log.log("camera", "attach failed: ${result.errorOrNull()?.name}")
+      // A STARTED session with no camera would sit in CONNECTING forever. End it; the loop retries.
+      val e = result.errorOrNull()
+      log.log("camera", "attach failed: ${e?.name} ${e?.description ?: ""}; ending session to retry")
+      _status.update { it.copy(lastError = e?.name, guidance = "Couldn't start the glasses camera. Retrying.") }
+      s.stop()
       return
     }
     camera = cam
+    cameraStarted = false
+    streamedOnce = false
+    streamRestarts = 0
     firstFrameAt = null
     frameCount = 0
     fpsWindowStart = 0
     fpsWindowFrames = 0
     val stream = cam.stream
-    // Subscribe before start() so the first transitions aren't missed.
-    cameraJobs += launch(frameDispatcher) { stream.videoStream.collect { onFrame(it) } }
-    cameraJobs += launch { stream.state.collect { onStreamState(it) } }
-    cameraJobs += launch { stream.errorStream.collect { onStreamError(s, it) } }
-    cameraJobs += launch {
+    // Subscribed (UNDISPATCHED) before start() so the first transitions and errors aren't missed.
+    cameraJobs += launch(frameDispatcher, start = CoroutineStart.UNDISPATCHED) { stream.videoStream.collect { onFrame(it) } }
+    cameraJobs += launch(start = CoroutineStart.UNDISPATCHED) { stream.state.collect { onStreamState(s, cam, it) } }
+    cameraJobs += launch(start = CoroutineStart.UNDISPATCHED) { stream.errorStream.collect { onStreamError(s, it) } }
+    cameraJobs += launch(start = CoroutineStart.UNDISPATCHED) {
       // CameraState replays STOPPED to a new collector; only a stop *after* a start means the
       // glasses went away under us.
-      var started = false
       cam.state.collect { cs ->
         log.log("camera_state", cs.name)
-        if (cs == CameraState.STARTED) started = true
-        else if (started && cs == CameraState.STOPPED) {
+        if (cs == CameraState.STARTED) cameraStarted = true
+        else if (cameraStarted && cs == CameraState.STOPPED) {
+          cameraStarted = false
           log.log("camera", "stopped unexpectedly; ending session to reconnect")
           s.stop()
         }
       }
     }
-    stream.start().onFailure { e, _ -> log.log("stream", "start failed: ${e.name}") }
+    startStream(s, cam)
     log.log(
         "camera",
         "attached: ${streamConfig.videoQuality} @ ${streamConfig.frameRate} fps, " +
@@ -472,18 +545,45 @@ class GlassesController(
     )
   }
 
-  private fun onStreamState(st: StreamState) {
+  /** A stream that can't start leaves the walk with no frames: end the session so the loop retries. */
+  private fun startStream(s: DeviceSession, cam: Camera) {
+    cam.stream.start().onFailure { e, _ ->
+      log.log("stream", "start failed: ${e.name} ${e.description}; ending session to retry")
+      _status.update { it.copy(lastError = e.name, guidance = "Couldn't start the glasses camera. Retrying.") }
+      s.stop()
+    }
+  }
+
+  private fun onStreamState(s: DeviceSession, cam: Camera, st: StreamState) {
     _status.update { it.copy(streamState = st) }
     log.log("stream_state", st.name)
     when (st) {
-      StreamState.STREAMING ->
-          when {
-            userPaused -> setPhase(WalkPhase.PAUSED)
-            glassesOff() -> setPhase(WalkPhase.SUSPENDED, "Glasses are off. Put them on to keep capturing.")
-            else -> setPhase(WalkPhase.ACTIVE)
-          }
+      StreamState.STREAMING -> {
+        streamedOnce = true
+        when {
+          userPaused -> setPhase(WalkPhase.PAUSED)
+          glassesOff() -> setPhase(WalkPhase.SUSPENDED, "Glasses are off. Put them on to keep capturing.")
+          else -> setPhase(WalkPhase.ACTIVE)
+        }
+      }
       StreamState.PAUSED ->
           if (!userPaused) setPhase(WalkPhase.SUSPENDED, _status.value.guidance ?: "The glasses paused the camera.")
+      // The state flow replays STOPPED to a new collector, so only a stop after STREAMING counts.
+      // Per the DAT docs a started camera's stream can be started again; a stopped camera can't
+      // (that case ends the session in the camera-state collector).
+      // Never while the session itself is pausing or stopping, or the tech asked for a pause.
+      StreamState.STOPPED ->
+          if (streamedOnce && cameraStarted && !userPaused && s.state.value == DeviceSessionState.STARTED) {
+            streamedOnce = false
+            if (++streamRestarts > MAX_STREAM_RESTARTS) {
+              log.log("stream", "stopped again after $MAX_STREAM_RESTARTS restarts; ending session to reconnect")
+              s.stop()
+            } else {
+              log.log("stream", "stopped while the camera is still started; starting it again (#$streamRestarts)")
+              setPhase(WalkPhase.CONNECTING, "Glasses camera stopped. Restarting it.")
+              startStream(s, cam)
+            }
+          }
       else -> Unit
     }
   }
@@ -597,5 +697,7 @@ class GlassesController(
     const val STABLE_SESSION_MS = 30_000L
     const val MAX_BACKOFF_MS = 10_000L
     const val PHOTO_TIMEOUT_MS = 15_000L
+    const val PERMISSION_RECHECK_MS = 5_000L
+    const val MAX_STREAM_RESTARTS = 3
   }
 }

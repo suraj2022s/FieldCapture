@@ -211,7 +211,7 @@ private fun PhaseBanner(s: GlassesStatus) {
       when (s.phase) {
         WalkPhase.ACTIVE -> Color(0xFF2E7D32)
         WalkPhase.PAUSED, WalkPhase.SUSPENDED -> Color(0xFFF9A825)
-        WalkPhase.RECONNECTING, WalkPhase.NEEDS_REGISTRATION -> Color(0xFFC62828)
+        WalkPhase.RECONNECTING, WalkPhase.NEEDS_REGISTRATION, WalkPhase.NEEDS_PERMISSION -> Color(0xFFC62828)
         else -> Color(0xFF37474F)
       }
   Column(Modifier.fillMaxWidth().background(color).padding(16.dp)) {

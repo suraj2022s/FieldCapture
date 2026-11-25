@@ -127,6 +127,10 @@ These are the ones we know about; the full list is in [docs/MEMO.md](docs/MEMO.m
 - Raw (YUV) DAT streams pause when the app is backgrounded, per Meta's sample. Pocket mode, with the screen off and a compressed stream plus our own software HEVC decode, is the next step. Until then, keep the screen on during a walk.
 - Damage framing on device checks only exposure and blur. "Damage cut off" is flagged later by the back office.
 - Manufacture date is taken as printed. It isn't yet decoded from brand-specific serial formats.
+- A walk killed by the OS resumes on relaunch only if it saw activity in the last 30 minutes; older open jobs are closed and finalized instead. After a resume, "undo" only reaches captures made since the restart.
+- Offline uploads were tested with the back office unreachable (phone online, no route), not with the phone fully offline: on our test setup the PC's internet runs through the phone, so airplane mode was off-limits.
+
+**Debug builds only (by design, absent from release):** launching the app with `mwdat_ui_testing=true` starts Meta's loopback MockDevice test server, and `DebugCommandReceiver` accepts walk commands from adb (protected by `android.permission.DUMP`). On a debug build, another app on the same phone could start the test server and drive the *simulated* glasses.
 
 ## With two more weeks
 
@@ -139,28 +143,19 @@ These are the ones we know about; the full list is in [docs/MEMO.md](docs/MEMO.m
 
 ## AI tools used
 
-- **Claude Code** (Anthropic Claude Fable 5.2 / Opus 5.5) was used for:
-  - SDK research (docs, CHANGELOG, Meta's samples and skills, the issue tracker)
-  - the prior-art scan
-  - architecture and planning
-  - most of the code, the tests and the docs
-- **Meta's official `mwdat-android` Claude Code plugin** (1.1.0) is installed at project scope in [`.claude/settings.json`](.claude/settings.json), so it loads for anyone who opens this repo in Claude Code. It provides:
-  - Meta's 18 DAT skills
-  - the DAT docs MCP
-  - the MockDevice MCP, which drives the simulated glasses (launch the debug app with `--ez mwdat_ui_testing true`)
+Meta ships DAT skills and a docs MCP for several AI coding tools (its `dat-docs-mcp` skill covers Claude Code, Codex, Cursor and others), plus `AGENTS.md` and `llms.txt` for tools without plugins. We used the **Claude Code** plugin, installed at project scope in [`.claude/settings.json`](.claude/settings.json), so it loads for anyone who opens this repo in Claude Code.
 
-  Before the plugin was installed, its skills and `AGENTS.md` were read straight from the SDK repo.
-- **Google's official Android skills** ([android/skills](https://github.com/android/skills), Apache-2.0), installed locally in `.claude/skills`:
-  - `android-cli`
-  - `testing-setup`
-  - `anr-audit-and-fix`
-  - `android-permissions-security`
-  - `android-intent-security`
+| Tool | What it was used for | Where it shows |
+|---|---|---|
+| **Claude Code** (Claude Fable 5.2 / Opus 5.5) | SDK research, prior-art scan, planning, most of the code, tests and docs | Every commit (`Co-Authored-By` trailer). Each decision and its reason is in the [journal](docs/JOURNAL.md). |
+| **Meta `mwdat-android` plugin 1.1.0: DAT skills** | **Session 1**, before the plugin was installed: the skills and `AGENTS.md` were read straight from the SDK repo. They shaped the session supervisor (camera attached once at STARTED, PAUSED keeps it, STOPPED is terminal) and the phone-mic decision (`audio-streaming`: the mock camera carries no audio). The named-device selector and capability-revival rules came from Meta's BirdSpotter sample, not the skills. **2026-11-25:** loaded `dat-conventions`, `session-lifecycle`, `camera-streaming` and `mockdevice-testing` in Claude Code and audited our DAT code against them. That found 5 gaps, all fixed: collectors weren't guaranteed to subscribe before `start()`; a failed `addCamera`/`stream.start()` left the walk stuck; no permission check before streaming on resume or reconnect; a late "resume job" was lost before the pause settled; a stopped stream under a started camera was never restarted. | [`GlassesController.kt`](android/app/src/main/java/app/fieldcapture/glasses/GlassesController.kt) (header lists the rules it follows); [RESEARCH.md §1–2](docs/RESEARCH.md); journal, 2026-11-25 session 2 |
+| **Meta DAT docs MCP** (`search_dat_docs`) | Checked each of our measured mock behaviours against docs v1.1, so the memo only claims what is new (e.g. the I420 frame layout is undocumented). Found the documented "restart the stream of a started camera" rule. Confirmed the `checkPermissionStatus` contract. | [RESEARCH.md §5b](docs/RESEARCH.md) |
+| **Meta MockDevice MCP** | The app calls `startTestServer` in debug builds so the MCP can drive the simulated glasses. On this Windows machine `mock_connect` fails (it needs `adb` on PATH), so [`tools/chaos_run.ps1`](tools/chaos_run.ps1) drives the same test-server HTTP routes directly: power off/on, unfold, don. | [`MainActivity.kt`](android/app/src/main/java/app/fieldcapture/MainActivity.kt), [`MockGlassesController.kt`](android/app/src/main/java/app/fieldcapture/mock/MockGlassesController.kt), `tools/chaos_run.ps1` |
+| **Google's Android skills** ([android/skills](https://github.com/android/skills), Apache-2.0, local in `.claude/skills`) | `android-intent-security`: audited the exported components (`MainActivity`, the debug `DebugCommandReceiver`), `WalkService` and the notification `PendingIntent`. No code changes; one debug-only risk documented under Known limitations. `android-cli`, `testing-setup`, `anr-audit-and-fix` and `android-permissions-security` are installed but not used yet. | Journal, 2026-11-25 session 2 |
+| `javap` | Every DAT API signature checked against the 1.1.0 AARs, never assumed | [RESEARCH.md §4.4](docs/RESEARCH.md) |
+| **Claude models** (Haiku/Sonnet/Opus 5.5) | Run *inside the product*, for extraction in the back office | [`backend/`](backend/), model choice in [`eval/REPORT.md`](eval/REPORT.md) |
 
-  They're used for device automation, test setup, and the permission and intent audit.
-- SDK signatures were verified with `javap` against the 1.1.0 AARs, never assumed.
-- The author reviewed every change. The [journal](docs/JOURNAL.md) records each decision and why.
-- **Claude models** (Haiku/Sonnet/Opus 5.5) run inside the product, for extraction.
+The author reviewed every change.
 
 ## Repo map
 

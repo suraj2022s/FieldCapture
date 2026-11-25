@@ -215,6 +215,7 @@ class WalkController(
       WalkPhase.ACTIVE ->
           if (prev == WalkPhase.RECONNECTING || prev == WalkPhase.SUSPENDED) speaker.say("Glasses back.")
       WalkPhase.NEEDS_REGISTRATION -> speaker.say("Open FieldCapture to connect to Meta AI.")
+      WalkPhase.NEEDS_PERMISSION -> speaker.say(guidance ?: "Allow camera access for FieldCapture in Meta AI.")
       else -> Unit
     }
   }
