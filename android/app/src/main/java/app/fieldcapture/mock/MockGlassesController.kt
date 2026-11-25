@@ -31,7 +31,8 @@ data class MockState(
  * panel, by instrumentation tests, or by the MockDevice MCP through the test server.
  */
 class MockGlassesController(context: Context, private val log: EventLog) {
-  private val kit = MockDeviceKit.getInstance(context.applicationContext)
+  private val appContext = context.applicationContext
+  private val kit = MockDeviceKit.getInstance(appContext)
   private var glasses: MockGlasses? = null
 
   private val _state = MutableStateFlow(MockState(enabled = kit.isEnabled))
@@ -127,6 +128,18 @@ class MockGlassesController(context: Context, private val log: EventLog) {
       }
 
   fun setCapturedImage(uri: Uri) = act("captured image set") { it.services.camera.setCapturedImage(uri) }
+
+  /** Debug builds bundle a synthetic H.265 test pattern (assets/test_feed.mp4) for repeatable checks. */
+  fun useTestFeed() {
+    val out = java.io.File(appContext.cacheDir, "test_feed.mp4")
+    val ok =
+        runCatching {
+              appContext.assets.open("test_feed.mp4").use { input -> out.outputStream().use { input.copyTo(it) } }
+            }
+            .isSuccess
+    if (ok) useVideo(Uri.fromFile(out), "synthetic test feed (540x960 H.265)")
+    else log.log("mock", "test feed asset missing (debug builds only)")
+  }
 
   /** Lets the MockDevice MCP (Meta's Claude Code plugin) drive this simulated device over adb. */
   fun startTestServer(port: Int = TEST_SERVER_PORT) {

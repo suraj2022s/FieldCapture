@@ -195,6 +195,7 @@ fun MainScreen(app: FieldCaptureApp, actions: MainActions) {
           OutlinedButton(onClick = { app.mock.thermal(ThermalLevel.NONE) }) { Text("Cool") }
           OutlinedButton(onClick = { app.mock.usePhoneCamera(back = true) }) { Text("Back cam") }
           OutlinedButton(onClick = { app.mock.usePhoneCamera(back = false) }) { Text("Front cam") }
+          OutlinedButton(onClick = { app.mock.useTestFeed() }) { Text("Test feed") }
         }
       }
     }

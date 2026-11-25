@@ -138,6 +138,21 @@ Third-party note: the GemGlasses README reports **"the first frame takes ~5 s"**
   - Mock Device Kit additions: `MockDevice.setBatteryLevel/setChargingState/setThermalLevel`, `MockSpeechKit.setTranscriptionSource(INJECTED | LIVE_DEVICE_ASR)`, and `getLiveSourceDiagnostic()`.
 - **Tooling change.** As of command-line tools 16111833, `sdkmanager` is deprecated and forwards to a new "Android CLI". It collects usage metrics unless you pass `--no-metrics`, and it uses slash package names (`platforms/android-36`). Not DAT-specific, but it affects "setup in under 10 minutes".
 
+## 5a. Measured on our build (OPPO A6x 5G, Android 16, DAT 1.1.0 Mock Device Kit) — [ours]
+
+All measured 2026-11-25 from the app's event log (logcat tag `FieldCapture`).
+
+| What we checked | Result |
+|---|---|
+| Registration without the Meta AI app | Mock Device Kit simulates registration and permissions: `REGISTERED` and DAT camera permission `Granted` on a phone **without** the Meta AI app installed. Real glasses need Meta AI. |
+| Session start | `createSession` → `STARTING` → `STARTED` in **47–54 ms**. Camera `STARTED` follows immediately; stream `STARTING` → `STREAMING` takes **1.5–2.1 s**. |
+| Time to first frame (after `createSession`) | **1,777 ms and 2,609 ms** (n=2, phone-camera feed). |
+| Requested vs delivered stream | We asked for `VideoQuality.HIGH` (720×1280) at 15 fps. The phone-camera feed delivered **480×640 at ~29.6 fps**. The mock ignores both requested quality and frame rate, so mock frames are *smaller* than real HIGH frames, and small-text accuracy on the mock is a pessimistic bound. |
+| Raw frame format | **I420 (planar Y, U, V), tightly packed, stride = width**: 460,800 B = 480×640×1.5. Verified by rendering the same frame as I420, NV21 and NV12; only I420 has natural colours. The format is not documented. |
+| `capturePhoto()` on the mock | Phone-camera feed: a **480×640 HEIC in 656 ms**, the same resolution as the stream, so no detail gain. Video-file feed with no `setCapturedImage`: a **1×1 HEIC placeholder (759 B) in 45 ms**. Treat mock stills as untrusted; the app now rejects stills under 120 px. |
+| `setCameraFeed(Uri)` while streaming | Did **not** switch the live stream; frames kept coming from the phone camera. Set the feed before starting the stream, or restart the stream. |
+| On-device speech | On this phone `SpeechRecognizer.isOnDeviceRecognitionAvailable` is true, but **en-US is not installed** on the on-device engine. The app requests the model (`triggerModelDownload`, API 33+) and falls back to Google's recognition service (`GoogleTTSRecognitionService`, the system default). |
+
 ## 5. Open questions to measure on our build (→ memo "[ours]")
 
 - [ ] Time to first frame after `session.start()` on MDK, phone-camera feed vs file feed

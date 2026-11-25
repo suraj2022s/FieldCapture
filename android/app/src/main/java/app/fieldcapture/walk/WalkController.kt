@@ -378,9 +378,15 @@ class WalkController(
         is PhotoResult.Ok -> {
           photoLatency = photo.latencyMs
           photoBytes = photo.jpeg
-          val pj = judgePhoto(photo, purpose)
-          // The head may have moved during the transfer: only prefer the still if it also passes.
-          if (pj.first.ok) {
+          // Mock Device Kit returns a 1x1 placeholder still when the feed is a video file and no
+          // captured image is configured (measured 2026-11-25); never let that become evidence.
+          val pj =
+              if (photo.width < MIN_PHOTO_EDGE || photo.height < MIN_PHOTO_EDGE) null
+              else runCatching { judgePhoto(photo, purpose) }.getOrNull()
+          if (pj == null) {
+            photoError = "unusable still ${photo.width}x${photo.height}"
+          } else if (pj.first.ok) {
+            // The head may have moved during the transfer: only prefer the still if it also passes.
             evidenceBytes = photo.jpeg
             evidenceW = photo.width
             evidenceH = photo.height
@@ -652,5 +658,6 @@ class WalkController(
     const val LAST_PROMPT_GRACE_MS = 3_000L
     const val MAX_WAIT_MS = 9_000L
     const val PHOTO_TIMEOUT_MS = 6_000L
+    const val MIN_PHOTO_EDGE = 120
   }
 }

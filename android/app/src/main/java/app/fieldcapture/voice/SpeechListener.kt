@@ -2,6 +2,7 @@ package app.fieldcapture.voice
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -222,6 +223,17 @@ class SpeechListener(
     if (!useOnDevice) {
       restart(2000)
       return
+    }
+    // The on-device engine exists but lacks this language: ask the system to fetch the offline model
+    // (API 33+), so the next walk works with no signal. Meanwhile use the default service.
+    if (Build.VERSION.SDK_INT >= 33 && reason.contains("unavailable")) {
+      runCatching {
+            recognizer?.triggerModelDownload(
+                Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).putExtra(RecognizerIntent.EXTRA_LANGUAGE, language),
+            )
+          }
+          .onSuccess { log.log("asr", "requested offline $language model download for the on-device engine") }
+          .onFailure { log.log("asr", "offline model download request failed: ${it.message}") }
     }
     log.log("asr", "falling back to the default recognition service: $reason")
     useOnDevice = false
