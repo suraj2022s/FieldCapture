@@ -1,0 +1,329 @@
+{
+  "e86b790f-2263-4153-ab2b-8976394b3add": {
+    "scene": "np-mektron-stabiliser",
+    "condition": "low_light"
+  },
+  "4ec5d397-f107-4acb-a59d-1251e687d902": {
+    "scene": "np-mektron-stabiliser",
+    "condition": "low_light_with_torch"
+  },
+  "e0ddc582-32ac-4a0e-b88a-61213e416e5a": {
+    "scene": "np-mektron-stabiliser",
+    "condition": "angle"
+  },
+  "6426840a-f539-4c4d-bd5e-ba2607e30823": {
+    "scene": "np-mektron-stabiliser",
+    "condition": "angle"
+  },
+  "175a0859-7c4e-445e-8e0c-fef7efcd4e78": {
+    "scene": "np-vguard-stabiliser",
+    "condition": "low_light_with_torch"
+  },
+  "9d34230f-653e-4c1f-a75b-ce1b2fed09fa": {
+    "scene": "np-vguard-stabiliser",
+    "condition": "low_light"
+  },
+  "b5bb8f74-1e6b-441f-8e36-a5f615242f05": {
+    "scene": "np-vguard-stabiliser",
+    "condition": "angle"
+  },
+  "c53a6c20-83d1-4dc5-93e1-d837bccdd3d9": {
+    "scene": "np-vguard-stabiliser",
+    "condition": "motion"
+  },
+  "c6c4c46f-da07-48bb-8efe-e1b6cd5b5d32": {
+    "scene": "np-lg-fridge-temp-guide",
+    "condition": "good"
+  },
+  "34cd8dad-3620-454d-aa6e-eff35d26c6ef": {
+    "scene": "np-lg-fridge-temp-guide",
+    "condition": "motion"
+  },
+  "c80309e9-55bc-446a-8081-14795e74fa05": {
+    "scene": "np-lg-fridge-temp-guide",
+    "condition": "angle"
+  },
+  "c614c6ab-2cc6-4d90-97a7-392f8c173ac0": {
+    "scene": "np-dell-label",
+    "condition": "low_light"
+  },
+  "f5f7e87e-c173-4e63-88c5-3a2eebb11d9e": {
+    "scene": "np-dell-label",
+    "condition": "low_light_with_torch"
+  },
+  "98f1a931-6b00-43a6-b884-5b6643d811f0": {
+    "scene": "np-dell-label",
+    "condition": "angle"
+  },
+  "8cafce67-7422-402a-b7f9-723032940f79": {
+    "scene": "np-dell-label",
+    "condition": "angle"
+  },
+  "8035f8ea-d547-4014-8ef7-cf4b1b754131": {
+    "scene": "np-microwave-panel",
+    "condition": "far"
+  },
+  "cc45e07a-b17a-49f7-8aa1-e2b6ca9e9213": {
+    "scene": "np-microwave-panel",
+    "condition": "low_light"
+  },
+  "e779cb4a-89f0-490e-b8b5-93af3be5e06a": {
+    "scene": "np-microwave-panel",
+    "condition": "low_light_with_torch"
+  },
+  "291c9897-a624-4f3f-b697-6d16249c6414": {
+    "scene": "np-microwave-panel",
+    "condition": "motion"
+  },
+  "d3043001-29dd-47c6-aaae-5bd27cd47660": {
+    "scene": "np-microwave-panel",
+    "condition": "angle"
+  },
+  "2f56c642-aec5-42a0-a2a4-1a60a008cfde": {
+    "scene": "np-microwave-panel",
+    "condition": "angle"
+  },
+  "a9498528-d7f9-41a0-8a55-71d013958a81": {
+    "scene": "np-bajaj-water-heater",
+    "condition": "low_light"
+  },
+  "968aa53f-d1fe-49a1-a97b-be6194c3cc3a": {
+    "scene": "np-bajaj-water-heater",
+    "condition": "low_light_with_torch"
+  },
+  "30090cf8-8f65-49f4-8899-bee0e8a79269": {
+    "scene": "np-bajaj-water-heater",
+    "condition": "low_light_with_torch"
+  },
+  "520591b0-a5f0-403d-835f-706c93f8e9f2": {
+    "scene": "np-roxy-iron",
+    "condition": "good"
+  },
+  "01dac631-03d1-4492-bd53-d17aaed873c9": {
+    "scene": "np-roxy-iron",
+    "condition": "low_light"
+  },
+  "6378cd12-5643-46aa-bda5-bafec32e73ef": {
+    "scene": "np-roxy-iron",
+    "condition": "motion"
+  },
+  "a143a483-a5d1-4619-99af-3650e19c3c8a": {
+    "scene": "np-roxy-iron",
+    "condition": "low_light"
+  },
+  "06407b27-72e6-45db-b471-e42da933e1da": {
+    "scene": "np-roxy-iron",
+    "condition": "angle"
+  },
+  "dc593ea9-6a66-4449-905e-a47f6d27e089": {
+    "scene": "np-roxy-iron",
+    "condition": "good"
+  },
+  "d44195c8-d561-471e-bd5f-4644adca9460": {
+    "scene": "np-roxy-iron",
+    "condition": "good"
+  },
+  "44ee6e4b-e3c7-439b-8217-10f723f2e41b": {
+    "scene": "np-link-padlock",
+    "condition": "low_light"
+  },
+  "5b07d3d5-8244-46f8-b2ab-b206b62ea3c2": {
+    "scene": "np-link-padlock",
+    "condition": "low_light"
+  },
+  "500f0e15-4b57-489c-ba50-dd4705cb2690": {
+    "scene": "np-link-padlock",
+    "condition": "low_light_with_torch"
+  },
+  "28234216-5b50-4920-af20-ef9ea3c56e8b": {
+    "scene": "np-link-padlock",
+    "condition": "low_light_with_torch"
+  },
+  "86682367-3675-4480-aa2f-20984bd2090f": {
+    "scene": "np-link-padlock",
+    "condition": "motion"
+  },
+  "40d330ac-aa24-4309-b08c-8830c3b1d76c": {
+    "scene": "np-link-padlock",
+    "condition": "angle"
+  },
+  "26f05d53-c387-4958-aee3-e98c7ba79cf3": {
+    "scene": "np-link-padlock",
+    "condition": "low_light_with_torch"
+  },
+  "f02f3088-fac6-4277-8805-fd432a9d781f": {
+    "scene": "np-mosquito-vaporiser",
+    "condition": "good"
+  },
+  "e7d316b3-9498-4b5f-a5f0-84280e8ae97a": {
+    "scene": "np-mosquito-vaporiser",
+    "condition": "far"
+  },
+  "7be648a5-a3b6-4b42-b99b-d49fa211ca75": {
+    "scene": "np-mosquito-vaporiser",
+    "condition": "motion"
+  },
+  "ba9f4f29-e0da-4b86-b56e-a2d56ae76643": {
+    "scene": "np-mosquito-vaporiser",
+    "condition": "low_light"
+  },
+  "cc59cbf8-d4ad-4bff-8652-94093cc87651": {
+    "scene": "np-mosquito-vaporiser",
+    "condition": "angle"
+  },
+  "6ce64945-ba71-437f-8e87-18f85ec0eef6": {
+    "scene": "np-lg-fridge-label",
+    "condition": "good"
+  },
+  "cf8c80cb-3fdd-4c37-8846-4dcb2225af48": {
+    "scene": "np-lg-fridge-label",
+    "condition": "low_light"
+  },
+  "d970bbde-002a-488c-a3fa-ac919d7f6e60": {
+    "scene": "np-lg-fridge-label",
+    "condition": "low_light"
+  },
+  "33d73f16-ceb6-416f-8987-49b3d371ca5a": {
+    "scene": "np-lg-fridge-label",
+    "condition": "angle"
+  },
+  "6f55f5b3-9ae5-4f77-af91-7a63deaaf5e6": {
+    "scene": "np-senpandit-front",
+    "condition": "good"
+  },
+  "04bb5f71-0cf3-46a8-b840-5ad6daeeff64": {
+    "scene": "np-senpandit-front",
+    "condition": "motion"
+  },
+  "6e58947a-e170-46f0-96b1-588d8db07e10": {
+    "scene": "np-senpandit-front",
+    "condition": "low_light"
+  },
+  "f7283d09-b04e-483a-88e7-8f4a1b0a85e9": {
+    "scene": "np-senpandit-plate",
+    "condition": "low_light"
+  },
+  "b2339cb0-bc4b-4370-a844-d9fd915a00ed": {
+    "scene": "np-senpandit-plate",
+    "condition": "low_light_with_torch"
+  },
+  "9f2c5801-6d40-4640-9f22-0d1bf4098dfc": {
+    "scene": "np-lg-microwave-label",
+    "condition": "low_light"
+  },
+  "0225a219-2975-4584-805c-01fcc68f19d3": {
+    "scene": "np-lg-microwave-label",
+    "condition": "low_light_with_torch"
+  },
+  "24d4601e-90d6-4315-ae1d-3db864da0813": {
+    "scene": "dm-drawing-room-north-wall",
+    "condition": "good"
+  },
+  "b9c3537d-94f4-4291-9284-92c624502079": {
+    "scene": "dm-drawing-room-north-wall",
+    "condition": "good"
+  },
+  "ad53034b-123c-43dd-aebe-cd19508bc0c8": {
+    "scene": "dm-kitchen-ceiling",
+    "condition": "low_light"
+  },
+  "5bebeac2-64ad-47a2-9efa-c5c7bc4a33d5": {
+    "scene": "dm-living-room-peeling-paint",
+    "condition": "good"
+  },
+  "1ac740cb-7f92-4540-bad3-20603aff094f": {
+    "scene": "dm-living-room-peeling-paint",
+    "condition": "good"
+  },
+  "f4c66141-6acb-4509-8ed4-83886f37defd": {
+    "scene": "dm-bathroom-seepage",
+    "condition": "good"
+  },
+  "95665eff-bc20-4c6e-be87-ea2794f1619b": {
+    "scene": "dm-bathroom-broken-plaster",
+    "condition": "good"
+  },
+  "f759584e-a18d-4970-accf-4d6f0b34b9f7": {
+    "scene": "dm-bathroom-ventilator",
+    "condition": "good"
+  },
+  "be2ae7a0-fbc1-44c5-afdc-e790787ee077": {
+    "scene": "dm-bathroom-ventilator",
+    "condition": "good"
+  },
+  "43dfa321-7590-4099-8b88-09ece3476048": {
+    "scene": "dm-loft",
+    "condition": "good"
+  },
+  "402cf750-d8e3-48fd-a9fc-39db68a1f28f": {
+    "scene": "dm-loft",
+    "condition": "good"
+  },
+  "bdaf8b03-ac3b-4fbc-971d-7b52987b12a8": {
+    "scene": "dm-kitchen-window",
+    "condition": "low_light"
+  },
+  "d4529579-59da-401d-91eb-16fff2f4f1a8": {
+    "scene": "dm-kitchen-window",
+    "condition": "low_light"
+  },
+  "caf81854-3582-4d4e-86e5-bb8463f26875": {
+    "scene": "dm-living-room-ac",
+    "condition": "good"
+  },
+  "a251fe8e-d357-4814-bbfe-df2b34446c86": {
+    "scene": "",
+    "condition": "",
+    "excluded": "label shows IMEI numbers"
+  },
+  "a295dd40-1472-4f15-8502-6dfb343c492d": {
+    "scene": "",
+    "condition": "",
+    "excluded": "label shows IMEI numbers"
+  },
+  "d9727852-473b-489b-9077-0f5e0b1d88f7": {
+    "scene": "",
+    "condition": "",
+    "excluded": "label shows IMEI numbers"
+  },
+  "432d34cd-9df4-487e-9232-a32618d035b6": {
+    "scene": "",
+    "condition": "",
+    "excluded": "label shows IMEI numbers"
+  },
+  "4fc7f71f-1f21-4c7f-9008-ad0302f9afa0": {
+    "scene": "",
+    "condition": "",
+    "excluded": "electricity meter in frame"
+  },
+  "f372ca02-34d5-4231-b8b4-a0be064ba23d": {
+    "scene": "",
+    "condition": "",
+    "excluded": "electricity meter in frame"
+  },
+  "074acb13-8f74-40e3-9e13-b6dfd532d7b1": {
+    "scene": "",
+    "condition": "",
+    "excluded": "electricity meter in frame"
+  },
+  "bf86f095-9e00-4666-9a5f-0e613bc79ec0": {
+    "scene": "",
+    "condition": "",
+    "excluded": "TV in frame showing a person"
+  },
+  "974372f6-a242-446b-bb82-f00a7c4843d3": {
+    "scene": "",
+    "condition": "",
+    "excluded": "laptop screen in frame (and not a damage shot)"
+  },
+  "f788fb18-b5a3-4544-b4c9-4bb5bb9c40bf": {
+    "scene": "",
+    "condition": "",
+    "excluded": "operator's leg in frame, target not in view"
+  },
+  "faf21946-121c-495c-974e-26df733a88c9": {
+    "scene": "",
+    "condition": "",
+    "excluded": "framed photo and an organisation's anniversary memento on top of the fridge"
+  }
+}

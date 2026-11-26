@@ -31,6 +31,7 @@ from fieldcapture_backend.textmatch import norm_code, normalize_date  # noqa: E4
 CACHE = EVAL_DIR / "llm-cache"
 MAX_EDGE = 1568
 NAMEPLATE_FIELDS = ("make", "model", "serial", "manufacture_date")
+UNVERIFIED = "?"  # truth value: printed, but not confirmed against the physical item -> not scored (blank = not printed)
 
 
 # ---------------------------------------------------------------------- scoring helpers
@@ -67,6 +68,8 @@ def score_nameplate(fields: dict, truth: dict) -> dict:
     out = {}
     for f in NAMEPLATE_FIELDS:
         t = (truth.get(f) or "").strip()
+        if t == UNVERIFIED:
+            continue
         pf = fields.get(f) or {}
         p = pf.get("value")
         if not t:  # not printed on the plate: the only right answer is to abstain
@@ -93,10 +96,10 @@ def score_damage(fields: dict, truth: dict, raw: dict, image_size) -> dict:
     out = {}
     for f in ("damage_type", "material"):
         t = (truth.get(f) or "").strip()
-        if t:
+        if t and t != UNVERIFIED:
             pf = fields.get(f) or {}
             out[f] = {"truth": t, "pred": pf.get("value"), "conf": float(pf.get("confidence") or 0), "correct": pf.get("value") == t}
-    t_surface = (truth.get("surface") or "").strip().lower()
+    t_surface = (truth.get("surface") or "").strip().lower().replace(UNVERIFIED, "")
     if t_surface:
         pf = fields.get("surface") or {}
         p = (pf.get("value") or "").lower()
@@ -170,7 +173,10 @@ def frame_rows(which: str, per_capture: int) -> list[dict]:
                     "key": key,
                     "path": root / key,
                     "capture": c["captureId"],
-                    "purpose": c["purpose"],
+                    # Score what is in frame: before the parser fix, 5 nameplate shots were filed as damage
+                    # ("name blade"). app_purpose keeps what the app did, for the report.
+                    "purpose": scenes[sid].get("type") or c["purpose"],
+                    "app_purpose": c["purpose"],
                     "scene": sid,
                     "split": split_of(sid),
                     "condition": meta.get("condition", ""),

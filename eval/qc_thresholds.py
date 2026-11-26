@@ -34,12 +34,16 @@ SEED = {
 
 
 def frame_rows() -> list[dict]:
-    frames, caps, _ = labels()
+    frames, caps, scenes = labels()
     rows = []
     root = source_root()
     for c in raw_captures(root):
         meta = caps.get(c["captureId"], {})
         scene = meta.get("scene") or f"unassigned-{c['captureId'][:8]}"
+        if scenes.get(scene, {}).get("type", c["purpose"]) != c["purpose"]:
+            # Filed under the wrong purpose by the voice parser, so the gate judged it with the other
+            # purpose's metrics (no text-region metrics for a "damage" nameplate): not fit material.
+            continue
         rel = c["_dir"].relative_to(root).as_posix()
         for cand in c["candidates"]:
             lab = frames.get(f"{rel}/{cand['file']}", {}).get("label")

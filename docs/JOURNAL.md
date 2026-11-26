@@ -777,3 +777,37 @@ The 100 queued items went to a separate back office with extraction off (`backen
 ### Next
 - Ground truth from the user's paper notes: plate fields and damage sizes. Spoken sizes like "40 into 30 cm" / "14 to 30 cm" are ambiguous, so they won't be used.
 - Then labelling, freeze, and the eval sequence.
+
+## 2026-11-26 23:10 IST: draft labels for the test set (user verifying the plates)
+
+### What was done
+- Grouped all 79 captures (75 from the two walks, plus 4 the user filmed afterwards in job `5038830a` for the serial stickers) into **22 scenes**: 13 nameplate labels on 11 appliances, and 9 damage spots. Written to `eval/labels/captures.json` and `scenes.json`.
+- Proposed each capture's **condition** by looking at its frames (not from the gate's metrics, which would make the gate evaluation circular). Drafted **frame labels for the 204 frames freeze.py commits** (3 per capture), so every label can be checked against a public image.
+- Ground truth was drafted from the sharpest frames; the user is checking it against the physical items. Unconfirmed fields are `?`. A field printed on the item but **not in any frame** (the padlock's serial 21585 is on the back) is recorded under `not_in_view` and scored as "abstain is correct".
+
+### Privacy review (all committed frames, plus the OCR text in each capture.json)
+11 captures are left out of the public set (`excluded` reason in captures.json):
+- 4: a phone label showing IMEI numbers.
+- 3: the electricity meter (the living-room wiring spot).
+- 1: a TV showing a person.
+- 1: a laptop screen.
+- 1: the operator's leg, with the target not in view.
+- 1: a framed photo and an organisation's anniversary memento on top of the fridge.
+
+This corrects the 22:20 entry: its sample had none, but the full pass found these. The operator's own hand appears in a few kept frames (holding the item); no faces. The OCR text of the kept captures holds only manufacturer text.
+
+### Eval script fixes
+- **`run_extraction.py` scores what is in frame.** 5 nameplate shots were filed as damage by the pre-fix parser ("name blade"). They are now scored as nameplates (`purpose` = scene type), and `app_purpose` keeps what the app did.
+- **`qc_thresholds.py` skips those 5 captures.** The gate judged them with damage metrics, so they are not fit material.
+- **A `?` truth value is not scored.** Blank still means "not printed, abstain".
+- **`label_app.py` shows only the committed frames by default** (`?all=1` for all), shows the exclusion reason, and no longer drops extra keys when saving.
+
+### Finding (product)
+When a damage command names no room, the app reuses the previous room. That put the loft under "bathroom" and the kitchen window under "attic". It's kept as real data and goes in the limitations.
+
+### Verified
+- `py_compile` passes on the three scripts.
+- `frame_rows` gives 201 scored frames (204 minus 3 wrong_target): 160 nameplate (15 of them from the misfiled captures) and 41 damage.
+
+### Next
+User's confirmations (the `?` fields) and the damage sizes in cm. Then the label page review, freeze, `qc_thresholds --write-app`, `run_extraction` (3 models), calibrate, report.

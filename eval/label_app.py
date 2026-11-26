@@ -20,7 +20,7 @@ import uvicorn  # noqa: E402
 from fastapi import FastAPI, HTTPException, Request  # noqa: E402
 from fastapi.responses import FileResponse, HTMLResponse  # noqa: E402
 
-from common import CONDITIONS, FRAME_LABELS, LABELS, RAW, labels, raw_captures, save_json  # noqa: E402
+from common import CONDITIONS, FRAME_LABELS, FREEZE_PER_CAPTURE, LABELS, RAW, labels, raw_captures, sample_frames, save_json  # noqa: E402
 
 app = FastAPI(title="FieldCapture labelling")
 
@@ -54,18 +54,25 @@ def page(title: str, body: str) -> HTMLResponse:
 
 
 @app.get("/", response_class=HTMLResponse)
-def frames_page():
+def frames_page(all: int = 0):  # noqa: A002 (query parameter name)
     frames, caps, _ = labels()
     captures = raw_captures(RAW)  # labelling always works on the full pull, never the frozen subset
-    out = [f"<h1>Captures ({len(captures)})</h1><p class='muted'>Blue border = frame the app chose. Label every frame: is it usable for its purpose (nameplate: could you read the serial? damage: is it visible with context?). Leave a capture's scene blank to keep it out of the committed test set.</p>"]
+    scope = (
+        "Showing every saved frame (<a href='/'>only the committed ones</a>)."
+        if all
+        else f"Showing the {FREEZE_PER_CAPTURE} frames per capture that freeze.py commits, so every label can be checked against a public image (<a href='/?all=1'>show all frames</a>)."
+    )
+    out = [f"<h1>Captures ({len(captures)})</h1><p class='muted'>Blue border = frame the app chose. Label each frame: is it usable for its purpose (nameplate: could you read the plate's key text, serial if printed? damage: is it visible with context?). Leave a capture's scene blank to keep it out of the committed test set. {scope}</p>"]
     for c in captures:
         cid = c["captureId"]
         meta = caps.get(cid, {})
         rel = c["_dir"].relative_to(RAW).as_posix()
-        keys = [f"{rel}/{cand['file']}" for cand in c["candidates"]]
+        shown = c["candidates"] if all else sample_frames(c, FREEZE_PER_CAPTURE)
+        keys = [f"{rel}/{cand['file']}" for cand in shown]
         cond_opts = "".join(f"<option {'selected' if meta.get('condition') == x else ''}>{x}</option>" for x in [""] + CONDITIONS)
+        excluded = f" <b style='color:#c62828'>excluded: {html.escape(meta['excluded'])}</b>" if meta.get("excluded") else ""
         cells = []
-        for cand, key in zip(c["candidates"], keys):
+        for cand, key in zip(shown, keys):
             cur = frames.get(key, {}).get("label")
             btns = "".join(
                 f"<button class='{('sel' if l == 'usable' else 'bad') if cur == l else ''}' onclick=\"lab('{key}','{l}',this)\">{l}</button>"
@@ -82,7 +89,7 @@ def frames_page():
         out.append(
             f"<div class='cap'><b>{html.escape(c['purpose'])}</b> “{html.escape(c['transcript'])}” "
             f"room={html.escape(str(c.get('room')))} surface={html.escape(str(c.get('surface')))} "
-            f"<span class='muted'>{html.escape(c['createdAt'])} · prompts {c['prompts']} · evidence {c['evidenceSource']}</span><br>"
+            f"<span class='muted'>{html.escape(c['createdAt'])} · prompts {c['prompts']} · evidence {c['evidenceSource']}</span>{excluded}<br>"
             f"scene <input id='scene-{cid}' value='{html.escape(meta.get('scene', ''))}' placeholder='e.g. np-geyser' onchange=\"capMeta('{cid}')\"> "
             f"condition <select id='cond-{cid}' onchange=\"capMeta('{cid}')\">{cond_opts}</select> "
             f"<button onclick='allUsable(\"{cid}\", {json.dumps(keys)})'>mark all usable</button>"
@@ -102,7 +109,8 @@ def scenes_page():
     purposes = {c["captureId"]: c["purpose"] for c in raw_captures(RAW)}
     for cid, meta in caps.items():
         if meta.get("scene"):
-            by_scene.setdefault(meta["scene"], purposes.get(cid, "nameplate"))
+            known = scenes.get(meta["scene"], {}).get("type")  # what is in frame beats what the app filed it as
+            by_scene.setdefault(meta["scene"], known or purposes.get(cid, "nameplate"))
     out = ["<h1>Scenes</h1><p class='muted'>One row per physical thing. Type exactly what is printed (nameplates) / what you measured with the tape (damage, inches). Leave blank if not printed.</p>"]
     for sid, purpose in sorted(by_scene.items()):
         truth = scenes.get(sid, {}).get("truth", {})
@@ -141,7 +149,7 @@ async def set_frame(req: Request):
 async def set_capture(req: Request):
     body = await req.json()
     _, caps, _ = labels()
-    caps[body["id"]] = {"scene": body.get("scene", "").strip(), "condition": body.get("condition", "")}
+    caps[body["id"]] = {**caps.get(body["id"], {}), "scene": body.get("scene", "").strip(), "condition": body.get("condition", "")}
     save_json(LABELS / "captures.json", caps)
     return {"ok": True}
 
@@ -151,7 +159,7 @@ async def set_scene(req: Request):
     body = await req.json()
     _, _, scenes = labels()
     truth = {k: v.strip() for k, v in body.get("truth", {}).items() if isinstance(v, str)}
-    scenes[body["id"]] = {"type": truth.pop("type", "nameplate"), "truth": truth}
+    scenes[body["id"]] = {**scenes.get(body["id"], {}), "type": truth.pop("type", "nameplate"), "truth": truth}
     save_json(LABELS / "scenes.json", scenes)
     return {"ok": True}
 

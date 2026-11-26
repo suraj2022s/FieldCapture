@@ -1,0 +1,262 @@
+{
+  "np-mektron-stabiliser": {
+    "type": "nameplate",
+    "truth": {
+      "equipment_type": "voltage stabiliser",
+      "make": "MEKTRON",
+      "model": "MT450",
+      "serial": "450AW55230192",
+      "manufacture_date": ""
+    }
+  },
+  "np-vguard-stabiliser": {
+    "type": "nameplate",
+    "truth": {
+      "equipment_type": "voltage stabiliser",
+      "make": "V-GUARD",
+      "model": "VE 400",
+      "serial": "?",
+      "manufacture_date": ""
+    }
+  },
+  "np-lg-fridge-temp-guide": {
+    "type": "nameplate",
+    "truth": {
+      "equipment_type": "refrigerator",
+      "make": "?",
+      "model": "",
+      "serial": "",
+      "manufacture_date": ""
+    }
+  },
+  "np-dell-label": {
+    "type": "nameplate",
+    "truth": {
+      "equipment_type": "?",
+      "make": "DELL",
+      "model": "D17M",
+      "serial": "",
+      "manufacture_date": ""
+    }
+  },
+  "np-microwave-panel": {
+    "type": "nameplate",
+    "truth": {
+      "equipment_type": "microwave oven",
+      "make": "",
+      "model": "",
+      "serial": "",
+      "manufacture_date": ""
+    }
+  },
+  "np-bajaj-water-heater": {
+    "type": "nameplate",
+    "truth": {
+      "equipment_type": "water heater",
+      "make": "BAJAJ",
+      "model": "?",
+      "serial": "?",
+      "manufacture_date": "?"
+    }
+  },
+  "np-roxy-iron": {
+    "type": "nameplate",
+    "truth": {
+      "equipment_type": "electric iron",
+      "make": "ROXY",
+      "model": "?",
+      "serial": "?",
+      "manufacture_date": ""
+    }
+  },
+  "np-link-padlock": {
+    "type": "nameplate",
+    "truth": {
+      "equipment_type": "padlock",
+      "make": "LINK",
+      "model": "ROUND 65",
+      "serial": "",
+      "manufacture_date": ""
+    },
+    "not_in_view": {
+      "serial": "21585",
+      "where": "stamped on the back; no capture shows the back"
+    }
+  },
+  "np-mosquito-vaporiser": {
+    "type": "nameplate",
+    "truth": {
+      "equipment_type": "mosquito vaporiser",
+      "make": "?",
+      "model": "?",
+      "serial": "",
+      "manufacture_date": ""
+    }
+  },
+  "np-lg-fridge-label": {
+    "type": "nameplate",
+    "truth": {
+      "equipment_type": "refrigerator",
+      "make": "LG",
+      "model": "GL-205KMG5",
+      "serial": "",
+      "manufacture_date": "2012"
+    }
+  },
+  "np-senpandit-front": {
+    "type": "nameplate",
+    "truth": {
+      "equipment_type": "voltage stabiliser",
+      "make": "SEN & PANDIT",
+      "model": "",
+      "serial": "",
+      "manufacture_date": ""
+    }
+  },
+  "np-senpandit-plate": {
+    "type": "nameplate",
+    "truth": {
+      "equipment_type": "voltage stabiliser",
+      "make": "SEN & PANDIT",
+      "model": "SPE 56",
+      "serial": "?",
+      "manufacture_date": ""
+    }
+  },
+  "np-lg-microwave-label": {
+    "type": "nameplate",
+    "truth": {
+      "equipment_type": "microwave oven",
+      "make": "?",
+      "model": "MC2844SPB.DBKQILN",
+      "serial": "?",
+      "manufacture_date": ""
+    }
+  },
+  "dm-drawing-room-north-wall": {
+    "type": "damage",
+    "truth": {
+      "damage_type": "peeling_bubbling_paint",
+      "material": "plaster",
+      "surface": "wall",
+      "width_in": "",
+      "height_in": "",
+      "reference_kind": "",
+      "reference_w_in": "",
+      "reference_h_in": "",
+      "staged": "no"
+    }
+  },
+  "dm-kitchen-ceiling": {
+    "type": "damage",
+    "truth": {
+      "damage_type": "crack",
+      "material": "plaster",
+      "surface": "ceiling",
+      "width_in": "",
+      "height_in": "",
+      "reference_kind": "",
+      "reference_w_in": "",
+      "reference_h_in": "",
+      "staged": "no"
+    }
+  },
+  "dm-living-room-peeling-paint": {
+    "type": "damage",
+    "truth": {
+      "damage_type": "peeling_bubbling_paint",
+      "material": "plaster",
+      "surface": "wall",
+      "width_in": "",
+      "height_in": "",
+      "reference_kind": "",
+      "reference_w_in": "",
+      "reference_h_in": "",
+      "staged": "no"
+    }
+  },
+  "dm-bathroom-seepage": {
+    "type": "damage",
+    "truth": {
+      "damage_type": "water_stain",
+      "material": "plaster",
+      "surface": "wall",
+      "width_in": "",
+      "height_in": "",
+      "reference_kind": "",
+      "reference_w_in": "",
+      "reference_h_in": "",
+      "staged": "no"
+    }
+  },
+  "dm-bathroom-broken-plaster": {
+    "type": "damage",
+    "truth": {
+      "damage_type": "hole",
+      "material": "plaster",
+      "surface": "wall",
+      "width_in": "",
+      "height_in": "",
+      "reference_kind": "",
+      "reference_w_in": "",
+      "reference_h_in": "",
+      "staged": "no"
+    }
+  },
+  "dm-bathroom-ventilator": {
+    "type": "damage",
+    "truth": {
+      "damage_type": "other",
+      "material": "other",
+      "surface": "window",
+      "width_in": "",
+      "height_in": "",
+      "reference_kind": "",
+      "reference_w_in": "",
+      "reference_h_in": "",
+      "staged": "no"
+    }
+  },
+  "dm-loft": {
+    "type": "damage",
+    "truth": {
+      "damage_type": "other",
+      "material": "other",
+      "surface": "cabinet",
+      "width_in": "",
+      "height_in": "",
+      "reference_kind": "",
+      "reference_w_in": "",
+      "reference_h_in": "",
+      "staged": "no"
+    }
+  },
+  "dm-kitchen-window": {
+    "type": "damage",
+    "truth": {
+      "damage_type": "other",
+      "material": "other",
+      "surface": "window",
+      "width_in": "",
+      "height_in": "",
+      "reference_kind": "",
+      "reference_w_in": "",
+      "reference_h_in": "",
+      "staged": "no"
+    }
+  },
+  "dm-living-room-ac": {
+    "type": "damage",
+    "truth": {
+      "damage_type": "other",
+      "material": "other",
+      "surface": "fixture",
+      "width_in": "",
+      "height_in": "",
+      "reference_kind": "",
+      "reference_w_in": "",
+      "reference_h_in": "",
+      "staged": "no"
+    }
+  }
+}
