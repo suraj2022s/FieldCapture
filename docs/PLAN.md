@@ -271,11 +271,11 @@ Any field below its review threshold gets a review flag. Nothing is silently dro
 | `DRY-RR` | Wall drywall remove & replace (hang, tape, finish) | SF |
 | `DRY-FC2` | Flood cut wall drywall 2 ft above floor | LF |
 | `CLG-RR` | Ceiling drywall remove & replace | SF |
-| `PNT-SPR` | Stain-block prime + 2 coats paint | SF |
+| `PNT-SPR` | Surface prep (scrape loose paint, fill minor cracks), stain-block prime + 2 coats paint | SF |
 | `INS-RR` | Insulation remove & replace | SF |
 | `BSB-RR` | Baseboard remove & replace | LF |
 | `SBF-RR` | Subfloor remove & replace | SF |
-| `FLC-RR` | Floor covering (vinyl/laminate/tile) remove & replace | SF |
+| `FLC-RR` | Floor covering (vinyl/laminate/tile/wood/carpet) remove & replace | SF |
 | `CAB-DR` | Base cabinet detach & reset | LF |
 | `MLD-REM` | Mold remediation (containment, HEPA, removal) | SF |
 | `WH-RR` | Water heater remove & replace (capacity and fuel from nameplate) | EA |
@@ -284,15 +284,21 @@ Any field below its review threshold gets a review flag. Nothing is silently dro
 
 | Observation | Line items | Notes |
 |---|---|---|
-| Wall water stain or swelling on drywall, area A | `DRY-RR` = A × 1.25 waste (min 4 SF), `PNT-SPR` ≈ 2A (blend), `ANT-APP` = A, `MST-MAP` = 1 per room | |
-| Damage in the lower 2 ft of a wall | `DRY-FC2` (LF ≈ damage width), instead of `DRY-RR` | |
-| Ceiling damage | `CLG-RR` + `PNT-SPR`, with `INS-RR` as "consider" | |
+| Surface-only damage (water stain, peeling paint, efflorescence) on a paintable wall or ceiling, area A | `PNT-SPR` ≈ 2A (blend), `MST-MAP` = 1 per room | Substrate assumed sound and dry; verify with a moisture reading. Nothing is cut out. |
+| Substrate damage (swelling, rot, hole, active leak, mold) on drywall or unknown board, area A | `DRY-RR` / `CLG-RR` = A × 1.25 waste (min 4 SF) + `PNT-SPR`; wet types add `ANT-APP`, `WTR-DRY` (assumed 3 days) | A material other than drywall is flagged "confirm it is board" |
+| Any damage on plaster, concrete or brick (walls, ceilings) | `PNT-SPR` (cracks filled in prep) | Anything beyond a crack: `needs_measurement`, estimator scopes the repair. Never `DRY-RR`. |
+| Tile or wood panelling on walls | none from the rules | Left to the estimator |
+| Water on a board or unknown ceiling | adds `INS-RR` as "consider" | |
 | Mold | `MLD-REM` | Containment flag when > 10 SF |
-| Floor or subfloor damage, or a note like "subfloor soft…" | `SBF-RR` + `FLC-RR` | Quantity "needs measurement" if unknown |
+| Floor damage on a covering (vinyl, laminate, tile, wood, carpet) | `FLC-RR`; swelling/rot adds `SBF-RR` "consider" | Unknown covering is flagged. Bare concrete/brick gets no `FLC-RR`. |
+| Active leak on a floor | `WTR-EXT` | |
+| A note like "subfloor soft…" | `SBF-RR` + `FLC-RR` | Quantity "needs measurement" |
 | …near a cabinet | adds `CAB-DR` | |
 | Water-heater nameplate + leak evidence | `WH-RR` | Low-confidence "consider" |
 
-All items are `status: draft`. Unknown quantities come out as `null` with `needs_measurement: true`; nothing is fabricated.
+All items are `status: draft`. Unknown quantities come out as `null` with `needs_measurement: true`. A size the model estimated below the 0.6 review bar still gives a ballpark quantity, but marked `needs_measurement: true` with the confidence in its basis. Nothing is fabricated.
+
+*Changed 2026-11-26 after the first real job.* The old rules turned any water damage on any wall into `DRY-RR` and any floor damage into `FLC-RR`. On a plaster-walled house with concrete floors, that drafted 40 SF of drywall replacement and 10 SF of floor covering, neither of which exists there. `DRY-FC2` (flood cut) is still unused by the rules: no capture yet tells us the damage height.
 
 ---
 

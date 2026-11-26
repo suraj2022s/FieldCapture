@@ -364,3 +364,43 @@ The newest entry is at the bottom. Each entry records what was done, the decisio
 1. User adds API credit → reprocess `5482e66c` on :8002.
 2. Optional: a 5-minute outage run to measure the backoff tail.
 3. 11-26 filming per `eval/README.md`.
+
+---
+
+## 2026-11-26 — Session 2, past midnight: first real extraction; line-item rules fixed for plaster and concrete
+
+### Extraction on the first real job (`5482e66c`, 6 damage captures)
+- The user added API credit. A reprocess on :8002 ran 6 Opus 5.5 calls, all 200 OK.
+  - Cost **$0.1346** (15,921 input / 3,546 output tokens, about $0.022 per photo); model latency p50 **8.96 s**.
+  - Record schema-valid.
+  - The record's `capture_to_extracted_ms` (~1.7 h) is meaningless for a *reprocessed* job. Latency for the report must come from live walks.
+- **My own look at the 6 photos.** This is an anecdotal check (n=6), not the eval; reported numbers come from the labelled test set.
+  - #3 "seepage on wall": **correct**. Peeling paint with the older blue coat exposed along the wall–ceiling junction; `peeling_bubbling_paint` 0.85, plaster, moderate.
+  - #1 "broken wall" and #2 "broken switchboard": the model **abstained** (`none`, 0.30) on wide shots where no damage is visible at 480×640. That's a framing problem at capture time, not a model error, and both are flagged for review.
+  - #4: crack plus exposed wiring (0.50). #5: minor flaking (0.60). #6: possible water staining on a concrete/terrazzo floor (0.40, hedged).
+  - Every capture has `room_missing` (no room was spoken), and all sizes are low-confidence. There was no reference object in frame, so the size is the model's guess.
+- **Privacy:** #3's evidence frame shows a framed photo of a person and a religious picture. Keep it out of `samples/` and the demo, or crop it.
+
+### Line-item rules were wrong for this house, now fixed
+- **Before:** any water-type damage on any wall → `DRY-RR`; any floor damage → `FLC-RR`; model-guessed sizes → firm quantities. On plaster walls and a concrete floor that drafted **40 SF of drywall replacement and 10 SF of floor covering**, neither of which exists there. The 66 SF repaint was presented as if measured.
+- **Now:**
+  - Surface-only damage (stain, peeling paint, efflorescence) on a paintable surface → `PNT-SPR` only. The substrate is assumed sound and dry, and the basis text says to verify that with a moisture reading.
+  - Substrate damage on drywall or unknown board → `DRY-RR`/`CLG-RR` as before. A non-drywall material is flagged "confirm it is board".
+  - Plaster, concrete or brick → `PNT-SPR`. Cracks are filled in prep; anything else gets `needs_measurement` for the estimator to scope.
+  - Tile or wood walls → nothing; left to the estimator.
+  - `FLC-RR` only on a real covering; an unknown covering is flagged.
+  - Sizes below the 0.6 review bar give a ballpark quantity marked `needs_measurement`, with the confidence in the basis.
+  - Merged lines no longer repeat the same reason.
+  - Code table: `PNT-SPR` now includes scraping and filling minor cracks; `FLC-RR` names wood and carpet.
+- **The real job now drafts:** `MST-MAP` 1 EA + `PNT-SPR` 66 SF (**measure**). That's the right scope for seepage on plaster: find the moisture source, scrape, prime and repaint, and tape-measure first.
+- **Decision and why:** this is industry practice. A dry, intact stain is sealed and repainted; board is cut out only when it's wet, swollen, rotten or holed. Rules stay deterministic and readable by an estimator, and nothing moves into the prompt.
+- **Tests:** backend **12/12** (7 → 12). Two old tests encoded the over-scoping and were rewritten. New cases cover plaster seepage with a guessed size, a hole in plaster, a concrete floor stain, swollen drywall and a tile wall.
+
+### Back office
+- The :8002 server (this session's own background task) was restarted twice to load the new rules; the phone is routed to it.
+- `adb reverse` was lost again overnight and has been re-armed. It drops on every USB reconnect.
+
+### Next (11-26, filming day)
+1. Film the dataset per `eval/README.md`, with **Dataset: ON**.
+2. **Name the room** in each command, and **keep a reference object** in frame (a switch plate, an A4 sheet or an ID card) and tape-measure it. Both were missing on day 1, and they're what turn the size guesses into measured scaling.
+3. Frame the damage itself, not the whole room (#1 and #2 above).

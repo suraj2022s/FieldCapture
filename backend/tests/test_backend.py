@@ -90,26 +90,61 @@ def test_offline_record_is_schema_valid_with_line_items(client):
     assert client.get(f"/jobs/{JOB}").status_code == 200  # back-office page renders
 
 
-def test_wall_stain_quantities():
+def _items(dtype, material, surface, area=None, size_conf=0.7):
     fields = {
-        "damage_type": {"value": "water_stain", "confidence": 0.9},
-        "material": {"value": "drywall", "confidence": 0.8},
-        "surface": {"value": "north wall", "confidence": 0.9},
+        "damage_type": {"value": dtype, "confidence": 0.9},
+        "material": {"value": material, "confidence": 0.8},
+        "surface": {"value": surface, "confidence": 0.9},
         "room": {"value": "kitchen", "confidence": 0.9},
-        "size": {"value": {"width_in": 24, "height_in": 36, "area_sqft": 6.0}, "confidence": 0.7},
+        "size": {"value": {"width_in": 24, "height_in": 36, "area_sqft": area} if area else None, "confidence": size_conf if area else 0.0},
     }
-    items = {li["code"]: li for li in lineitems.derive([{"id": "d1", "type": "damage", "fields": fields}], [])}
-    assert items["DRY-RR"]["quantity"] == 8.0  # 6 SF x 1.25 waste = 7.5 -> 8
-    assert items["PNT-SPR"]["quantity"] == 12.0  # 2x blend
+    return {li["code"]: li for li in lineitems.derive([{"id": "d1", "type": "damage", "fields": fields}], [])}
+
+
+def test_dry_wall_stain_is_stain_block_and_paint_not_replacement():
+    items = _items("water_stain", "drywall", "north wall", area=6.0)
+    assert "DRY-RR" not in items  # a dry, intact stain is sealed and painted, not cut out
+    assert items["PNT-SPR"]["quantity"] == 12.0 and not items["PNT-SPR"]["needs_measurement"]  # 6 SF x 2 blend
     assert items["MST-MAP"]["quantity"] == 1.0
     assert "WTR-DRY" not in items  # a dry stain doesn't need drying equipment
 
 
+def test_swollen_drywall_is_replaced_and_dried():
+    items = _items("swelling_warping", "drywall", "north wall", area=6.0)
+    assert items["DRY-RR"]["quantity"] == 8.0  # 6 SF x 1.25 waste = 7.5 -> 8
+    assert items["PNT-SPR"]["quantity"] == 12.0
+    assert items["WTR-DRY"]["assumption"]
+
+
+def test_plaster_seepage_is_repainted_never_drywall_and_a_guessed_size_must_be_measured():
+    # The first real job: peeling paint on a plaster wall, size guessed by the model at 0.4.
+    items = _items("peeling_bubbling_paint", "plaster", "wall", area=25.0, size_conf=0.4)
+    assert "DRY-RR" not in items
+    assert items["PNT-SPR"]["quantity"] == 50.0 and items["PNT-SPR"]["needs_measurement"]
+    assert "measure" in items["PNT-SPR"]["basis"]
+    assert items["MST-MAP"]["quantity"] == 1.0  # seepage means a moisture source to find
+
+
+def test_hole_in_plaster_is_left_for_the_estimator_to_scope():
+    items = _items("hole", "plaster", "wall", area=1.0)
+    assert "DRY-RR" not in items and items["PNT-SPR"]["needs_measurement"]
+
+
+def test_concrete_floor_stain_has_no_floor_covering_to_replace():
+    items = _items("water_stain", "concrete", "floor", area=7.5)
+    assert "FLC-RR" not in items
+    assert items["MST-MAP"]["quantity"] == 1.0
+
+
+def test_tile_wall_is_not_repainted():
+    items = _items("water_stain", "tile", "wall", area=4.0)
+    assert "PNT-SPR" not in items and "DRY-RR" not in items
+
+
 def test_unknown_size_is_never_invented():
-    fields = {"damage_type": {"value": "water_stain", "confidence": 0.9}, "surface": {"value": "ceiling", "confidence": 0.9},
-              "room": {"value": "hall", "confidence": 0.9}, "size": {"value": None, "confidence": 0.0}}
-    items = {li["code"]: li for li in lineitems.derive([{"id": "d1", "type": "damage", "fields": fields}], [])}
-    assert items["CLG-RR"]["quantity"] is None and items["CLG-RR"]["needs_measurement"]
+    items = _items("water_stain", None, "ceiling")
+    assert items["PNT-SPR"]["quantity"] is None and items["PNT-SPR"]["needs_measurement"]
+    assert items["INS-RR"]["quantity"] is None and items["INS-RR"]["assumption"]  # board ceiling: check above
 
 
 def test_ocr_agreement_and_dates():

@@ -21,13 +21,23 @@ ORDER = list(CODES)
 
 WATER_TYPES = {"water_stain", "active_leak", "swelling_warping", "peeling_bubbling_paint", "mold_mildew", "rot", "efflorescence"}
 WET_TYPES = {"active_leak", "swelling_warping"}
-WALL_MATERIALS = {"drywall", "plaster", "paint", "unknown", "other"}
+# Damage to the finish on a sound, dry substrate: scrape, stain-block, repaint. Nothing is replaced.
+SURFACE_ONLY = {"water_stain", "peeling_bubbling_paint", "efflorescence"}
+# Board that is cut out and replaced when the substrate itself is damaged. "paint" means the model
+# only saw paint, so the substrate is unknown and treated like board, flagged by the basis text.
+BOARD_OR_UNKNOWN = {"drywall", "ceiling_board", "paint", "unknown", "other", None}
+# Repaired in place and repainted, never "drywall remove and replace" (first real job: plaster walls).
+MASONRY = {"plaster", "concrete", "brick"}
+FLOOR_COVERINGS = {"vinyl", "laminate", "tile", "wood", "carpet"}
 SOFT_CONDITIONS = {"soft", "spongy", "rotten", "rotted", "sagging", "wet", "soaked", "saturated", "swollen", "warped"}
 
 MIN_PATCH_SF = 4  # smallest practical drywall patch
 WASTE = 1.25  # cut to studs / sheet edges
 PAINT_BLEND = 2.0  # paint past the patch so it blends
 DEFAULT_DRY_DAYS = 3  # IICRC S500 typical drying duration; flagged as an assumption
+# Same bar as record.REVIEW_THRESHOLD. Below it a size is a ballpark from the photo, not a
+# quantity: it is still shown, but the line needs a tape measure before it goes on an estimate.
+SIZE_TRUST = 0.6
 
 
 @dataclass
@@ -69,37 +79,58 @@ def from_damage(capture_id: str, fields: dict) -> list[Draft]:
     ev = [capture_id]
     base_conf = min(c_type, max(c_surf, 0.5))
 
+    size_trusted = area is not None and c_size >= SIZE_TRUST
+    size_note = "" if area is None or size_trusted else f" [size estimated from the photo at {c_size:.2f} confidence: measure]"
+
     def qty(min_sf: float, factor: float) -> tuple[float | None, bool]:
-        return (_ceil(max(min_sf, area * factor)), False) if area is not None else (None, True)
+        """(quantity, needs_measurement). Unknown size: no quantity. Untrusted size: a ballpark to measure."""
+        if area is None:
+            return None, True
+        return _ceil(max(min_sf, area * factor)), not size_trusted
+
+    def repaint(where: str, basis: str, must_scope: bool = False) -> Draft:
+        q, nm = qty(8, PAINT_BLEND)
+        return Draft("PNT-SPR", room, q, round(base_conf * 0.9, 3), f"{basis}; {where} plus blend{size_note}", ev, nm or must_scope)
 
     water = dtype in WATER_TYPES
-    if "wall" in surf and (material in WALL_MATERIALS or material is None):
-        q, nm = qty(MIN_PATCH_SF, WASTE)
-        out.append(Draft("DRY-RR", room, q, round(min(base_conf, c_size if q else base_conf), 3), f"{dtype} on wall drywall, {area or '?'} SF x {WASTE} waste (min {MIN_PATCH_SF} SF)", ev, nm))
-        q2, nm2 = qty(8, PAINT_BLEND)
-        out.append(Draft("PNT-SPR", room, q2, round(base_conf * 0.9, 3), "re-paint patched area plus blend", ev, nm2))
-    elif "ceiling" in surf:
-        q, nm = qty(MIN_PATCH_SF, WASTE)
-        out.append(Draft("CLG-RR", room, q, round(min(base_conf, c_size if q else base_conf), 3), f"{dtype} on ceiling, {area or '?'} SF x {WASTE}", ev, nm))
-        q2, nm2 = qty(8, PAINT_BLEND)
-        out.append(Draft("PNT-SPR", room, q2, round(base_conf * 0.9, 3), "stain-block and paint ceiling", ev, nm2))
-        if water:
+    surface_only = dtype in SURFACE_ONLY
+    if "wall" in surf or "ceiling" in surf:
+        ceiling = "ceiling" in surf
+        where = "ceiling" if ceiling else "wall"
+        # Tile, wood panelling etc. aren't repainted or cut out like board: left to the estimator.
+        paintable = material in MASONRY or material in BOARD_OR_UNKNOWN
+        if surface_only and paintable:
+            out.append(repaint(where, f"{dtype} on {material or 'unknown'} {where}: finish damage, substrate assumed sound and dry (verify with a moisture reading)"))
+        elif material in MASONRY:
+            # Cracks are filled as part of the prep; holes, swelling or rot in plaster need an estimator.
+            beyond_paint = dtype != "crack"
+            out.append(repaint(where, f"{dtype} on {material} {where}: repair in place and repaint" + ("; masonry/plaster repair beyond filling to be scoped by the estimator" if beyond_paint else ""), must_scope=beyond_paint))
+        elif material in BOARD_OR_UNKNOWN:
+            q, nm = qty(MIN_PATCH_SF, WASTE)
+            code = "CLG-RR" if ceiling else "DRY-RR"
+            unsure = "" if material in ("drywall", "ceiling_board") else f" (material seen as {material or 'unknown'}: confirm it is board)"
+            out.append(Draft(code, room, q, round(min(base_conf, c_size if q else base_conf), 3), f"{dtype} in {where} board{unsure}, {area or '?'} SF x {WASTE} waste (min {MIN_PATCH_SF} SF){size_note}", ev, nm))
+            out.append(repaint(where, "re-paint the patch"))
+        if ceiling and water and material in BOARD_OR_UNKNOWN:
             qi, nmi = qty(MIN_PATCH_SF, WASTE)
-            out.append(Draft("INS-RR", room, qi, round(base_conf * 0.5, 3), "consider: wet insulation above a stained ceiling", ev, nmi))
+            out.append(Draft("INS-RR", room, qi, round(base_conf * 0.5, 3), f"consider: wet insulation above a water-damaged board ceiling{size_note}", ev, nmi, assumption=True))
     elif "floor" in surf:
-        q, nm = qty(10, WASTE)
-        out.append(Draft("FLC-RR", room, q, round(base_conf * 0.8, 3), f"{dtype} on floor covering", ev, nm))
-        if dtype in {"swelling_warping", "rot"}:
-            out.append(Draft("SBF-RR", room, None, round(base_conf * 0.5, 3), "consider: subfloor under swollen/rotten flooring", ev, True))
+        # Bare concrete or brick has no covering to replace; moisture mapping and extraction still apply below.
+        if material in FLOOR_COVERINGS or material in (None, "unknown", "other"):
+            q, nm = qty(10, WASTE)
+            unknown = material not in FLOOR_COVERINGS
+            out.append(Draft("FLC-RR", room, q, round(base_conf * (0.5 if unknown else 0.8), 3), f"{dtype} on {material or 'unknown'} floor covering" + ("; covering type not confirmed" if unknown else "") + size_note, ev, nm or unknown))
+            if dtype in {"swelling_warping", "rot"}:
+                out.append(Draft("SBF-RR", room, None, round(base_conf * 0.5, 3), "consider: subfloor under swollen/rotten flooring", ev, True))
         if dtype == "active_leak":
             q3, nm3 = qty(10, 1.5)
-            out.append(Draft("WTR-EXT", room, q3, round(base_conf * 0.8, 3), "standing/active water on floor", ev, nm3))
+            out.append(Draft("WTR-EXT", room, q3, round(base_conf * 0.8, 3), f"standing/active water on floor{size_note}", ev, nm3))
     elif "cabinet" in surf:
         out.append(Draft("CAB-DR", room, None, round(base_conf * 0.7, 3), f"{dtype} at base cabinet; measure cabinet run", ev, True))
 
     if dtype == "mold_mildew":
-        q, nm = (area, False) if area is not None else (None, True)
-        basis = "visible mold" + (" (>10 SF: containment)" if area and area > 10 else "")
+        q, nm = (area, not size_trusted) if area is not None else (None, True)
+        basis = "visible mold" + (" (>10 SF: containment)" if area and area > 10 else "") + size_note
         out.append(Draft("MLD-REM", room, _ceil(q), round(base_conf, 3), basis, ev, nm))
     if dtype in WET_TYPES or dtype == "mold_mildew":
         q, nm = qty(MIN_PATCH_SF, 1.0)
@@ -170,7 +201,8 @@ def derive(captures: list[dict[str, Any]], notes: list[dict[str, Any]]) -> list[
             m.needs_measurement = m.needs_measurement or d.needs_measurement
             m.confidence = round(min(m.confidence, d.confidence), 3)
             m.evidence = sorted(set(m.evidence + d.evidence))
-            m.basis = f"{m.basis}; {d.basis}"
+            if d.basis not in m.basis:  # several captures often give the same reason
+                m.basis = f"{m.basis}; {d.basis}"
 
     items = sorted(merged.values(), key=lambda d: (ORDER.index(d.code), d.room or ""))
     return [
