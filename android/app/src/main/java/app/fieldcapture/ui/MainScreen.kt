@@ -90,6 +90,8 @@ fun MainScreen(app: FieldCaptureApp, actions: MainActions) {
             Text("Start job", fontSize = 22.sp)
           }
           Text("Then everything is by voice: \"capture nameplate\", \"capture damage kitchen north wall\", \"note: …\", \"end job\".")
+          walk.last?.let { Text(it) }
+          if (pending > 0) Text("$pending waiting for signal", color = Color(0xFFFFB74D))
         } else {
           Text(
               "${walk.room?.replaceFirstChar { it.uppercase() } ?: "No room yet"} · ${walk.captures} captures · ${walk.notes} notes",

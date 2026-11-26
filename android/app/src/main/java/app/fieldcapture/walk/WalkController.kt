@@ -197,7 +197,8 @@ class WalkController(
     kickUpload()
     val u = _ui.value
     speaker.say("Job ended. ${u.captures} captures, ${u.notes} notes. Uploading when there's signal.")
-    _ui.update { it.copy(busy = null, last = "Job ended") }
+    // No job id on screen means "no job": the Start job button comes back and the screen may sleep.
+    _ui.value = WalkUi(last = "Last job: ${u.room?.let { "$it, " } ?: ""}${u.captures} captures, ${u.notes} notes")
     onJobActive(false)
   }
 

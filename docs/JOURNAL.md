@@ -489,3 +489,17 @@ New `tools/phone_smoke.ps1` (about 1 min). Its preflight matches the chaos run: 
 
 ### Next
 The user films the dataset (Dataset ON, then the shot list in `eval/README.md` §1), then pull → label.
+
+## 2026-11-26 14:53 IST: bug: no "Start job" button after a job ended
+
+### Found
+The user asked whether the UI is good, so I looked at a screenshot instead of the code. After the smoke test ended its job, the screen still showed the job (Pause / Resume / End job) and **no Start job button**.
+
+### Cause
+`endJob()` cleared the controller's job but left `jobId` in the UI state. The screen picks "Start job" vs "job in progress" from that field, so a second job couldn't be started without killing the app. The same field drives `FLAG_KEEP_SCREEN_ON`, so the screen also stayed awake after the job ended. Every scripted run (chaos, smoke, instrumented tests) starts jobs through the debug driver or the controller, never the button, so none of them could catch this.
+
+### Fix
+`endJob()` resets the UI state, keeping a "Last job: room, N captures, M notes" line, and the no-job view shows that line plus any uploads still waiting.
+
+### Verified on the phone
+Debug start → job view → debug end → **Start job** is back with "Last job: 0 captures, 0 notes"; screenshots before and after. App JVM tests pass.
