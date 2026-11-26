@@ -32,6 +32,25 @@ class CommandParserTest {
         .forEach { assertEquals(it, Command.CaptureNameplate, cmd(it)) }
   }
 
+  /** Exactly what Google's recogniser returned for "capture nameplate" on the first real walk (2026-11-26). */
+  @Test
+  fun nameplateAsHeardOnTheFirstRealWalk() {
+    listOf(
+            "Please capture the name play it",
+            "Please capture the name blade",
+            "Please please capture the name blade",
+            "Please capture the name",
+            "capture the name plait",
+        )
+        .forEach { assertEquals(it, Command.CaptureNameplate, cmd(it)) }
+  }
+
+  @Test
+  fun captureNotesIsNotADamagePhoto() {
+    assertNull(cmd("Please capture notes"))
+    assertNull(cmd("capture the note"))
+  }
+
   @Test
   fun damageSlotsAreOrderIndependentAndOptional() {
     assertEquals(Command.CaptureDamage("kitchen", "north wall", "north wall kitchen"), cmd("capture damage north wall kitchen"))

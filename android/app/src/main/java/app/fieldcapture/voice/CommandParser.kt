@@ -42,13 +42,18 @@ object CommandParser {
   private class IntentSpec(val name: String, val pattern: Regex, val build: (MatchResult) -> Command?)
 
   private val VERB = "(?:capture|captured|capturing|take|snap|grab|shoot|click|photograph|record)"
+  // "name blade", "name play it", "name plait": how Google's recogniser heard "nameplate" from the
+  // user (Indian English) on the first real walk, 2026-11-26; five of them were filed as damage.
   private val NAMEPLATE_WORD =
-      "(?:name ?plates?|nameplates?|data ?plate|rating ?plate|serial (?:plate|tag|label|number)|spec (?:plate|label)|model number|label|sticker)"
+      "(?:name ?(?:plates?|plated|plait|plat|blades?|play(?:ed| it)?|place)|nameplates?|data ?plate|rating ?plate|" +
+          "serial (?:plate|tag|label|number)|spec (?:plate|label)|model number|label|sticker)"
 
   private val intents: List<IntentSpec> =
       listOf(
           // "capture nameplate", "take a photo of the label on the heater", "click the rating plate"
           IntentSpec("nameplate", Regex("^$VERB\\b.*\\b$NAMEPLATE_WORD\\b.*")) { Command.CaptureNameplate },
+          // "capture the name": the end of "nameplate" lost (same walk).
+          IntentSpec("nameplate_cut", Regex("^$VERB (?:the |a )?name$")) { Command.CaptureNameplate },
           IntentSpec("damage", Regex("^$VERB (?:the |some )?damage[sd]?\\b(.*)$")) { m ->
             val rest = m.groupValues[1].trim()
             val room = Vocabulary.findRoom(rest)
@@ -85,7 +90,8 @@ object CommandParser {
               Regex("^$VERB (?:a |an )?(?:photo |picture |pic |shot |image |snap )?(?:of )?(?:the |this |that |these |some |a )?(.+)$"),
           ) { m ->
             val rest = m.groupValues[1].trim()
-            if (rest.isEmpty() || rest == "anyway") null
+            // "please capture notes" was a damage photo (same walk): a note isn't something to photograph.
+            if (rest.isEmpty() || rest == "anyway" || Regex("^notes?\\b").containsMatchIn(rest)) null
             else Command.CaptureDamage(Vocabulary.findRoom(rest), Vocabulary.findSurface(rest), rest)
           },
       )
