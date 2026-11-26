@@ -503,3 +503,46 @@ The user asked whether the UI is good, so I looked at a screenshot instead of th
 
 ### Verified on the phone
 Debug start → job view → debug end → **Start job** is back with "Last job: 0 captures, 0 notes"; screenshots before and after. App JVM tests pass.
+
+## 2026-11-26 15:25 IST: full bug scan before filming: 4 bugs fixed
+
+### Why
+The user asked for a full scan of every screen (scrolled, not just the top), thorough testing, open-source testing tools from GitHub, and fixes before they film.
+
+### How
+- **Static.** Android lint (`:app:lintDebug`): 0 errors and 24 warnings. Most are newer library versions, which we pin to CameraAccess on purpose. `allowBackup` is already false, so job photos never go to cloud backup. The phone-only portrait lock is fine on this phone.
+- **Every screen.** A scratchpad UI driver reads the Compose tree with `uiautomator dump`, scrolls to each label, taps its centre and checks the crash buffer after every tap. Swipes stay mid-screen so they never pull down quick settings, which hold this PC's hotspot. Screenshots were taken top to bottom, idle and during a job.
+- **Every control and command.** All four settings toggles and the YUV cycle. The measure buttons with and without a stream. All 14 mock buttons, idle and mid-job. A whole job driven through the real buttons, covering:
+  - Pause ×2 and Resume ×2
+  - every voice intent (nameplate, damage with slots, note, undo, retake, status, "start a job" while running, gibberish, a bare "note", the loose "please capture the broken wall", two captures 150 ms apart, pause/capture/resume by voice)
+  - glasses power-off, doff, fold, 5% battery and overheat mid-walk
+  - the no-signal queue and drain
+  - End job while paused, then a second job ended by voice.
+
+  The test feed was used throughout, so nothing from the home was recorded.
+- **Web search for open-source test tools:** [Maestro](https://github.com/mobile-dev-inc/maestro) (Apache-2.0, UI flows; needs a global CLI, so not installed without asking), [Schemathesis](https://github.com/schemathesis/schemathesis) (MIT, API fuzzing; **used**), [Toxiproxy](https://github.com/Shopify/toxiproxy) (MIT, network faults; binary download, not installed), and DroidBot / Fastbot / monkey (random GUI exploration; skipped, because random taps can reach quick settings).
+
+### Found and fixed
+1. **A capture finished after a glasses drop with a late frame.** "capture damage hallway left wall" said as the glasses lost power was saved 6.8 s later, after the reconnect, so the frame may not show what was asked for. The capture loop now stops when the walk leaves ACTIVE: *"Capture not taken. Say it again when the glasses are back."* Re-tested: power-off 0.5 s into a nameplate capture → abandoned at the phase change; the next capture works.
+2. **Heat and battery were silent.** Overheat raised `THERMAL_CRITICAL` and the mock set 5% battery, but the app only changed a banner a tech wearing glasses never sees. New `GlassesController.alerts` speaks heat, battery (≤ 15%) and power-limit warnings, at most once a minute per message. Re-tested: both spoken; a second overheat within the minute stayed quiet.
+3. **Slow reconnect after the glasses go back on.** The reconnect loop slept through its back-off (up to 10 s) even when the glasses became wearable. It now wakes on the not-ready → ready change (connected, unfolded, on). Re-tested: retry 1 ms after `don`, ACTIVE 0.23 s later (was 3.7 s).
+4. **Back office 500 (Schemathesis).** An `item` of valid JSON that isn't an object (`"0"`) raised AttributeError. Now 400.
+   - My first fix also rejected list `meta`, which **would have dropped every real event-log upload**. The existing record test caught it (disconnects 0 ≠ 1).
+   - The final rule: `item` is an object, and `meta` is an object, except the event log, which is a list of objects. A list with a non-object would have crashed the record page later.
+   - 5 parametrized regression cases. 400/404 are now documented in the OpenAPI.
+   - The re-fuzz on a throwaway server (extraction off): **1,759 requests, 0 failures**.
+
+### Checked, not bugs
+- The back office page shows "QC FAIL CUT_OFF" correctly; it only looked wrong through PowerShell's JSON flattening.
+- Gibberish is ignored silently, which is right for a hands-free app that shouldn't nag.
+- The second "Label is cut off" prompt can still play in the 5 s before a link loss is declared. That's left as is: a shorter grace would abandon captures on brief blips.
+
+### Mock findings (RESEARCH §5a)
+- `fold()` also doffs, and only unfold + don makes the glasses eligible again.
+- Thermal CRITICAL raises a session error but keeps streaming.
+- Battery 5% raises nothing.
+
+### Verified at the end
+- Tests: app JVM, quality-core, and backend 17/17.
+- `tools/phone_smoke.ps1` **PASS** on the new build and the restarted :8002 back office (14 earlier jobs intact): plate read correctly at $0.038 for the job, schema valid.
+- Phone left as filming needs: Start job showing, Dataset off, feed = back camera, dataset and debug folders empty, "stay awake while charging" back to off.

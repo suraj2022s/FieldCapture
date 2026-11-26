@@ -67,6 +67,22 @@ def test_idempotency_key_must_match(client):
     assert r.status_code == 400
 
 
+@pytest.mark.parametrize(
+    ("item", "meta"),
+    [
+        ("0", "{}"),
+        ("null", "null"),
+        ('{"id": "x", "kind": "note", "jobId": "j"}', "[]"),
+        ('{"id": "x", "kind": "events", "jobId": "j"}', "{}"),
+        ('{"id": "x", "kind": "events", "jobId": "j"}', "[0]"),  # would crash the record page later
+    ],
+)
+def test_json_that_is_not_an_object_is_a_400_not_a_crash(client, item, meta):
+    # Found by Schemathesis (2026-11-26): item="0" raised AttributeError -> 500.
+    r = client.post("/v1/jobs/j/items", data={"item": item}, files={"meta": ("m.json", meta, "application/json")})
+    assert r.status_code == 400
+
+
 def test_offline_record_is_schema_valid_with_line_items(client):
     post(client, "job", f"job-{JOB}", {"jobId": JOB, "createdAt": "2026-11-25T10:00:00Z", "app": {"version": "0.1.0", "dat_sdk": "1.1.0"}, "device": {"phone": "OPPO CPH2823"}}, image=False)
     post(client, "capture", "np1", capture_meta("np1", "nameplate", ocr=["A.O. SMITH", "MODEL NO. GCR-50 300", "SERIAL NO 1932A012345"]))

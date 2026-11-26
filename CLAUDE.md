@@ -65,6 +65,8 @@ Run these from `android/` in PowerShell. `JAVA_HOME` is already set to the Andro
 | App logs | `adb logcat -s FieldCapture` |
 | App JVM tests (parser, job recovery) | `.\gradlew.bat :app:testDebugUnitTest` |
 | Drive a walk from adb (debug builds) | `adb shell "am broadcast -n app.fieldcapture/.debug.DebugCommandReceiver --es cmd say --es text 'capture nameplate'"`. `cmd` = `start`, `end`, `say` (+`text`), `mic_off`, `mark` (+`text`), `offline`, `online`, `status`, `feed_test`, `feed_camera`, `feed_file` (+`text` = absolute path of an H.265 file pushed into the app's external files dir), `dataset_on`, `dataset_off`. `feed_test` persists until `feed_camera`. Mock clips play at the *stream* fps (15), so encode them at 15 fps for real-time playback. |
+| Phone smoke test (~1 min) | From the repo root: `powershell -File tools\phone_smoke.ps1` (needs the :8002 back office with extraction on). Same preflight as the chaos run, and it also refuses if the dataset folder holds captures. |
+| API fuzz (Schemathesis, MIT) | Throwaway server: `FIELDCAPTURE_PORT=8003`, `FIELDCAPTURE_EXTRACT=0`, `FIELDCAPTURE_DATA_DIR=<empty dir>`, then `uv run --with schemathesis schemathesis run http://127.0.0.1:8003/openapi.json --checks all --exclude-checks positive_data_acceptance`. **Never fuzz :8002**: extraction is on there, so fuzzed uploads would spend API money. |
 | Chaos run (~5 min, phone to itself) | From the repo root: `powershell -File tools\chaos_run.ps1 [-OutageSeconds 60]` → `eval/chaos/chaos-<ts>.json`. It runs its own back office on :8001 and refuses to start if the app heard speech recently, a job is open, or uploads are queued. |
 | SDK packages | `$env:LOCALAPPDATA\Android\Sdk\cmdline-tools\latest\bin\android.exe --no-metrics sdk install <pkg>` |
 

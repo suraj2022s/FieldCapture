@@ -162,6 +162,7 @@ All measured 2026-11-25 from the app's event log (logcat tag `FieldCapture`).
 | Video-file feed playback speed | The mock delivers **one source frame per stream frame**, at the stream's rate. Our 24 fps clip streamed at 15 fps played at **15/24 = 0.625× real time**: a 10 s segment lasted 16 s. It matches the frame luma at three points of a 240 s rehearsal clip (2026-11-26) and explains the earlier "8 s clip keeps flowing past 8 s" (192 frames ÷ 15 fps = 12.8 s). **Encode mock clips at the stream fps** for real-time playback. Not documented. |
 | `checkPermissionStatus(CAMERA)` with the glasses off | Returns a **failure**, not `Denied`: "All discovered devices are powered off or disconnected" (chaos run, 2026-11-25). A permission gate must treat a failed check as "unknown", not "denied", or a reconnect loop would ask the tech to grant a permission they already granted. |
 | Reconnect after mock `powerOff()` → `powerOn()` | Link back → new session → STREAMING in **~0.2–0.3 s** on the mock (first frame 304 ms after `createSession`). Our 5 s link-loss grace dominates the outage the tech hears. Real glasses will be slower (Bluetooth re-pair, ~5 s first frame reported by GemGlasses). |
+| Mock fold, overheat and battery mid-walk (UI test through the app's buttons, 2026-11-26) | **`fold()` also sets don to DOFFED**, and the device ends the session (`SESSION_ENDED_BY_DEVICE`). Every new session fails with `NO_ELIGIBLE_DEVICE` until the glasses are unfolded **and** put back on: `unfold()` alone leaves them DOFFED. **`setThermalLevel(CRITICAL)`** raises `DeviceSessionError.THERMAL_CRITICAL`, but the stream **keeps STREAMING**. **Battery 5%** changes only the battery level: no stream error, no session error. So on the mock, heat and battery never stop a walk, and an app that only reacts to stopped streams says nothing (ours did, until it gained spoken alerts). Not documented. |
 | MockDevice MCP on Windows | `mock_connect` needs `adb` on PATH (it ignores `ANDROID_HOME`). The app's test server can be driven directly over HTTP after `adb forward tcp:8237 tcp:8237`; `GET /capabilities` lists 55 routes (contract version 1). |
 
 ## 5b. Checked against Meta's DAT docs MCP (`search_dat_docs`, docs v1.1, 2026-11-25)
@@ -187,8 +188,8 @@ Docs facts we hadn't used yet:
 - [ ] Actual frame size and fps delivered per `VideoQuality` / `frameRate` on MDK
 - [ ] `capturePhoto()` on MDK: latency, resolution, and whether it is the `setCapturedImage` image or a frame from the feed
 - [ ] Does MDK reproduce the raw-stream pause when the app is backgrounded (finding 2.3)?
-- [ ] Which stream errors and states MDK emits for doff, fold, power-off, thermal and battery
-- [ ] Reconnect time after `powerOff()` → `powerOn()`
+- [x] Which stream errors and states MDK emits for doff, fold, power-off, thermal and battery (§5a)
+- [x] Reconnect time after `powerOff()` → `powerOn()` (§5a)
 - [ ] Does MDK Speech `LIVE_DEVICE_ASR` work without Developer Center capability approval?
 - [ ] Nameplate serial accuracy at 504×896 vs 720×1280 stream frames vs stills
 

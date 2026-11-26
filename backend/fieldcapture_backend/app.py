@@ -41,7 +41,7 @@ def create_app(data_dir: Path | None = None, extract: bool | None = None) -> Fas
     def healthz():
         return {"ok": True, "extract": s.extract}
 
-    @app.post("/v1/jobs/{job_id}/items")
+    @app.post("/v1/jobs/{job_id}/items", responses={400: {"description": "item or meta is not a JSON object, or doesn't match the URL"}})
     async def ingest(
         job_id: str,
         item: Annotated[str, Form()],
@@ -55,6 +55,15 @@ def create_app(data_dir: Path | None = None, extract: bool | None = None) -> Fas
             meta_obj = json.loads(await meta.read())
         except json.JSONDecodeError as e:
             raise HTTPException(400, f"bad JSON: {e}") from e
+        # Valid JSON of the wrong shape (e.g. item "0") used to crash here with a 500 (Schemathesis,
+        # 2026-11-26). The event log is the one list: a list of event objects.
+        if not isinstance(it, dict):
+            raise HTTPException(400, "item must be a JSON object")
+        if it.get("kind") == "events":
+            if not isinstance(meta_obj, list) or not all(isinstance(e, dict) for e in meta_obj):
+                raise HTTPException(400, "events meta must be a list of objects")
+        elif not isinstance(meta_obj, dict):
+            raise HTTPException(400, "meta must be a JSON object")
         kind = it.get("kind")
         item_id = it.get("id")
         if kind not in KINDS or not item_id:
@@ -89,13 +98,13 @@ def create_app(data_dir: Path | None = None, extract: bool | None = None) -> Fas
     def jobs():
         return [{"job_id": j, "first_seen": t} for j, t in store.job_ids()]
 
-    @app.get("/v1/jobs/{job_id}/record")
+    @app.get("/v1/jobs/{job_id}/record", responses={404: {"description": "no such job"}})
     def record(job_id: str):
         if not store.items(job_id):
             raise HTTPException(404, "no such job")
         return assemble(store, job_id, s.extract)
 
-    @app.get("/files/{path:path}")
+    @app.get("/files/{path:path}", responses={404: {"description": "not a stored file"}})
     def files(path: str):
         target = (store.data_dir / path).resolve()
         if store.data_dir.resolve() not in target.parents or not target.is_file():
@@ -109,7 +118,7 @@ def create_app(data_dir: Path | None = None, extract: bool | None = None) -> Fas
         )
         return _page("FieldCapture back office", f"<h1>Jobs</h1><table><tr><th>Job</th><th>First upload</th></tr>{rows}</table>")
 
-    @app.get("/jobs/{job_id}", response_class=HTMLResponse)
+    @app.get("/jobs/{job_id}", response_class=HTMLResponse, responses={404: {"description": "no such job"}})
     def job_page(job_id: str):
         if not store.items(job_id):
             raise HTTPException(404, "no such job")

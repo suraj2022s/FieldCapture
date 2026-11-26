@@ -128,6 +128,7 @@ class WalkController(
         previous = phase
       }
     }
+    scope.launch { glasses.alerts.collect { if (job != null) speaker.say(it) } }
   }
 
   // ------------------------------------------------------------------ job lifecycle
@@ -401,6 +402,19 @@ class WalkController(
       }
       chosen = BestFrame.bestPassing(evaluated)?.payload
       if (chosen != null) break
+      // The glasses dropped, came off or were paused mid-capture. Waiting on would take the first
+      // frame after they're back, which may not show what was asked for (UI test 2026-11-26: a
+      // frame 6.8 s after the command, after a reconnect). Say so and let the tech repeat it.
+      val phaseNow = glasses.status.value.phase
+      if (phaseNow != WalkPhase.ACTIVE) {
+        speaker.failure()
+        speaker.say(
+            if (phaseNow == WalkPhase.PAUSED) "Capture not taken, the job is paused."
+            else "Capture not taken. Say it again when the glasses are back.",
+        )
+        log.log("capture", "$label: abandoned, glasses went $phaseNow mid-capture")
+        return
+      }
       val now = SystemClock.elapsedRealtime()
       val gaveUp = now - tCmd > MAX_WAIT_MS || (prompts >= MAX_PROMPTS && now - lastPromptAt > LAST_PROMPT_GRACE_MS)
       if ((forceAccept || gaveUp) && evaluated.isNotEmpty()) {

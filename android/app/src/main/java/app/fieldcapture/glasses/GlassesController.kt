@@ -41,7 +41,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
@@ -150,6 +154,26 @@ class GlassesController(
   private val _status = MutableStateFlow(GlassesStatus())
   val status: StateFlow<GlassesStatus> = _status.asStateFlow()
 
+  private val _alerts = MutableSharedFlow<String>(extraBufferCapacity = 8)
+  /**
+   * Warnings worth saying out loud that don't change the walk phase (heat, battery, power limit).
+   * Phase changes are announced by WalkController. A tech wearing glasses never looks at the phone,
+   * so a banner alone isn't enough (UI test 2026-11-26: overheat and 5% battery were silent).
+   */
+  val alerts: SharedFlow<String> = _alerts.asSharedFlow()
+  private val lastAlertAt = HashMap<String, Long>()
+
+  private fun alert(message: String) {
+    val now = SystemClock.elapsedRealtime()
+    synchronized(lastAlertAt) {
+      val last = lastAlertAt[message]
+      if (last != null && now - last < ALERT_REPEAT_MS) return
+      lastAlertAt[message] = now
+    }
+    log.log("alert", message)
+    _alerts.tryEmit(message)
+  }
+
   val frames = FrameRingBuffer()
 
   /** Called on the frame thread for every raw frame (quality scoring hooks in here). */
@@ -251,6 +275,10 @@ class GlassesController(
     if (old.thermal != new.thermal) log.log("device", "thermal ${old.thermal} -> ${new.thermal}")
     if (old.battery != new.battery && (new.battery <= 20 || old.battery <= 20)) {
       log.log("device", "battery ${old.battery}% -> ${new.battery}%")
+    }
+    // 0 is "not reported yet" (every device starts there), not an empty battery.
+    if (new.battery in 1..LOW_BATTERY_PCT && old.battery > LOW_BATTERY_PCT) {
+      alert("Glasses battery at ${new.battery} percent.")
     }
     if (old.compatibility != new.compatibility) {
       log.log("device", "compatibility ${old.compatibility} -> ${new.compatibility}")
@@ -361,7 +389,18 @@ class GlassesController(
       val backoff = (500L shl (attempt - 1).coerceIn(0, 5)).coerceAtMost(MAX_BACKOFF_MS)
       log.log("reconnect", "session ended after ${ranMs} ms; next attempt in $backoff ms (#$attempt)")
       setPhase(WalkPhase.RECONNECTING, "Glasses disconnected. Reconnecting.")
-      delay(backoff)
+      // Wake early when the glasses become wearable again (connected, unfolded, on), so a tech
+      // doesn't wait out the back-off after putting them back on (UI test 2026-11-26: 3.7 s idle).
+      // Only a change counts: glasses that already look ready but keep failing still back off.
+      val woke =
+          withTimeoutOrNull(backoff) {
+            _status
+                .map { st -> st.device?.let { it.link == LinkState.CONNECTED && it.don != DonState.DOFFED && it.hinge != HingeState.CLOSED } == true }
+                .distinctUntilChanged()
+                .drop(1)
+                .first { it }
+          }
+      if (woke != null) log.log("reconnect", "glasses ready again; retrying now")
     }
   }
 
@@ -603,6 +642,10 @@ class GlassesController(
         }
     _status.update { it.copy(lastError = e.name, guidance = guidance ?: it.guidance) }
     if (e == StreamError.CRITICAL_STREAM_ERROR || e == StreamError.TIMEOUT) s.stop()
+    // Folding and stream failures are announced through the phase change; these would be silent.
+    else if (guidance != null && e in setOf(StreamError.THERMAL_HOT, StreamError.BATTERY_LOW, StreamError.PEAK_POWER_LIMIT)) {
+      alert(guidance)
+    }
   }
 
   private fun onSessionError(e: DeviceSessionError) {
@@ -614,13 +657,19 @@ class GlassesController(
           DeviceSessionError.INSUFFICIENT_SDK_VERSION -> "This FieldCapture build is too old for these glasses."
           DeviceSessionError.NOT_REGISTERED -> "FieldCapture isn't connected to Meta AI."
           DeviceSessionError.THERMAL_CRITICAL,
-          DeviceSessionError.THERMAL_EMERGENCY -> "The glasses overheated."
+          DeviceSessionError.THERMAL_EMERGENCY -> "The glasses overheated. Let them cool down."
           DeviceSessionError.BATTERY_CRITICAL -> "Glasses battery is critical."
           DeviceSessionError.DEVICE_DISCONNECTED,
           DeviceSessionError.SESSION_ENDED_BY_DEVICE -> "Glasses disconnected."
           else -> null
         }
     _status.update { it.copy(lastError = e.name, guidance = guidance ?: it.guidance) }
+    when (e) {
+      DeviceSessionError.THERMAL_CRITICAL,
+      DeviceSessionError.THERMAL_EMERGENCY,
+      DeviceSessionError.BATTERY_CRITICAL -> guidance?.let { alert(it) }
+      else -> Unit // a disconnect is announced through the phase change
+    }
   }
 
   // ---------------------------------------------------------------- frames
@@ -694,6 +743,9 @@ class GlassesController(
   companion object {
     const val STARTING_WATCHDOG_MS = 15_000L
     const val LINK_LOSS_GRACE_MS = 5_000L
+    /** The same warning is spoken at most once a minute. */
+    const val ALERT_REPEAT_MS = 60_000L
+    const val LOW_BATTERY_PCT = 15
     const val STABLE_SESSION_MS = 30_000L
     const val MAX_BACKOFF_MS = 10_000L
     const val PHOTO_TIMEOUT_MS = 15_000L
