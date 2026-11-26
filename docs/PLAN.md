@@ -411,7 +411,7 @@ The brief arrived 2026-11-24 and is **due 2026-11-27**.
   - [x] Gradle project (`android/`) pinned to CameraAccess versions + DAT 1.1.0; `Wearables.initialize`; registration and permission flows
   - [x] MDK debug panel (pair / power / don / fold / feed / chaos) + `startTestServer` for the MockDevice MCP
   - [x] `GlassesController` (state machine, watchdog, reconnect, pause/resume) + frame buffer
-  - [ ] Run on the phone; instrumented tests L1–L8; measure mock behaviour (time to first frame, frame size per quality, `capturePhoto()` latency and output)
+  - [x] Run on the phone; instrumented tests L1–L8 (8/8); measure mock behaviour (time to first frame, frame size per quality, `capturePhoto()` latency and output): RESEARCH §5a
 - [ ] **M2 — Voice, capture, QC v0, persistence** (~4 h)
   - [x] Phone `SpeechRecognizer` loop + `CommandParser` (+ unit tests) + TTS/earcons
   - [x] `quality-core` metrics + seed thresholds + best-frame selection + auto-retake UX
@@ -420,13 +420,14 @@ The brief arrived 2026-11-24 and is **due 2026-11-27**.
 - [ ] **M3 — Backend and end-to-end loop** (~3 h)
   - [x] FastAPI ingest (idempotent), SQLite, file store; job-record JSON Schema + assembler + validation tests
   - [x] Line-item rules + tests; back-office HTML view; Claude extractors (nameplate, damage, note)
-  - [ ] End-to-end on the phone: voice → capture → upload → record
+  - [x] End-to-end on the phone: voice → capture → upload → record (real job 11-26; `tools/phone_smoke.ps1` PASS 11-26)
 - [ ] **M4 — Dataset round 1 and thresholds** (~2.5 h, mostly the user filming)
-  - [ ] Dataset mode in the app; labeling page; capture session per §12
-  - [ ] `quality-core` CLI → `qc_thresholds.py` → thresholds v1 shipped in the app
+  - [x] Dataset mode in the app; labeling page (whole pipeline rehearsed 11-26, nothing from the rehearsal committed)
+  - [ ] Capture session per §12 (the user films)
+  - [ ] `quality-core` CLI → `qc_thresholds.py` → thresholds v1 shipped in the app (script ready; needs the real frames)
 - [ ] **M5 — Extraction and eval** (~3 h)
-  - [ ] Claude extractors (nameplate, damage, note) + validators + OCR agreement
-  - [ ] Eval harness + calibration + report generator; model comparison (Haiku/Sonnet/Opus)
+  - [x] Claude extractors (nameplate, damage, note) + validators + OCR agreement
+  - [ ] Eval harness + calibration + report generator; model comparison (Haiku/Sonnet/Opus): built and rehearsed; needs the real test set
 - [ ] **M6 — Stretch** (~2.5 h): size without depth (A vs B vs tape); cost and latency (instrument → 2× cut)
 - [ ] **M7 — Hardening** (~2 h): chaos runs (offline/kill/server down); pocket mode (compressed HEVC + MediaCodec) if time allows; prompt polish
   - [x] L11: a walk the OS killed resumes on relaunch under the same job id (30 min inactivity window); older open jobs are closed and finalized. JVM-tested; verified on device with a real job.
