@@ -1,0 +1,81 @@
+# The simulated glasses misbehave mid-walk (Mock Device Kit buttons); the walk must recover each time.
+appId: app.fieldcapture
+name: Glasses events mid-job
+---
+- launchApp
+- scrollUntilVisible:
+    element: "Test feed"
+    direction: DOWN
+- tapOn: "Test feed"
+- scrollUntilVisible:
+    element: "Start job"
+    direction: UP
+- tapOn: "Start job"
+- extendedWaitUntil:
+    visible: "ACTIVE"
+    timeout: 15000
+
+# Power off -> reconnecting; power on -> back
+- scrollUntilVisible:
+    element: "Power off"
+    direction: DOWN
+- tapOn: "Power off"
+- scrollUntilVisible:
+    element: "RECONNECTING"
+    direction: UP
+    timeout: 20000
+- scrollUntilVisible:
+    element: "Power on"
+    direction: DOWN
+- tapOn: "Power on"
+- scrollUntilVisible:
+    element: "ACTIVE"
+    direction: UP
+    timeout: 20000
+
+# Taken off -> suspended; put on -> back
+- scrollUntilVisible:
+    element: "Doff"
+    direction: DOWN
+- tapOn: "Doff"
+- scrollUntilVisible:
+    element: "SUSPENDED"
+    direction: UP
+    timeout: 10000
+- scrollUntilVisible:
+    element: "Don"
+    direction: DOWN
+- tapOn: "Don"
+- scrollUntilVisible:
+    element: "ACTIVE"
+    direction: UP
+    timeout: 10000
+
+# Folded -> not active; unfolded and put on -> back
+- scrollUntilVisible:
+    element: "Fold"
+    direction: DOWN
+- tapOn: "Fold"
+- tapOn: "Unfold"
+- tapOn: "Don"
+- scrollUntilVisible:
+    element: "ACTIVE"
+    direction: UP
+    timeout: 20000
+
+# Overheat and low battery must not end the walk on the mock
+- scrollUntilVisible:
+    element: "Overheat"
+    direction: DOWN
+- tapOn: "Overheat"
+- tapOn: "Battery 5%"
+- tapOn: "Cool"
+- tapOn: "Battery 80%"
+- scrollUntilVisible:
+    element: "ACTIVE"
+    direction: UP
+    timeout: 10000
+- tapOn: "End job"
+- extendedWaitUntil:
+    visible: "Start job"
+    timeout: 10000

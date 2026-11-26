@@ -182,8 +182,8 @@ class GlassesController(
   @Volatile private var session: DeviceSession? = null
   @Volatile private var camera: Camera? = null
   @Volatile private var userPaused = false
-  /** We called pause() and the device hasn't confirmed PAUSED yet. */
-  @Volatile private var pauseInFlight = false
+  /** We called pause() and the session hasn't come back to STARTED since (tells our pause from the device's). */
+  @Volatile private var ourPause = false
   @Volatile private var cameraStarted = false
   @Volatile private var streamedOnce = false
   @Volatile private var streamRestarts = 0
@@ -330,9 +330,8 @@ class GlassesController(
     val s = session
     userPaused = true
     log.log("walk", "pause requested (session=${s?.state?.value})")
-    if (s?.state?.value == DeviceSessionState.STARTED) pauseInFlight = true
-    s?.pause()
     setPhase(WalkPhase.PAUSED, "Paused. Say \"resume job\" to continue.")
+    s?.let { reconcilePause(it, userAsked = true) }
   }
 
   /** "resume job": DAT 1.1 DeviceSession.resume(). */
@@ -340,8 +339,29 @@ class GlassesController(
     val s = session
     userPaused = false
     log.log("walk", "resume requested (session=${s?.state?.value})")
-    s?.resume()
     if (s == null) setPhase(WalkPhase.RECONNECTING, "Reconnecting to the glasses.")
+    else reconcilePause(s, userAsked = true)
+  }
+
+  /**
+   * Moves the session one settled step towards the pause state the tech asked for ([userPaused]).
+   * pause() only on a STARTED session whose stream is STREAMING; resume() only once our pause has
+   * reached the stream. A request that lands mid-transition is applied by the state change that ends
+   * it, which calls this again ("call pause() or resume() again once it settles": DAT docs).
+   * UI test 2026-11-26: taps 0.1 s apart used to resume() the instant the session said PAUSED, or pause
+   * a session whose camera was still starting. Mock Device Kit then stopped the camera, and the walk
+   * reconnected, in an endless loop while paused.
+   */
+  private fun reconcilePause(s: DeviceSession, userAsked: Boolean = false) {
+    val ss = s.state.value
+    val stream = _status.value.streamState
+    if (userPaused && ss == DeviceSessionState.STARTED && stream == StreamState.STREAMING) {
+      ourPause = true
+      s.pause()
+    } else if (!userPaused && ss == DeviceSessionState.PAUSED && (stream == StreamState.PAUSED || (userAsked && !ourPause))) {
+      // Our own pause: wait until it reached the stream. The device's pause: resume when the tech asks.
+      s.resume()
+    }
   }
 
   /** "end job": stop camera and session; the supervisor's finally-block does the teardown. */
@@ -518,19 +538,24 @@ class GlassesController(
     log.log("session_state", st.name)
     when (st) {
       DeviceSessionState.STARTED -> {
+        ourPause = false
         // Capabilities can only be attached at STARTED, and only once per session.
         if (camera == null) scope.attachCamera(s)
-        if (userPaused) s.pause()
+        // A pause wanted while the session (re)started waits for STREAMING (see reconcilePause).
+        reconcilePause(s)
       }
       DeviceSessionState.PAUSED -> {
-        val ours = pauseInFlight
-        pauseInFlight = false
         when {
           userPaused -> setPhase(WalkPhase.PAUSED, "Paused. Say \"resume job\" to continue.")
-          // "resume job" came before the device confirmed our pause, so the SDK ignored it.
-          ours -> {
-            log.log("walk", "resume arrived before the pause settled; resuming now")
-            s.resume()
+          // "resume job" came while our pause was settling: resume once the stream has paused. If the
+          // stream never says so, resume anyway after a moment rather than stay paused.
+          ourPause -> {
+            log.log("walk", "resume asked for before the pause settled; resuming once it has")
+            reconcilePause(s)
+            scope.launch {
+              delay(PAUSE_SETTLE_MS)
+              if (!userPaused && s.state.value == DeviceSessionState.PAUSED) s.resume()
+            }
           }
           else -> setPhase(WalkPhase.SUSPENDED, _status.value.guidance ?: "The glasses paused the camera.")
         }
@@ -600,13 +625,19 @@ class GlassesController(
       StreamState.STREAMING -> {
         streamedOnce = true
         when {
-          userPaused -> setPhase(WalkPhase.PAUSED)
+          userPaused -> {
+            setPhase(WalkPhase.PAUSED)
+            reconcilePause(s) // a pause asked for while the stream was starting
+          }
           glassesOff() -> setPhase(WalkPhase.SUSPENDED, "Glasses are off. Put them on to keep capturing.")
           else -> setPhase(WalkPhase.ACTIVE)
         }
       }
       StreamState.PAUSED ->
-          if (!userPaused) setPhase(WalkPhase.SUSPENDED, _status.value.guidance ?: "The glasses paused the camera.")
+          when {
+            ourPause -> reconcilePause(s) // a resume may be waiting for our pause to settle
+            !userPaused -> setPhase(WalkPhase.SUSPENDED, _status.value.guidance ?: "The glasses paused the camera.")
+          }
       // The state flow replays STOPPED to a new collector, so only a stop after STREAMING counts.
       // Per the DAT docs a started camera's stream can be started again; a stopped camera can't
       // (that case ends the session in the camera-state collector).
@@ -742,6 +773,8 @@ class GlassesController(
 
   companion object {
     const val STARTING_WATCHDOG_MS = 15_000L
+    /** How long a resume waits for our pause to reach the stream before resuming anyway. */
+    const val PAUSE_SETTLE_MS = 1_000L
     const val LINK_LOSS_GRACE_MS = 5_000L
     /** The same warning is spoken at most once a minute. */
     const val ALERT_REPEAT_MS = 60_000L

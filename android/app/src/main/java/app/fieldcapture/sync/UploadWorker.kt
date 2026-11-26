@@ -7,6 +7,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import app.fieldcapture.BuildConfig
@@ -136,13 +137,29 @@ class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker
     private const val MAX_ROUNDS = 20
     private const val WORK_NAME = "fieldcapture-upload"
 
+    private fun request() =
+        OneTimeWorkRequestBuilder<UploadWorker>()
+            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 10, TimeUnit.SECONDS)
+            .build()
+
     fun kick(context: Context) {
-      val request =
-          OneTimeWorkRequestBuilder<UploadWorker>()
-              .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
-              .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 10, TimeUnit.SECONDS)
-              .build()
-      WorkManager.getInstance(context).enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.APPEND_OR_REPLACE, request)
+      WorkManager.getInstance(context).enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.APPEND_OR_REPLACE, request())
+    }
+
+    /**
+     * The back office answers again: drop what's left of WorkManager's back-off and upload now.
+     * Leaves a running upload alone, and work that was just kicked (no failed attempt yet).
+     * Blocking (reads WorkInfo), so call it off the main thread. Returns true if it re-queued.
+     */
+    fun retryNow(context: Context): Boolean {
+      val wm = WorkManager.getInstance(context)
+      val infos = runCatching { wm.getWorkInfosForUniqueWork(WORK_NAME).get() }.getOrDefault(emptyList())
+      if (infos.any { it.state == WorkInfo.State.RUNNING }) return false
+      val waiting = infos.filter { it.state == WorkInfo.State.ENQUEUED || it.state == WorkInfo.State.BLOCKED }
+      if (waiting.isNotEmpty() && waiting.none { it.runAttemptCount > 0 }) return false
+      wm.enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.REPLACE, request())
+      return true
     }
   }
 }

@@ -546,3 +546,50 @@ The user asked for a full scan of every screen (scrolled, not just the top), tho
 - Tests: app JVM, quality-core, and backend 17/17.
 - `tools/phone_smoke.ps1` **PASS** on the new build and the restarted :8002 back office (14 earlier jobs intact): plate read correctly at $0.038 for the job, schema valid.
 - Phone left as filming needs: Start job showing, Dataset off, feed = back camera, dataset and debug folders empty, "stay awake while charging" back to off.
+
+## 2026-11-26 16:35 IST: Maestro + Toxiproxy round: 2 more bugs fixed
+
+### Why
+The user expected more bugs and approved installing Maestro (350 MB over their phone's hotspot; asked first) and Toxiproxy. Both went in `%LOCALAPPDATA%\fc-tools\`, were checksum-verified against the GitHub releases, and run with Maestro's analytics off.
+
+### What ran
+- **Toxiproxy** between the phone and a throwaway back office (extraction off), via the new `tools/toxiproxy_run.ps1`:
+  - 2–3 s latency: stored after 2.9 s.
+  - 8 KB/s uplink: 18.7 s.
+  - Connections reset for 40 s.
+  - Replies lost after the server stored the item: the phone gave up after 5.2 s (uvicorn's 5 s keep-alive closes the held connection), re-sent, and the server answered `duplicate`.
+  - Outages of 90, 150 and 200 s.
+  - The server stored every capture exactly once in both runs (8/8 and 5/5).
+- **Maestro**: 5 committed flows (`android/maestro/`): settings, job buttons, double taps, glasses events mid-walk, leaving the app mid-walk. **5/5 pass.**
+- **Genuinely fast taps** with adb, 0.1–0.3 s apart. Maestro waits for the UI to settle, so its taps land ~2 s apart.
+- **Screen off and background** mid-job, on the test feed and the phone camera, including **2 min with the screen off**: the stream stays at full rate, no ColorOS freeze, and a capture at 2 min saves and uploads.
+- **Memory**: 30 dataset-mode captures. PSS goes 139 → 175 MB over the first 10 (OCR and buffers load once), then 180–196 MB, ending at 184. No leak visible.
+- **Instrumented MDK tests**: 8/8.
+
+### Bugs found and fixed
+1. **Uploads waited out WorkManager's back-off after the signal came back.**
+   - Retries ran at 3, 15, 37, 79 and 161 s into an outage; the gap doubles, and new captures don't reset it.
+   - Measured: idle **31.2 s** after a 40 s fault (`eval/chaos/toxiproxy-faults-20261126-before-upload-fix.txt`). After 200 s down, the phone was in an 82 s gap.
+   - Fix: while anything is queued and the app is alive, ping the back office every 15 s. Once it answers, re-queue with REPLACE, unless an upload is running or the work was only just kicked (`UploadWorker.retryNow`).
+   - After the fix (`eval/chaos/toxiproxy-outages-20261126-160735.txt`): **5.5 s** after resets stop, **1.6 s** after a 90 s outage, **0.2 s** after a 200 s outage. 5/5 stored once, finalized.
+2. **Fast Pause/Resume broke the session; an endless reconnect loop while paused.**
+   - Taps 0.1 s apart made us `resume()` the instant the session said PAUSED, or `pause()` a session whose camera was still starting.
+   - Mock Device Kit then stops the camera, so we rebuilt the session. Ending on Pause, every new session was paused while its camera started, so it looped.
+   - Fix: `reconcilePause` keeps the tech's wish and moves one settled step at a time (pause only when the stream is STREAMING, resume only once it's PAUSED, 1 s fallback), per DAT's "call pause() or resume() again once it settles".
+   - Re-tested on 4 tap sequences: correct final state, **0 reconnects**, no drift. A double Start or End still gives one job.
+
+### Test-tool bugs (mine, fixed)
+- PowerShell names ignore case, so `$t` overwrote `$T`, the Toxiproxy URL.
+- Toxiproxy rejects "Mozilla" user agents.
+- Timing measured from the last phone event instead of a `mark` at the restore.
+- `Stop-Process` on `uv` orphaned the Python server, which held the pipe; now `taskkill /T`, as `chaos_run.ps1` does.
+- The Maestro runner's every-2-s `mic_off` broadcast restarted the app under Maestro's stop-then-launch. Now it mutes once per job start, read from logcat.
+
+### Mock findings (RESEARCH §5a)
+- No raw-stream pause in the background or with the screen off. This answers open question 2.3: it doesn't reproduce on MDK.
+- Fast pause/resume stops the camera.
+- A file feed runs at ~30 fps after a pause/resume.
+- ColorOS's `OplusHansManager` freezes the app at screen-off when no foreground service runs. One instrumented test timed out that way until the screen was kept awake.
+
+### Next
+The user films.

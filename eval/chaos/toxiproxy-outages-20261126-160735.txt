@@ -1,0 +1,40 @@
+# tools/toxiproxy_run.ps1 -Suite outages, 2026-11-26T16:07:35, app commit 5b7ca69
+job 99455df6-3f15-4fd2-a8f9-427311bbb8fc
+
+=== R1 connection reset 300 ms into every upload, for 40 s
+   pending while resetting: 2
+   stored 5.5s after the resets stopped
+     0.4s no connection to back office (IOException); will retry
+     10.8s no connection to back office (IOException); will retry
+     31.2s no connection to back office (IOException); will retry
+     45.6s back office answers; retrying now instead of waiting out the back-off
+     45.7s capture 888820ca stored
+     45.8s events events-9 stored
+
+=== R2 back office unreachable for 90 s, captures during it
+   last capture stored 1.6s after the back office came back
+     2.7s no connection to back office (IOException); will retry
+     14.8s no connection to back office (IOException); will retry
+     36.9s no connection to back office (IOException); will retry
+     80.7s no connection to back office (IOException); will retry
+     92.9s back office answers; retrying now instead of waiting out the back-off
+     93.1s capture 3647e792 stored
+     93.2s capture 073a638f stored
+     93.3s events events-9 stored
+
+=== R2 back office unreachable for 200 s, captures during it
+   last capture stored 0.2s after the back office came back
+     2.4s no connection to back office (IOException); will retry
+     14.5s no connection to back office (IOException); will retry
+     36.6s no connection to back office (IOException); will retry
+     78.7s no connection to back office (IOException); will retry
+     160.8s no connection to back office (IOException); will retry
+     203.4s back office answers; retrying now instead of waiting out the back-off
+     203.5s capture 88bafcf3 stored
+     203.7s capture b1b4e867 stored
+     203.8s events events-9 stored
+
+=== end job
+   final drain 3.4s
+captures saved on the phone: 888820ca 3647e792 073a638f 88bafcf3 b1b4e867
+server: {"rows_by_kind": {"job": 1, "capture": 5, "events": 1, "finalize": 1}, "captures": ["073a638f", "3647e792", "888820ca", "88bafcf3", "b1b4e867"], "notes": [], "finalized": true, "ingest_answers": {"created": 8, "updated": 4}, "items_uploaded_more_than_once": []}

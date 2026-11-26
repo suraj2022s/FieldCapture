@@ -1,0 +1,67 @@
+# Impatient or gloved hands: buttons tapped again before the app has caught up.
+# The walk must settle in a consistent state, and a double tap must never start two jobs.
+appId: app.fieldcapture
+name: Rapid and double taps
+---
+- launchApp
+- scrollUntilVisible:
+    element: "Test feed"
+    direction: DOWN
+- tapOn: "Test feed"
+- scrollUntilVisible:
+    element: "Start job"
+    direction: UP
+# Double tap on Start job
+- tapOn:
+    text: "Start job"
+    waitToSettleTimeoutMs: 50
+- tapOn:
+    text: "Start job"
+    optional: true
+    waitToSettleTimeoutMs: 50
+- extendedWaitUntil:
+    visible: "ACTIVE"
+    timeout: 15000
+# Pause/Resume hammered, ending on Resume: the walk must end up ACTIVE
+- tapOn:
+    text: "Pause"
+    waitToSettleTimeoutMs: 50
+- tapOn:
+    text: "Resume"
+    waitToSettleTimeoutMs: 50
+- tapOn:
+    text: "Pause"
+    waitToSettleTimeoutMs: 50
+- tapOn:
+    text: "Resume"
+    waitToSettleTimeoutMs: 50
+- extendedWaitUntil:
+    visible: "ACTIVE"
+    timeout: 10000
+# ... ending on Pause: the walk must end up PAUSED
+- tapOn:
+    text: "Pause"
+    waitToSettleTimeoutMs: 50
+- tapOn:
+    text: "Resume"
+    waitToSettleTimeoutMs: 50
+- tapOn:
+    text: "Pause"
+    waitToSettleTimeoutMs: 50
+- extendedWaitUntil:
+    visible: "PAUSED"
+    timeout: 10000
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible: "PAUSED"
+# Double tap on End job
+- tapOn:
+    text: "End job"
+    waitToSettleTimeoutMs: 50
+- tapOn:
+    text: "End job"
+    optional: true
+    waitToSettleTimeoutMs: 50
+- extendedWaitUntil:
+    visible: "Start job"
+    timeout: 10000

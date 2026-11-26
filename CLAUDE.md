@@ -66,11 +66,15 @@ Run these from `android/` in PowerShell. `JAVA_HOME` is already set to the Andro
 | App JVM tests (parser, job recovery) | `.\gradlew.bat :app:testDebugUnitTest` |
 | Drive a walk from adb (debug builds) | `adb shell "am broadcast -n app.fieldcapture/.debug.DebugCommandReceiver --es cmd say --es text 'capture nameplate'"`. `cmd` = `start`, `end`, `say` (+`text`), `mic_off`, `mark` (+`text`), `offline`, `online`, `status`, `feed_test`, `feed_camera`, `feed_file` (+`text` = absolute path of an H.265 file pushed into the app's external files dir), `dataset_on`, `dataset_off`. `feed_test` persists until `feed_camera`. Mock clips play at the *stream* fps (15), so encode them at 15 fps for real-time playback. |
 | Phone smoke test (~1 min) | From the repo root: `powershell -File tools\phone_smoke.ps1` (needs the :8002 back office with extraction on). Same preflight as the chaos run, and it also refuses if the dataset folder holds captures. |
+| Maestro UI flows (~6 min) | From the repo root: `powershell -File tools\maestro_run.ps1 [-Flow 03_rapid_taps.yaml]`. Flows live in `android/maestro/`; never add `clearState` (it wipes real jobs). Maestro's taps wait for the UI to settle (~2 s apart), so genuinely fast taps need `adb shell "input tap ..; input tap .."`. |
+| Bad-signal run (Toxiproxy, ~10 min) | From the repo root: `powershell -File tools\toxiproxy_run.ps1 [-Suite faults|outages]` → `eval/chaos/toxiproxy-<suite>-<ts>.txt`. It starts Toxiproxy and its own extract-off back office on :8001, and restores the 8000 → 8002 route afterwards. Toxiproxy rejects "Mozilla" user agents, so pass `-UserAgent` from PowerShell. |
 | API fuzz (Schemathesis, MIT) | Throwaway server: `FIELDCAPTURE_PORT=8003`, `FIELDCAPTURE_EXTRACT=0`, `FIELDCAPTURE_DATA_DIR=<empty dir>`, then `uv run --with schemathesis schemathesis run http://127.0.0.1:8003/openapi.json --checks all --exclude-checks positive_data_acceptance`. **Never fuzz :8002**: extraction is on there, so fuzzed uploads would spend API money. |
 | Chaos run (~5 min, phone to itself) | From the repo root: `powershell -File tools\chaos_run.ps1 [-OutageSeconds 60]` → `eval/chaos/chaos-<ts>.json`. It runs its own back office on :8001 and refuses to start if the app heard speech recently, a job is open, or uploads are queued. |
 | SDK packages | `$env:LOCALAPPDATA\Android\Sdk\cmdline-tools\latest\bin\android.exe --no-metrics sdk install <pkg>` |
 
 **Before driving the phone from a script, check the user isn't using it.** On 2026-11-25 the user was speaking commands to the app while a scripted check started a job on the synthetic feed, so their captures went into the wrong job. Look for recent `[heard]` lines in logcat, and ask first.
+
+**Instrumented tests:** run `.\gradlew.bat :app:connectedDebugAndroidTest "-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true"` with the screen awake (`adb shell svc power stayon usb`, then set it back to `false`). Without the flag, AGP uninstalls the app afterwards and deletes its local jobs. With the screen off, ColorOS freezes the app (`OplusHansManager … LcdOff`), because the tests run no foreground service.
 
 **Never toggle airplane mode, mobile data or Wi-Fi on the phone.** This PC's internet runs through the phone's Wi-Fi hotspot (`ap0`, gateway 172.30.136.250), so doing that cuts the session. Simulate "no signal" with `adb reverse --remove tcp:8000` (back office unreachable), the app's `offline` switch, or by stopping the server.
 
@@ -146,4 +150,8 @@ Commit-message tip for PowerShell 5.1: messages containing double quotes break `
 - **Google's official Android skills** (android/skills v1.0.24, Apache-2.0) are installed **locally** in `.claude/skills/`, which is gitignored: `android-cli`, `testing-setup`, `anr-audit-and-fix`, `android-permissions-security`, `android-intent-security`.
   - `android-profiler` was skipped on purpose: it bundles a native `trace_processor` binary.
   - The normal install is `android --no-metrics skills add --project . --agent claude <id>`. On this network the Android CLI's Java HTTP client times out, so the release zip was downloaded with curl and the skill folders copied in.
+- **Test tools installed with the user's OK (2026-11-26)**, outside the repo in `%LOCALAPPDATA%\fc-tools\`, checksum-verified against the GitHub release, no PATH changes:
+  - Maestro CLI 2.12.1 (Apache-2.0, 350 MB), run with `MAESTRO_CLI_NO_ANALYTICS=1`
+  - Toxiproxy 2.13.0 (MIT)
+  - Schemathesis runs through `uv run --with schemathesis` (uv cache only)
 - **Searched and skipped:** community Android plugins (unofficial, unknown provenance). Meta's iOS and display/Web-App kits don't apply to Android camera capture.

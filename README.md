@@ -69,6 +69,8 @@ flowchart LR
 
 **Without a phone**
 - Run the tests: `cd backend && uv run pytest -q`, and `cd android && ./gradlew :quality-core:test :app:testDebugUnitTest`.
+- UI flows on the phone with [Maestro](https://github.com/mobile-dev-inc/maestro) (Apache-2.0): `powershell -File tools\maestro_run.ps1` runs the five flows in [`android/maestro/`](android/maestro/README.md) (settings, job buttons, double taps, glasses events mid-walk, leaving the app mid-walk). 5/5 pass.
+- Bad signal with [Toxiproxy](https://github.com/Shopify/toxiproxy) (MIT) between the phone and a throwaway back office: `powershell -File tools\toxiproxy_run.ps1 [-Suite faults|outages]` (latency, an 8 KB/s uplink, reset connections, lost replies, outages). Results in [`eval/chaos/`](eval/chaos/).
 - Fuzz the back office API with [Schemathesis](https://github.com/schemathesis/schemathesis) (MIT), against a throwaway server with extraction off: start one with `FIELDCAPTURE_PORT=8003 FIELDCAPTURE_EXTRACT=0 FIELDCAPTURE_DATA_DIR=<empty dir> uv run fieldcapture-server`, then `uv run --with schemathesis schemathesis run http://127.0.0.1:8003/openapi.json --checks all --exclude-checks positive_data_acceptance`. The excluded check flags our `item` form field, a JSON string, being rejected when it isn't JSON. On 2026-11-26 it found one crash (fixed, with a regression test); 1,759 generated requests then passed.
 - Replay the whole eval from committed model responses, with no key and no spend:
   ```bash

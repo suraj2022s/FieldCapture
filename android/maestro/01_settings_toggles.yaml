@@ -1,0 +1,27 @@
+# Every debug setting flips and flips back. Never uses clearState: that would wipe real jobs.
+# Run: maestro test android/maestro   (debug build installed; see android/maestro/README.md)
+appId: app.fieldcapture
+name: Settings toggles flip and flip back
+---
+- launchApp
+- scrollUntilVisible:
+    element: "No-signal: off"
+    direction: DOWN
+- tapOn: "No-signal: off"
+- assertVisible: "No-signal: ON"
+- tapOn: "No-signal: ON"
+- assertVisible: "No-signal: off"
+- tapOn: "Dataset: off"
+- assertVisible: "Dataset: ON"
+- tapOn: "Dataset: ON"
+- assertVisible: "Dataset: off"
+- tapOn: "Evidence: photo"
+- assertVisible: "Evidence: stream"
+- tapOn: "Evidence: stream"
+- assertVisible: "Evidence: photo"
+- tapOn: "YUV: I420"
+- assertVisible: "YUV: NV21"
+- tapOn: "YUV: NV21"
+- assertVisible: "YUV: NV12"
+- tapOn: "YUV: NV12"
+- assertVisible: "YUV: I420"

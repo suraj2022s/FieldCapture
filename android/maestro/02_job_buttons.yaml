@@ -1,0 +1,39 @@
+# A job driven only by the on-screen buttons: start, pause, resume, end, and a second job.
+# The synthetic test feed is selected first, so nothing in the room is filmed.
+appId: app.fieldcapture
+name: Job buttons
+---
+- launchApp
+- scrollUntilVisible:
+    element: "Test feed"
+    direction: DOWN
+- tapOn: "Test feed"
+- scrollUntilVisible:
+    element: "Start job"
+    direction: UP
+- tapOn: "Start job"
+- extendedWaitUntil:
+    visible: "ACTIVE"
+    timeout: 15000
+- tapOn: "Pause"
+- extendedWaitUntil:
+    visible: "PAUSED"
+    timeout: 10000
+- tapOn: "Resume"
+- extendedWaitUntil:
+    visible: "ACTIVE"
+    timeout: 10000
+- tapOn: "End job"
+- extendedWaitUntil:
+    visible: "Start job"
+    timeout: 10000
+- assertVisible: "Last job: .*"
+# A second job straight after the first (the Start job button used to disappear after a job ended)
+- tapOn: "Start job"
+- extendedWaitUntil:
+    visible: "ACTIVE"
+    timeout: 15000
+- tapOn: "End job"
+- extendedWaitUntil:
+    visible: "Start job"
+    timeout: 10000

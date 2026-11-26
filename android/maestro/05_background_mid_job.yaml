@@ -1,0 +1,29 @@
+# The tech leaves the app mid-walk (home button, a call) and comes back: the walk must carry on.
+appId: app.fieldcapture
+name: Leave the app mid-job and come back
+---
+- launchApp
+- scrollUntilVisible:
+    element: "Test feed"
+    direction: DOWN
+- tapOn: "Test feed"
+- scrollUntilVisible:
+    element: "Start job"
+    direction: UP
+- tapOn: "Start job"
+- extendedWaitUntil:
+    visible: "ACTIVE"
+    timeout: 15000
+- pressKey: Home
+- waitForAnimationToEnd:
+    timeout: 8000
+- launchApp:
+    stopApp: false
+- extendedWaitUntil:
+    visible: "ACTIVE"
+    timeout: 20000
+- assertVisible: ".*[1-9]\\d*\\.\\d fps.*|.*fps=[1-9].*"
+- tapOn: "End job"
+- extendedWaitUntil:
+    visible: "Start job"
+    timeout: 10000

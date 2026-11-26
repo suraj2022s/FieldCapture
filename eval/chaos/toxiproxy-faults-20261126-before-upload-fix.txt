@@ -1,0 +1,48 @@
+﻿# Toxiproxy faults suite, 2026-11-26 ~15:27 IST, BEFORE the upload-retry fix (installed app = commit 7c1a854).
+# Produced by the scratchpad predecessor of tools/toxiproxy_run.ps1 (same S1-S6 cases). S4 is timed from a status call made just before the resets stopped;
+# S6 "drained" is wall-clock from the restore. Server counts (tools/chaos_counts.py): 8/8 captures stored once each, finalized; capture b3e5bc95 sent twice (S5, lost reply) and answered "duplicate".
+
+
+job a485e124-8440-455a-93ac-7544b7c2c5fc
+
+=== S1 baseline
+   stored after 0.2s
+
+=== S2 latency 2000+-500 ms down, 1000 ms up
+   stored after 2.9s
+
+=== S3 slow uplink 8 KB/s
+   stored after 18.7s
+
+=== S4 connection reset 300 ms into every upload, for 40 s
+   pending while resetting: 2
+   stored 31.2s after the resets stopped
+     0.4s no connection to back office (IOException); will retry
+     10.8s no connection to back office (IOException); will retry
+     31.2s no connection to back office (IOException); will retry
+     71.3s capture 0ac40f8d stored
+     71.4s events events-a stored
+
+=== S5 server stores it, but the reply never reaches the phone
+   phone gave up waiting after 5.2s
+   stored 10.1s after the replies came back
+     5.2s no connection to back office (IOException); will retry
+     15.3s capture b3e5bc95 stored
+     15.3s events events-a stored
+
+=== S6 back office unreachable for 150 s, 3 captures during it
+   pending before restore: 4
+   drained 9.7s after the back office came back
+     2.7s no connection to back office (IOException); will retry
+     14.8s no connection to back office (IOException); will retry
+     36.9s no connection to back office (IOException); will retry
+     78.9s no connection to back office (IOException); will retry
+     159.0s capture 3e8a3696 stored
+     159.1s capture c53f268d stored
+     159.3s capture f69b9f75 stored
+     159.4s events events-a stored
+
+=== end job
+   final drain 3.3s
+captures saved on phone: fbcf1c3b cfb732be ef231d8c 0ac40f8d b3e5bc95 3e8a3696 c53f268d f69b9f75
+JOB=a485e124-8440-455a-93ac-7544b7c2c5fc
