@@ -152,12 +152,17 @@
       "damage_type": "peeling_bubbling_paint",
       "material": "plaster",
       "surface": "wall",
-      "width_in": "",
-      "height_in": "",
+      "width_in": "33.9",
+      "height_in": "26.4",
       "reference_kind": "",
       "reference_w_in": "",
       "reference_h_in": "",
       "staged": "no"
+    },
+    "measured_cm": {
+      "w": 86,
+      "h": 67,
+      "by": "user, study ruler, 2026-11-26"
     }
   },
   "dm-kitchen-ceiling": {
@@ -166,12 +171,17 @@
       "damage_type": "crack",
       "material": "plaster",
       "surface": "ceiling",
-      "width_in": "",
-      "height_in": "",
+      "width_in": "44.5",
+      "height_in": "3.1",
       "reference_kind": "",
       "reference_w_in": "",
       "reference_h_in": "",
       "staged": "no"
+    },
+    "measured_cm": {
+      "w": 113,
+      "h": 8,
+      "by": "user, study ruler, 2026-11-26 (approx.)"
     }
   },
   "dm-living-room-peeling-paint": {
@@ -180,12 +190,17 @@
       "damage_type": "peeling_bubbling_paint",
       "material": "plaster",
       "surface": "wall",
-      "width_in": "",
-      "height_in": "",
+      "width_in": "61.8",
+      "height_in": "19.7",
       "reference_kind": "",
       "reference_w_in": "",
       "reference_h_in": "",
       "staged": "no"
+    },
+    "measured_cm": {
+      "w": 157,
+      "h": 50,
+      "by": "user, study ruler, 2026-11-26"
     }
   },
   "dm-bathroom-seepage": {
@@ -194,12 +209,17 @@
       "damage_type": "water_stain",
       "material": "plaster",
       "surface": "wall",
-      "width_in": "",
-      "height_in": "",
+      "width_in": "43.3",
+      "height_in": "32.7",
       "reference_kind": "",
       "reference_w_in": "",
       "reference_h_in": "",
       "staged": "no"
+    },
+    "measured_cm": {
+      "w": 110,
+      "h": 83,
+      "by": "user, study ruler, 2026-11-26"
     }
   },
   "dm-bathroom-broken-plaster": {
@@ -208,12 +228,17 @@
       "damage_type": "hole",
       "material": "plaster",
       "surface": "wall",
-      "width_in": "",
-      "height_in": "",
+      "width_in": "9.8",
+      "height_in": "8.7",
       "reference_kind": "",
       "reference_w_in": "",
       "reference_h_in": "",
       "staged": "no"
+    },
+    "measured_cm": {
+      "w": 25,
+      "h": 22,
+      "by": "user, study ruler, 2026-11-26"
     }
   },
   "dm-bathroom-ventilator": {
@@ -222,12 +247,17 @@
       "damage_type": "other",
       "material": "other",
       "surface": "window",
-      "width_in": "",
-      "height_in": "",
+      "width_in": "13.8",
+      "height_in": "13.8",
       "reference_kind": "",
       "reference_w_in": "",
       "reference_h_in": "",
       "staged": "no"
+    },
+    "measured_cm": {
+      "w": 35,
+      "h": 35,
+      "by": "user, study ruler, 2026-11-26"
     }
   },
   "dm-loft": {
@@ -236,12 +266,17 @@
       "damage_type": "other",
       "material": "other",
       "surface": "cabinet",
-      "width_in": "",
-      "height_in": "",
+      "width_in": "45.3",
+      "height_in": "19.7",
       "reference_kind": "",
       "reference_w_in": "",
       "reference_h_in": "",
       "staged": "no"
+    },
+    "measured_cm": {
+      "w": 115,
+      "h": 50,
+      "by": "user, study ruler, 2026-11-26"
     }
   },
   "dm-kitchen-window": {
@@ -250,12 +285,17 @@
       "damage_type": "other",
       "material": "other",
       "surface": "window",
-      "width_in": "",
-      "height_in": "",
+      "width_in": "37.4",
+      "height_in": "49.2",
       "reference_kind": "",
       "reference_w_in": "",
       "reference_h_in": "",
       "staged": "no"
+    },
+    "measured_cm": {
+      "w": 95,
+      "h": 125,
+      "by": "user, study ruler, 2026-11-26"
     }
   },
   "dm-living-room-ac": {
@@ -264,12 +304,17 @@
       "damage_type": "other",
       "material": "other",
       "surface": "fixture",
-      "width_in": "",
-      "height_in": "",
+      "width_in": "25.6",
+      "height_in": "17.7",
       "reference_kind": "",
       "reference_w_in": "",
       "reference_h_in": "",
       "staged": "no"
+    },
+    "measured_cm": {
+      "w": 65,
+      "h": 45,
+      "by": "user, study ruler, 2026-11-26"
     }
   }
 }

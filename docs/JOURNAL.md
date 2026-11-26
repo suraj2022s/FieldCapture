@@ -847,3 +847,18 @@ User's confirmations (the `?` fields) and the damage sizes in cm. Then the label
 
 ### Next
 Damage sizes from the user. Then `run_extraction` (3 models, ~$5, waiting on the user's OK), calibrate, report.
+
+## 2026-11-27 00:05 IST: damage sizes measured; new thresholds on the phone; eval run started
+
+### Damage ground truth
+- The user measured all 9 spots with a study ruler (cm, converted to inches in scenes.json; the cm values are kept under `measured_cm`). The kitchen-ceiling crack is approximate.
+- Claude's by-eye guesses were committed first (`eval/labels/claude_size_guesses.json`, bf355e8). Median area gap vs the ruler: **17%** (worst 34%, the kitchen crack). The guess was low on 7 of 9.
+- **Caveat: the user saw the guesses before measuring** (their choice, to see "how good AI is" while measuring). So the ruler numbers may lean toward the guesses, and this 17% is not evidence of by-eye accuracy. The extraction models never see these guesses, so the main size evaluation doesn't have this problem, but the ground truth itself carries the same possible lean.
+- No reference object was measured. `reference_kind` stays blank, so the "measured reference" sizing variant isn't scored.
+
+### Phone
+- Installed the build with the fitted thresholds; logcat shows `thresholds=measured-n112`.
+- The USB tunnel had dropped, leaving 7 uploads queued from job 5038830a. Routed 8000 → 8001 (the dataset back office, extraction off); the queue reached 0 in ~20 s (107 items stored). Then routed back to 8002.
+
+### Eval
+`run_extraction.py --per-capture 3` over the 201 scored frames × Haiku, Sonnet and Opus, plus the 19 notes. The user approved ~$5.
