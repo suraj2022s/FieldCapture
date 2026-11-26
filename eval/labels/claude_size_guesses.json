@@ -1,0 +1,12 @@
+{
+  "_about": "Claude's by-eye size estimates (cm, width x height of the damaged area or broken item), written from the frames on 2026-11-26 BEFORE seeing the user's tape/ruler measurements, so the ground truth is not anchored on them. No ruler is in view; the scale comes from objects of roughly known size. Not used for scoring: scenes.json holds the measured truth.",
+  "dm-drawing-room-north-wall": {"w_cm": 80, "h_cm": 60, "scale_from": "socket plate (~12 cm) at the bottom left"},
+  "dm-kitchen-ceiling": {"w_cm": 120, "h_cm": 5, "scale_from": "room corner; the crack runs along the ceiling edge"},
+  "dm-living-room-peeling-paint": {"w_cm": 150, "h_cm": 45, "scale_from": "wall clock (~25 cm) and clothes hangers (~40 cm)"},
+  "dm-bathroom-seepage": {"w_cm": 100, "h_cm": 80, "scale_from": "the two mugs (~12 cm) on the wall"},
+  "dm-bathroom-broken-plaster": {"w_cm": 30, "h_cm": 20, "scale_from": "15 L water heater (~35 cm across) below it"},
+  "dm-bathroom-ventilator": {"w_cm": 30, "h_cm": 30, "scale_from": "tube light (~60 cm) above it"},
+  "dm-loft": {"w_cm": 120, "h_cm": 60, "scale_from": "boxes on the loft shelf"},
+  "dm-kitchen-window": {"w_cm": 90, "h_cm": 120, "scale_from": "steel tumblers and a strainer on the sill"},
+  "dm-living-room-ac": {"w_cm": 60, "h_cm": 40, "scale_from": "typical window AC front panel"}
+}
