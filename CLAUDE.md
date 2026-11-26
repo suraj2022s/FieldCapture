@@ -64,7 +64,7 @@ Run these from `android/` in PowerShell. `JAVA_HOME` is already set to the Andro
 | adb | `$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe` |
 | App logs | `adb logcat -s FieldCapture` |
 | App JVM tests (parser, job recovery) | `.\gradlew.bat :app:testDebugUnitTest` |
-| Drive a walk from adb (debug builds) | `adb shell "am broadcast -n app.fieldcapture/.debug.DebugCommandReceiver --es cmd say --es text 'capture nameplate'"`. `cmd` = `start`, `end`, `say` (+`text`), `mic_off`, `mark` (+`text`), `offline`, `online`, `status`, `feed_test`, `feed_camera`. `feed_test` persists until `feed_camera`. |
+| Drive a walk from adb (debug builds) | `adb shell "am broadcast -n app.fieldcapture/.debug.DebugCommandReceiver --es cmd say --es text 'capture nameplate'"`. `cmd` = `start`, `end`, `say` (+`text`), `mic_off`, `mark` (+`text`), `offline`, `online`, `status`, `feed_test`, `feed_camera`, `feed_file` (+`text` = absolute path of an H.265 file pushed into the app's external files dir), `dataset_on`, `dataset_off`. `feed_test` persists until `feed_camera`. Mock clips play at the *stream* fps (15), so encode them at 15 fps for real-time playback. |
 | Chaos run (~5 min, phone to itself) | From the repo root: `powershell -File tools\chaos_run.ps1 [-OutageSeconds 60]` → `eval/chaos/chaos-<ts>.json`. It runs its own back office on :8001 and refuses to start if the app heard speech recently, a job is open, or uploads are queued. |
 | SDK packages | `$env:LOCALAPPDATA\Android\Sdk\cmdline-tools\latest\bin\android.exe --no-metrics sdk install <pkg>` |
 

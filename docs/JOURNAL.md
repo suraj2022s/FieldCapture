@@ -420,3 +420,48 @@ The newest entry is at the bottom. Each entry records what was done, the decisio
   - Line items under the new rules: board ceiling stains → `PNT-SPR` + `INS-RR` "consider" + `MST-MAP`; the Katrina mould ceiling → `MLD-REM` 120 SF (containment) + `ANT-APP` + `PNT-SPR`.
   - Every size was a 0.2–0.4 guess, so every quantity is marked `needs_measurement`, as intended.
 - **Caveat:** these are sharp, well-lit, high-resolution web photos, much easier than 480×640 glasses frames. They show the extractors and rules work end to end and fail safe. They say nothing about accuracy on our captures, which is what the eval measures.
+
+---
+
+## 2026-11-26 — Session 2, midday: full pipeline rehearsal before filming (web images as a stand-in, not data)
+
+### Why
+The user asked for the pipeline to be tested with web images before filming, so that real captures need "minimal updating" afterwards. Dataset mode, the pull, labelling, threshold fitting, extraction, calibration and the report had never run on any data. The rehearsal ran in a **copy of `eval/` in the scratchpad**: no rehearsal frame, label, result or report is in the repo. The phone's rehearsal data was deleted afterwards.
+
+### How
+- The 8 Commons images, each as good / dark (×0.13) / blurred (σ=7), were made into a 240 s, 540×960 H.265 clip, pushed to the phone and played as the **mock glasses feed**. That needed a new debug command `feed_file`, plus `dataset_on` / `dataset_off`.
+- 24 scripted captures with dataset mode ON, the mic off and a throwaway back office on :8001.
+- Pulled with the real `pull_dataset.ps1` (293 files), auto-labelled (standing in for the labelling page), then freeze → `qc_thresholds --write-app` → `run_extraction` (3 models) → `calibrate` → `report`.
+
+### What worked first time
+- Dataset mode on the device: 24/24 captures saved every candidate frame, with on-device metrics and OCR.
+- The pull script.
+- Labelling page: 24 captures, 245 frames, 5 scenes rendered; the label API saves; path traversal is blocked.
+- Extraction: 132 calls, 0 errors.
+- Notes scoring from the back-office DB.
+- The app loads a `--write-app` thresholds file (`thresholds=measured-n133` at start-up; the file was removed again afterwards).
+
+### What the rehearsal found and fixed
+1. **Cost.** Extraction scored every labelled frame. With ~10 frames saved per capture, the real set would have cost ~$20–25 (all of the API credit), mostly on near-duplicates. Now it scores 2 frames per capture (the app's chosen frame plus the worst-scoring one, `common.sample_frames`), configurable with `--per-capture`. Measured per frame: Haiku $0.0005, Sonnet $0.008, Opus $0.016, so the real eval is ~$3–5.
+2. **The committed test set had no producer.** The scripts read `eval/raw` (gitignored), the report linked to it, and `--cached` replay needs the frames. New `eval/freeze.py` copies labelled captures (`capture.json` plus the scored frames) into `eval/dataset/`. Scripts read that once it exists; the labelling page always uses the raw pull. A blank scene keeps a capture out of the public repo (privacy). The rehearsal's 24 captures froze to 3.7 MB. **`--cached` replay from the frozen set reproduced all 132 rows in 5 s for $0.**
+3. **Threshold fitting overfit to the edge of the usable frames.** It set e.g. `minMeanLuma 121`, `minSharpness 500` and `maxDarkFraction 0.03`, so a normal indoor frame would have been prompted "too dark". Within the false-retake cap it now takes the middle of the gap between the classes (geometric for sharpness): 75.8 / 34.9 / 0.30, with identical tune and test performance.
+4. **Calibration would refuse to run** on realistic data: Opus and Sonnet were **never confidently wrong**. On dark and blurred plates they returned null instead of guessing (13 times), which left nothing to calibrate against. It now measures leave-one-scene-out (all data, no leakage by scene), needs ≥ 3 wrong answers, and otherwise reports the abstention counts and keeps the prior instead of exiting with an error. It writes one result per model, so Haiku, whose confidence drives the cascade, can be calibrated separately.
+5. **Report fixes:**
+   - Extraction accuracy is now on all scenes (nothing is fitted on those labels), roughly doubling n; the quality gate stays on held-out scenes.
+   - New *read rate / invented values* table. **0/49 invented values for every model.**
+   - The five worst failures: one row per capture, misses (printed but left blank) count, drawn from all scenes, never an empty table.
+   - **The cascade simulation escalated 100% at every τ** because a blank, unprinted date has confidence 0. It now escalates only on a low-confidence *answer* or a blank make/model/serial: Haiku-first at τ=0.5 escalated 68% of plates with the same accuracy, at 0.69× the cost.
+   - Cosmetic: `nan` → "—", and the edge sign on upper rules.
+6. `run_extraction --workers 4`: the real set should take ~5 min instead of ~17.
+
+### Mock Device Kit finding
+A video feed plays **one source frame per stream frame at the stream's rate**: a 24 fps clip streamed at 15 fps runs at 0.625× real time. This was found because the clip ran out of step with the timed captures. It's confirmed from frame luma at three points and explains the earlier "8 s clip flows past 8 s". RESEARCH §5a; CLAUDE.md says to encode mock clips at 15 fps.
+
+### Verified
+- Backend 12/12.
+- The rehearsal ran end to end twice (live API, then `--cached`).
+- The app was rebuilt without the rehearsal thresholds: `seed-2026-11-25` at start-up.
+- The phone's dataset folder is empty, dataset mode is off, and the route is back to :8002.
+
+### For the real data (what's left is only the human part)
+pull → label (scene, condition, frame labels, ground truth) → `freeze` → review `eval/dataset` for privacy → the 5 commands in `eval/README.md` §3 → write `failure_causes.json` → re-run `report.py` → commit `eval/dataset`, `eval/labels`, `eval/llm-cache`, `eval/results` and `REPORT.md`.

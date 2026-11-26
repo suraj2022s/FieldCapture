@@ -56,8 +56,9 @@ def page(title: str, body: str) -> HTMLResponse:
 @app.get("/", response_class=HTMLResponse)
 def frames_page():
     frames, caps, _ = labels()
-    out = [f"<h1>Captures ({len(raw_captures())})</h1><p class='muted'>Blue border = frame the app chose. Label every frame: is it usable for its purpose (nameplate: could you read the serial? damage: is it visible with context?)</p>"]
-    for c in raw_captures():
+    captures = raw_captures(RAW)  # labelling always works on the full pull, never the frozen subset
+    out = [f"<h1>Captures ({len(captures)})</h1><p class='muted'>Blue border = frame the app chose. Label every frame: is it usable for its purpose (nameplate: could you read the serial? damage: is it visible with context?). Leave a capture's scene blank to keep it out of the committed test set.</p>"]
+    for c in captures:
         cid = c["captureId"]
         meta = caps.get(cid, {})
         rel = c["_dir"].relative_to(RAW).as_posix()
@@ -98,7 +99,7 @@ DAMAGE_FIELDS = ["damage_type", "material", "surface", "width_in", "height_in", 
 def scenes_page():
     _, caps, scenes = labels()
     by_scene: dict[str, str] = {}
-    purposes = {c["captureId"]: c["purpose"] for c in raw_captures()}
+    purposes = {c["captureId"]: c["purpose"] for c in raw_captures(RAW)}
     for cid, meta in caps.items():
         if meta.get("scene"):
             by_scene.setdefault(meta["scene"], purposes.get(cid, "nameplate"))

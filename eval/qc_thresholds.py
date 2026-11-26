@@ -3,8 +3,9 @@
 Usage (repo root):  uv run --project backend python eval/qc_thresholds.py [--max-false-retake 0.05] [--write-app]
 
 Metrics are the numbers the phone computed (dataset mode), not recomputed here, so the shipped
-thresholds are measured on exactly what the gate sees. Operating point: the loosest threshold that
-still rejects at most --max-false-retake of the usable frames in the TUNE scenes. Rationale: a false
+thresholds are measured on exactly what the gate sees. Operating point: reject at most
+--max-false-retake of the usable frames in the TUNE scenes while catching as many bad ones as
+possible; within that, the middle of the gap between the classes (see fit_lower). Rationale: a false
 retake costs a tech ~5 s and patience, so we cap it; we then report how many truly bad frames that
 threshold catches on the TEST scenes (scene-level split, no leakage).
 """
@@ -12,13 +13,14 @@ threshold catches on the TEST scenes (scene-level split, no leakage).
 from __future__ import annotations
 
 import argparse
+import math
 import statistics
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from common import REPO, RESULTS, RAW, labels, raw_captures, save_json, split_of  # noqa: E402
+from common import REPO, RESULTS, labels, raw_captures, save_json, source_root, split_of  # noqa: E402
 
 SEED = {
     "minSharpness": 40.0,
@@ -34,10 +36,11 @@ SEED = {
 def frame_rows() -> list[dict]:
     frames, caps, _ = labels()
     rows = []
-    for c in raw_captures():
+    root = source_root()
+    for c in raw_captures(root):
         meta = caps.get(c["captureId"], {})
         scene = meta.get("scene") or f"unassigned-{c['captureId'][:8]}"
-        rel = c["_dir"].relative_to(RAW).as_posix()
+        rel = c["_dir"].relative_to(root).as_posix()
         for cand in c["candidates"]:
             lab = frames.get(f"{rel}/{cand['file']}", {}).get("label")
             if not lab or lab == "wrong_target":
@@ -68,14 +71,27 @@ def frame_rows() -> list[dict]:
     return rows
 
 
-def fit_lower(usable: list[float], bad: list[float], max_fr: float) -> tuple[float | None, dict]:
-    """Rule 'reject if metric < T': T = the max_fr quantile of usable frames."""
+def fit_lower(usable: list[float], bad: list[float], max_fr: float, log: bool = False) -> tuple[float | None, dict]:
+    """Rule 'reject if metric < T'.
+
+    The false-retake cap allows any T up to the max_fr quantile of usable frames (the edge). Every T
+    between the highest bad value below that edge and the edge catches the same bad frames on tune,
+    with no more false retakes, so take the middle of that gap (max margin) rather than its edge: on
+    a small, clean set the edge is just the lowest usable frame seen, and a normal frame slightly
+    below it would be prompted. Sharpness spans orders of magnitude, so its midpoint is geometric.
+    """
     if len(usable) < 5 or len(bad) < 3:
         return None, {"n_usable": len(usable), "n_bad": len(bad), "note": "too few frames; seed kept"}
     u = sorted(usable)
     k = int(max_fr * len(u))
-    t = u[k] if k < len(u) else u[-1]
+    edge = u[k] if k < len(u) else u[-1]
+    below = [x for x in bad if x < edge]
+    t = edge
+    if below:
+        lo = max(below)
+        t = math.sqrt(lo * edge) if log and lo > 0 and edge > 0 else (lo + edge) / 2
     return t, {
+        "edge": round(edge, 4),
         "n_usable": len(usable),
         "n_bad": len(bad),
         "false_retake": sum(x < t for x in usable) / len(usable),
@@ -89,6 +105,8 @@ def fit_upper(usable: list[float], bad: list[float], max_fr: float) -> tuple[flo
     t, info = fit_lower([-x for x in usable], [-x for x in bad], max_fr)
     if t is None:
         return None, info
+    if "edge" in info:
+        info["edge"] = -info["edge"]
     return -t, info
 
 
@@ -161,7 +179,7 @@ def main() -> None:
     t = dict(SEED)
     fits: dict[str, dict] = {}
     mf = args.max_false_retake
-    t_val, fits["minSharpness"] = fit_lower(vals(tune, "sharp", {"usable"}), vals(tune, "sharp", {"blurry"}), mf)
+    t_val, fits["minSharpness"] = fit_lower(vals(tune, "sharp", {"usable"}), vals(tune, "sharp", {"blurry"}), mf, log=True)
     if t_val is not None:
         t["minSharpness"] = round(t_val, 1)
     t_val, fits["minMeanLuma"] = fit_lower(vals(tune, "luma", {"usable"}), vals(tune, "luma", {"dark"}), mf)

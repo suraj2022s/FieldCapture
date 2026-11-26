@@ -35,12 +35,37 @@ uv run --project backend python eval/label_app.py      # http://127.0.0.1:8100
 
 Labels go to `eval/labels/*.json`. They are part of the test set and get committed.
 
-## 3. Measure
+## 3. Freeze, measure, report (PC)
+
+Run from the repo root, in this order (rehearsed end to end on 2026-11-26):
 
 ```
-uv run --project backend python eval/qc_thresholds.py --write-app   # quality thresholds -> app assets + results/qc.json
+uv run --project backend python eval/freeze.py                 # labelled captures -> eval/dataset (committed)
+uv run --project backend python eval/qc_thresholds.py --write-app
+uv run --project backend python eval/run_extraction.py         # 3 models x 2 frames per capture, 4 calls at a time
+uv run --project backend python eval/calibrate.py --model claude-haiku-5-5
+uv run --project backend python eval/calibrate.py --model claude-opus-5-5 --write
+uv run --project backend python eval/report.py                 # -> eval/REPORT.md
 ```
 
-Splits are by **scene**: `common.split_of()` hashes the scene id, so no frame of a scene appears in
-both the tune and test halves. Thresholds and confidence calibration are fitted on **tune**; every
-number in the report is on **test** unless it says otherwise.
+- **freeze.py** copies every capture that has a scene into `eval/dataset/`: its `capture.json` (all
+  frames' on-device metrics) plus the frames extraction is scored on. Leave a capture's scene blank on
+  the labelling page to keep it out of the public repo (a person, a screen, a document in view).
+  Review `eval/dataset/` before committing it.
+- **qc_thresholds.py** fits on tune scenes and tests on held-out scenes (`common.split_of()` hashes the
+  scene id, so no frame of a scene lands in both halves). Within the false-retake cap it takes the
+  middle of the gap between usable and bad frames, not the edge of the usable ones (see `fit_lower`).
+  `--write-app` writes `android/app/src/main/assets/thresholds.json`; rebuild the app to ship it.
+- **run_extraction.py** scores the frame the app chose plus the worst-scoring frame of each capture
+  (`common.sample_frames`). Dataset mode saves ~10 frames per capture, so `--per-capture 0` (every
+  frame) costs ~10x for near-duplicates. Rehearsal cost: Haiku $0.0005, Sonnet $0.008, Opus $0.016 per frame.
+  Responses are cached in `eval/llm-cache/` (committed).
+- **calibrate.py** measures out-of-fold (leave one scene out) and needs at least 3 wrong answers; a
+  model that is never confidently wrong is reported as such rather than fitted. `--write` ships the
+  coefficients to `backend/calibration.json`.
+- **report.py**: extraction fits nothing on the labels, so §3–5 use all scenes; the quality gate (§2)
+  is reported on held-out scenes. Add a cause for each of the five worst failures in
+  `eval/labels/failure_causes.json` as `{"<frame key>#<field>": "cause"}` and re-run it.
+
+**Reproduce without an API key:** `run_extraction.py --cached` replays the committed responses
+against the committed frames, then `report.py`.

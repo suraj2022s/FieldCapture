@@ -19,7 +19,8 @@ import java.util.concurrent.atomic.AtomicInteger
  *
  *   adb shell "am broadcast -n app.fieldcapture/.debug.DebugCommandReceiver --es cmd say --es text 'capture nameplate'"
  *
- * cmd = start | end | say (text) | mic_off | offline | online | status | feed_test | feed_camera
+ * cmd = start | end | say (text) | mic_off | mark (text) | offline | online | status | feed_test | feed_camera
+ *       | feed_file (text = absolute path) | dataset_on | dataset_off
  */
 class DebugCommandReceiver : BroadcastReceiver() {
   override fun onReceive(context: Context, intent: Intent) {
@@ -66,6 +67,15 @@ class DebugCommandReceiver : BroadcastReceiver() {
         app.settings.mockTestFeed = false
         app.mock.usePhoneCamera(back = true)
       }
+      // An H.265 file the PC pushed into the app's external files dir (e.g. a pipeline rehearsal
+      // clip). Like feed_test it must be set before the stream starts. Not persisted.
+      "feed_file" -> {
+        val f = text?.let { java.io.File(it) }
+        if (f == null || !f.isFile) app.events.log("debug_cmd", "feed_file: no such file $text")
+        else app.mock.useVideo(android.net.Uri.fromFile(f), "file ${f.name}")
+      }
+      "dataset_on" -> app.settings.datasetMode = true
+      "dataset_off" -> app.settings.datasetMode = false
       else -> app.events.log("debug_cmd", "unknown cmd $cmd")
     }
   }

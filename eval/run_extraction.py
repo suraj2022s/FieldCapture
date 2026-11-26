@@ -15,6 +15,7 @@ import json
 import re
 import sqlite3
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from difflib import SequenceMatcher
 from pathlib import Path
 
@@ -22,7 +23,7 @@ EVAL_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(EVAL_DIR))
 sys.path.insert(0, str(EVAL_DIR.parent / "backend"))
 
-from common import LABELS, RAW, RESULTS, labels, load_json, raw_captures, split_of  # noqa: E402
+from common import LABELS, RESULTS, labels, load_json, raw_captures, sample_frames, source_root, split_of  # noqa: E402
 from fieldcapture_backend import damage, nameplate, note  # noqa: E402
 from fieldcapture_backend.llm import ExtractionError, Llm  # noqa: E402
 from fieldcapture_backend.textmatch import norm_code, normalize_date  # noqa: E402
@@ -144,16 +145,17 @@ def score_damage(fields: dict, truth: dict, raw: dict, image_size) -> dict:
 # ---------------------------------------------------------------------- runs
 
 
-def frame_rows(which: str) -> list[dict]:
+def frame_rows(which: str, per_capture: int) -> list[dict]:
     frames, caps, scenes = labels()
     rows = []
-    for c in raw_captures():
+    root = source_root()
+    for c in raw_captures(root):
         meta = caps.get(c["captureId"]) or {}
         sid = meta.get("scene")
         if not sid or sid not in scenes:
             continue
-        rel = c["_dir"].relative_to(RAW).as_posix()
-        cands = c["candidates"]
+        rel = c["_dir"].relative_to(root).as_posix()
+        cands = sample_frames(c, per_capture) if per_capture > 0 else c["candidates"]
         for cand in cands:
             key = f"{rel}/{cand['file']}"
             lab = (frames.get(key) or {}).get("label")
@@ -166,7 +168,7 @@ def frame_rows(which: str) -> list[dict]:
             rows.append(
                 {
                     "key": key,
-                    "path": RAW / key,
+                    "path": root / key,
                     "capture": c["captureId"],
                     "purpose": c["purpose"],
                     "scene": sid,
@@ -187,33 +189,38 @@ def frame_rows(which: str) -> list[dict]:
     return rows
 
 
-def run_frames(llm: Llm, models: list[str], which: str, effort: str) -> list[dict]:
+def run_one(llm: Llm, model: str, effort: str, r: dict) -> dict:
+    jpeg = Path(r["path"]).read_bytes()
+    rec = {k: v for k, v in r.items() if k not in ("path", "truth", "ocr_lines")}
+    rec["model"] = model
+    try:
+        if r["purpose"] == "nameplate":
+            read, call = nameplate.extract(llm, model, effort, jpeg, MAX_EDGE)
+            fields = nameplate.to_fields(read, r["ocr_lines"], r["gate_ok"])
+            rec["scores"] = score_nameplate(fields, r["truth"])
+            rec["legibility"] = read.legibility
+            rec["issues"] = read.issues
+        else:
+            read, call, size = damage.extract(llm, model, effort, jpeg, MAX_EDGE, r["room"], r["surface"])
+            fields = damage.to_fields(read, r["room"], r["surface"], 0.9, size)
+            rec["scores"] = score_damage(fields, r["truth"], read.model_dump(), size)
+            rec["issues"] = read.issues
+        rec["call"] = call
+    except ExtractionError as e:
+        rec["error"] = str(e)
+    return rec
+
+
+def run_frames(llm: Llm, models: list[str], which: str, effort: str, per_capture: int, workers: int) -> list[dict]:
+    rows = frame_rows(which, per_capture)
+    print(f"{len(rows)} labelled frames x {len(models)} models ({workers} in parallel)")
     out = []
-    rows = frame_rows(which)
-    print(f"{len(rows)} labelled frames x {len(models)} models")
-    for model in models:
-        for i, r in enumerate(rows, 1):
-            jpeg = Path(r["path"]).read_bytes()
-            rec = {k: v for k, v in r.items() if k not in ("path", "truth", "ocr_lines")}
-            rec["model"] = model
-            try:
-                if r["purpose"] == "nameplate":
-                    read, call = nameplate.extract(llm, model, effort, jpeg, MAX_EDGE)
-                    fields = nameplate.to_fields(read, r["ocr_lines"], r["gate_ok"])
-                    rec["scores"] = score_nameplate(fields, r["truth"])
-                    rec["legibility"] = read.legibility
-                    rec["issues"] = read.issues
-                else:
-                    read, call, size = damage.extract(llm, model, effort, jpeg, MAX_EDGE, r["room"], r["surface"])
-                    fields = damage.to_fields(read, r["room"], r["surface"], 0.9, size)
-                    rec["scores"] = score_damage(fields, r["truth"], read.model_dump(), size)
-                    rec["issues"] = read.issues
-                rec["call"] = call
-            except ExtractionError as e:
-                rec["error"] = str(e)
-            out.append(rec)
-            if i % 10 == 0:
-                print(f"  {model}: {i}/{len(rows)}")
+    with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
+        for model in models:
+            done = list(pool.map(lambda r: run_one(llm, model, effort, r), rows))  # map keeps row order
+            errors = sum("error" in d for d in done)
+            print(f"  {model}: {len(done)} frames, {errors} errors")
+            out += done
     return out
 
 
@@ -284,7 +291,10 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--models", default="claude-haiku-5-5,claude-sonnet-5-5,claude-opus-5-5")
     ap.add_argument("--frames", choices=["all", "usable", "chosen"], default="all")
+    ap.add_argument("--per-capture", type=int, default=2,
+                    help="frames per capture sent to the models: the app's chosen frame, then the worst one (0 = every frame; costs ~10x)")
     ap.add_argument("--effort", default="medium")
+    ap.add_argument("--workers", type=int, default=4, help="model calls in flight at once")
     ap.add_argument("--cached", action="store_true", help="only replay committed responses (no API key needed)")
     ap.add_argument("--db", default=str(EVAL_DIR.parent / "backend" / "data" / "fieldcapture.db"))
     ap.add_argument("--skip-notes", action="store_true")
@@ -293,7 +303,7 @@ def main() -> None:
     llm = Llm(CACHE, offline=args.cached)
 
     RESULTS.mkdir(parents=True, exist_ok=True)
-    rows = run_frames(llm, models, args.frames, args.effort)
+    rows = run_frames(llm, models, args.frames, args.effort, args.per_capture, args.workers)
     with (RESULTS / "extraction.jsonl").open("w", encoding="utf-8") as f:
         for r in rows:
             f.write(json.dumps(r, default=str) + "\n")

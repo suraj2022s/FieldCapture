@@ -51,7 +51,8 @@ def section_testset(rows, qc) -> str:
         ]
     lines += ["", "| Purpose | Condition | Frames scored for extraction |", "|---|---|---|"]
     lines += [f"| {p} | {cond} | {n} |" for (p, cond), n in sorted(by.items())]
-    lines += ["", "Split: by scene (`common.split_of`); thresholds and calibration fitted on **tune**, all accuracy below is on **test** unless marked.", ""]
+    lines += ["", "Split: by scene (`common.split_of`). The quality thresholds (§2) are fitted on **tune** scenes and checked on held-out **test** scenes. "
+              "Extraction (§3–5, §8) fits nothing on these labels, so it is reported on **all** scenes; confidence calibration uses leave-one-scene-out.", ""]
     return "\n".join(lines)
 
 
@@ -81,8 +82,9 @@ Median metrics by label: {json.dumps(qc['medians_by_label'])}
 
 
 def section_extraction(rows, models) -> str:
-    test = [r for r in rows if r["split"] == "test" and "scores" in r]
-    out = ["## 3. Extraction accuracy per field (test scenes)", ""]
+    test = [r for r in rows if "scores" in r]
+    out = ["## 3. Extraction accuracy per field (all scenes)", "",
+           "A nameplate field that is not printed counts as correct only if the model left it blank.", ""]
     hdr = "| Model | Slice | " + " | ".join(NP_FIELDS) + " | " + " | ".join(DM_FIELDS) + " |"
     out += [hdr, "|" + "---|" * (2 + len(NP_FIELDS) + len(DM_FIELDS))]
     for m in models:
@@ -102,17 +104,26 @@ def section_extraction(rows, models) -> str:
                 a, n = acc(dm_rs, f)
                 cells.append(f"{pct(a)} (n={n})")
             out.append(f"| {m} | {name} | " + " | ".join(cells) + " |")
+    out += ["", "**Read rate and invented values** (nameplates): of the fields printed on the plate, how many were read exactly; "
+            "of the fields *not* printed, how many got a value anyway.", "",
+            "| Model | Printed fields read exactly | Printed but left blank | Invented values (field not printed) |", "|---|---|---|---|"]
+    for m in models:
+        ss = [s for r in test if r["model"] == m and r["purpose"] == "nameplate" for s in r["scores"].values() if isinstance(s, dict)]
+        printed = [s for s in ss if s.get("truth")]
+        absent = [s for s in ss if not s.get("truth")]
+        out.append(f"| {m} | {sum(s['correct'] for s in printed)}/{len(printed)} | {sum(s['abstained'] for s in printed)}/{len(printed)} | "
+                   f"{sum(not s['abstained'] for s in absent)}/{len(absent)} |")
     cers = [r["scores"][f]["cer"] for r in test if r["purpose"] == "nameplate" for f in ("serial", "model") if r["scores"].get(f, {}).get("cer") is not None]
     if cers:
-        out += ["", f"Character error rate on model/serial (all models, test): median {statistics.median(cers):.2f}, mean {statistics.mean(cers):.2f}."]
+        out += ["", f"Character error rate on model/serial (all models): median {statistics.median(cers):.2f}, mean {statistics.mean(cers):.2f}."]
     return "\n".join(out) + "\n"
 
 
 def section_confidence(rows, models, calib) -> str:
-    out = ["## 4. Do confidence scores go down when the answer is wrong?", ""]
+    out = ["## 4. Do confidence scores go down when the answer is wrong? (answered fields, all scenes)", ""]
     out += ["| Model | Field rows | Accuracy | Mean conf. when right | Mean conf. when wrong | Accuracy of fields auto-accepted (conf ≥ 0.6) | Share auto-accepted |", "|---|---|---|---|---|---|---|"]
     for m in models:
-        vals = [(s["conf"], s["correct"]) for r in rows if r["model"] == m and r["split"] == "test" and r.get("scores")
+        vals = [(s["conf"], s["correct"]) for r in rows if r["model"] == m and r.get("scores")
                 for f, s in r["scores"].items() if isinstance(s, dict) and "conf" in s and "correct" in s and not s.get("abstained")]
         if not vals:
             continue
@@ -120,15 +131,19 @@ def section_confidence(rows, models, calib) -> str:
         wrong = [c for c, ok in vals if not ok]
         auto = [ok for c, ok in vals if c >= 0.6]
         out.append(
-            f"| {m} | {len(vals)} | {pct(sum(ok for _, ok in vals) / len(vals))} | {statistics.mean(right):.2f} | "
-            f"{(statistics.mean(wrong) if wrong else float('nan')):.2f} | {pct(sum(auto) / len(auto) if auto else None)} | {pct(len(auto) / len(vals))} |"
+            f"| {m} | {len(vals)} | {pct(sum(ok for _, ok in vals) / len(vals))} | {(f'{statistics.mean(right):.2f}' if right else '—')} | "
+            f"{(f'{statistics.mean(wrong):.2f}' if wrong else '— (none wrong)')} | {pct(sum(auto) / len(auto) if auto else None)} | {pct(len(auto) / len(vals))} |"
         )
-    if calib:
-        out += ["", f"Nameplate confidence calibration for `{calib['model']}` (fitted on tune, measured on test):", "",
-                "| Confidence | n | Accuracy | Mean conf. right | Mean conf. wrong | AUROC | ECE |", "|---|---|---|---|---|---|---|"]
-        for name, s in calib["test"].items():
+    for c in calib:
+        out += ["", f"**Nameplate confidence calibration, `{c['model']}`** ({c['method']}; {c['answered_fields']} answered fields from {c['scenes']} scenes, "
+                f"{c['wrong_answers']} wrong; abstained {c['abstained_correctly']}× where nothing was printed and {c['abstained_but_printed']}× on a printed value it couldn't read):"]
+        if not c.get("fitted"):
+            out += ["", f"_Not fitted: {c['note']}._"]
+            continue
+        out += ["", "| Confidence | n | Accuracy | Mean conf. right | Mean conf. wrong | AUROC | ECE |", "|---|---|---|---|---|---|---|"]
+        for name, s in c["test"].items():
             out.append(f"| {name} | {s['n']} | {pct(s['accuracy'])} | {s['mean_conf_correct']} | {s['mean_conf_wrong']} | {s['auroc']} | {s['ece']} |")
-        out += ["", f"Fitted coefficients: `{json.dumps(calib['coefficients'])}` (shipped in backend/calibration.json)."]
+        out += ["", f"Coefficients fitted on all rows: `{json.dumps(c['coefficients'])}`."]
     return "\n".join(out) + "\n"
 
 
@@ -136,17 +151,24 @@ def section_failures(rows, deployed) -> str:
     causes = load_json(LABELS / "failure_causes.json", {})
     wrong = []
     for r in rows:
-        if r["model"] != deployed or r["split"] != "test" or not r.get("scores"):
+        if r["model"] != deployed or not r.get("scores"):
             continue
         for f, s in r["scores"].items():
             if isinstance(s, dict) and s.get("correct") is False and "conf" in s:
                 wrong.append((s["conf"], r, f, s))
-    wrong.sort(key=lambda x: -x[0])
-    out = ["## 5. Five worst failures (most confident wrong answers, deployed model, test scenes)", "",
-           "| # | Frame | Field | Truth | Predicted | Conf. | Gate | Cause |", "|---|---|---|---|---|---|---|---|"]
+    # Worst first: a confident wrong value goes unchecked into an estimate; a blank is at least flagged.
+    # One row per capture, so five rows are five different failures, not one dark shot's fields.
+    wrong.sort(key=lambda x: (x[3].get("abstained", False), -x[0]))
+    seen: set[str] = set()
+    wrong = [w for w in wrong if not (w[1]["capture"] in seen or seen.add(w[1]["capture"]))]
+    out = ["## 5. Five worst failures (deployed model, all scenes)", "",
+           "Ranked: confidently wrong values first (they reach an estimate unchecked), then printed values the model left blank (flagged for review).", ""]
+    if not wrong:
+        return "\n".join(out + ["_No wrong or missed fields for the deployed model._"]) + "\n"
+    out += ["| # | Frame | Field | Truth | Predicted | Conf. | Gate | Cause |", "|---|---|---|---|---|---|---|---|"]
     for i, (c, r, f, s) in enumerate(wrong[:5], 1):
         cause = causes.get(f"{r['key']}#{f}", "_to be diagnosed_")
-        out.append(f"| {i} | [{r['scene']}](raw/{r['key']}) ({r['condition']}) | {f} | `{s.get('truth')}` | `{s.get('pred')}` | {c:.2f} | {'pass' if r['gate_ok'] else 'fail'} | {cause} |")
+        out.append(f"| {i} | [{r['scene']}](dataset/{r['key']}) ({r['condition']}) | {f} | `{s.get('truth')}` | `{s.get('pred')}` | {c:.2f} | {'pass' if r['gate_ok'] else 'fail'} | {cause} |")
     return "\n".join(out) + "\n"
 
 
@@ -196,19 +218,25 @@ def section_cost(rows, notes, models, deployed, cheap) -> str:
         per_model[m] = job
         out.append(f"| {m} | ${img:.4f} | {lat[len(lat) // 2]} ms | {lat[int(0.95 * (len(lat) - 1))]} ms | ${nt:.5f} | ${job:.4f} |")
     out += ["", f"\\*Typical job = {TYPICAL_JOB['nameplate']} nameplates + {TYPICAL_JOB['damage']} damage captures + {TYPICAL_JOB['note']} notes."]
-    # Cascade: cheap model first, escalate the frame to the deployed model when any core field is below tau.
-    test_np = [r for r in rows if r["split"] == "test" and r["purpose"] == "nameplate" and r.get("scores")]
-    cheap_rows = {r["key"]: r for r in test_np if r["model"] == cheap}
-    dep_rows = {r["key"]: r for r in test_np if r["model"] == deployed}
+    # Cascade: cheap model first; escalate to the deployed model when an answered core field is below
+    # tau, or make/model/serial came back blank (a blank date is normal: many plates print none).
+    np_rows = [r for r in rows if r["purpose"] == "nameplate" and r.get("scores")]
+    cheap_rows = {r["key"]: r for r in np_rows if r["model"] == cheap}
+    dep_rows = {r["key"]: r for r in np_rows if r["model"] == deployed}
     keys = sorted(set(cheap_rows) & set(dep_rows))
+
+    def escalate(scores: dict, tau: float) -> bool:
+        return any((not s["abstained"] and s["conf"] < tau) or (s["abstained"] and f in ("make", "model", "serial")) for f, s in scores.items())
+
     if keys:
-        out += ["", f"**Cascade simulation** on test nameplates ({len(keys)} frames): run `{cheap}`; if any core field's confidence < τ, re-run on `{deployed}`. Uses the per-model results above, so no new calls.", "",
+        out += ["", f"**Cascade simulation** on nameplates ({len(keys)} frames): run `{cheap}`; escalate to `{deployed}` when an answered field's confidence < τ "
+                "or make/model/serial is blank. Uses the per-model results above, so no new calls.", "",
                 "| τ | Escalated | Core-field accuracy | Cost per nameplate vs deployed-only |", "|---|---|---|---|"]
         dep_acc = statistics.mean(s["correct"] for k in keys for s in dep_rows[k]["scores"].values())
         dep_cost = statistics.mean(dep_rows[k]["call"]["cost_usd"] for k in keys)
         out.append(f"| deployed only | 100% | {pct(dep_acc)} | 1.00× |")
         for tau in (0.5, 0.6, 0.7, 0.8, 0.9):
-            esc = [k for k in keys if min(s["conf"] for s in cheap_rows[k]["scores"].values()) < tau]
+            esc = [k for k in keys if escalate(cheap_rows[k]["scores"], tau)]
             correct, cost = [], []
             for k in keys:
                 src = dep_rows[k] if k in esc else cheap_rows[k]
@@ -226,7 +254,7 @@ def main() -> None:
     rows = jsonl("extraction.jsonl")
     notes = jsonl("notes.jsonl")
     qc = load_json(RESULTS / "qc.json", None)
-    calib = load_json(RESULTS / "calibration.json", None)
+    calib = [load_json(p, {}) for p in sorted(RESULTS.glob("calibration_*.json"))]
     models = sorted({r["model"] for r in rows}, key=lambda m: ("haiku" not in m, "sonnet" not in m, m))
     doc = [
         "# FieldCapture evaluation report",
