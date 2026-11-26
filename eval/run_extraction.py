@@ -31,7 +31,9 @@ from fieldcapture_backend.textmatch import norm_code, normalize_date  # noqa: E4
 CACHE = EVAL_DIR / "llm-cache"
 MAX_EDGE = 1568
 NAMEPLATE_FIELDS = ("make", "model", "serial", "manufacture_date")
-UNVERIFIED = "?"  # truth value: printed, but not confirmed against the physical item -> not scored (blank = not printed)
+# Truth value "?" = not scored: the field is not printed, but a model can still get it right from what
+# is printed (e.g. the brand from an LG model code). Blank = not printed: the only right answer is to abstain.
+UNVERIFIED = "?"
 
 
 # ---------------------------------------------------------------------- scoring helpers

@@ -15,7 +15,7 @@
       "equipment_type": "voltage stabiliser",
       "make": "V-GUARD",
       "model": "VE 400",
-      "serial": "?",
+      "serial": "",
       "manufacture_date": ""
     }
   },
@@ -27,12 +27,16 @@
       "model": "",
       "serial": "",
       "manufacture_date": ""
+    },
+    "not_in_view": {
+      "make": "LG",
+      "where": "no brand printed; the guide shows LG customer-care helpline 1800-180-9999"
     }
   },
   "np-dell-label": {
     "type": "nameplate",
     "truth": {
-      "equipment_type": "?",
+      "equipment_type": "desktop computer",
       "make": "DELL",
       "model": "D17M",
       "serial": "",
@@ -54,9 +58,9 @@
     "truth": {
       "equipment_type": "water heater",
       "make": "BAJAJ",
-      "model": "?",
-      "serial": "?",
-      "manufacture_date": "?"
+      "model": "15GPU (150714)",
+      "serial": "G155 091605027",
+      "manufacture_date": ""
     }
   },
   "np-roxy-iron": {
@@ -64,10 +68,11 @@
     "truth": {
       "equipment_type": "electric iron",
       "make": "ROXY",
-      "model": "?",
-      "serial": "?",
+      "model": "",
+      "serial": "B1566",
       "manufacture_date": ""
-    }
+    },
+    "note": "B1566 is handwritten in an unlabelled box next to the brand; recorded as the serial"
   },
   "np-link-padlock": {
     "type": "nameplate",
@@ -88,9 +93,13 @@
     "truth": {
       "equipment_type": "mosquito vaporiser",
       "make": "?",
-      "model": "?",
+      "model": "ACTIV+",
       "serial": "",
       "manufacture_date": ""
+    },
+    "not_in_view": {
+      "make": "Good Knight",
+      "where": "brand per the owner; the device face prints only ACTIV+ Liquid Mosquito Vapouriser, 230V~ 5.3W 50Hz"
     }
   },
   "np-lg-fridge-label": {
@@ -119,7 +128,7 @@
       "equipment_type": "voltage stabiliser",
       "make": "SEN & PANDIT",
       "model": "SPE 56",
-      "serial": "?",
+      "serial": "4519000274",
       "manufacture_date": ""
     }
   },
@@ -129,8 +138,12 @@
       "equipment_type": "microwave oven",
       "make": "?",
       "model": "MC2844SPB.DBKQILN",
-      "serial": "?",
+      "serial": "601NMOM009844",
       "manufacture_date": ""
+    },
+    "not_in_view": {
+      "make": "LG",
+      "where": "no brand on the sticker; MC2844SPB is an LG model code"
     }
   },
   "dm-drawing-room-north-wall": {

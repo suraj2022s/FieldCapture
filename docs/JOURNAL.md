@@ -811,3 +811,39 @@ When a damage command names no room, the app reuses the previous room. That put 
 
 ### Next
 User's confirmations (the `?` fields) and the damage sizes in cm. Then the label page review, freeze, `qc_thresholds --write-app`, `run_extraction` (3 models), calibrate, report.
+
+## 2026-11-26 23:45 IST: plates confirmed, test set frozen, gate thresholds fitted
+
+### Ground truth
+- The user confirmed or corrected every plate field against the physical items:
+  - V-Guard has no serial.
+  - Bajaj: model 15GPU (150714), serial G155 091605027.
+  - Roxy: the handwritten B1566 is in an unlabelled box; recorded as the serial, no model printed.
+  - Sen & Pandit serial 4519000274.
+  - LG microwave serial 601NMOM009844 (letter O).
+  - The Dell label is on a desktop.
+- Three brands are not printed but can be inferred, so `make` is `?` (not scored), with the reason under `not_in_view`: the fridge guide (LG helpline), the microwave sticker (LG model code), and the vaporiser (Good Knight; the device prints only ACTIV+).
+
+### Frozen
+`eval/freeze.py`: 68 captures, 204 images (10.6 MB) in `eval/dataset`. 11 private captures are left out.
+- The privacy pass covered exactly these 204 images, plus their OCR text.
+- The images carry no EXIF data.
+- capture.json holds no location or device IDs.
+
+### Gate thresholds (`qc_thresholds.py --write-app`, version `measured-n112`)
+| on 74 held-out frames (28 bad) | catches bad | false retakes |
+|---|---|---|
+| seed thresholds | 67.9% | 19.6% |
+| fitted (min sharpness 40 → 97.9, min luma 45 → 34.8, max dark 0.60 → 0.657) | 75.0% | 19.6% |
+
+- The fit catches 2 more blurry frames at no extra false retakes.
+- **19.6% false retakes (9 of 46 usable held-out frames) is high.**
+  - The sharpness rule is involved in 7 of the 9 (4 alone).
+  - Luma or dark is involved in 4 (1 alone).
+  - These frames' text was readable to a person, but the text-region sharpness is below 97.9.
+  - The report will show this.
+- `cut_off` is caught 0 of 2 times.
+- Rebuilt: QC and app JVM tests pass, and the APK builds. **Not yet installed**: the phone was in use.
+
+### Next
+Damage sizes from the user. Then `run_extraction` (3 models, ~$5, waiting on the user's OK), calibrate, report.

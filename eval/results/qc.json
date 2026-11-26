@@ -1,0 +1,166 @@
+{
+  "operating_point": "<= 5% false retakes on usable TUNE frames",
+  "thresholds": {
+    "minSharpness": 97.9,
+    "minMeanLuma": 34.8,
+    "maxDarkFraction": 0.657,
+    "maxClippedFraction": 0.1,
+    "maxTextClippedFraction": 0.06,
+    "minTextLineHeight": 0.018,
+    "minEdgeMargin": 0.02
+  },
+  "seed": {
+    "minSharpness": 40.0,
+    "minMeanLuma": 45.0,
+    "maxDarkFraction": 0.6,
+    "maxClippedFraction": 0.1,
+    "maxTextClippedFraction": 0.06,
+    "minTextLineHeight": 0.018,
+    "minEdgeMargin": 0.02
+  },
+  "fits": {
+    "minSharpness": {
+      "edge": 99.065,
+      "n_usable": 70,
+      "n_bad": 9,
+      "false_retake": 0.04285714285714286,
+      "recall": 0.7777777777777778,
+      "auc": 0.965
+    },
+    "minMeanLuma": {
+      "edge": 35.3768,
+      "n_usable": 70,
+      "n_bad": 25,
+      "false_retake": 0.04285714285714286,
+      "recall": 0.8,
+      "auc": 0.978
+    },
+    "maxDarkFraction": {
+      "edge": 0.6552,
+      "n_usable": 70,
+      "n_bad": 25,
+      "false_retake": 0.04285714285714286,
+      "recall": 0.72,
+      "auc": 0.937
+    },
+    "maxTextClippedFraction": {
+      "n_usable": 54,
+      "n_bad": 0,
+      "note": "too few frames; seed kept"
+    },
+    "maxClippedFraction": {
+      "n_usable": 16,
+      "n_bad": 0,
+      "note": "too few frames; seed kept"
+    },
+    "minEdgeMargin": {
+      "n_usable": 32,
+      "n_bad": 1,
+      "note": "too few frames; seed kept"
+    },
+    "minTextLineHeight": {
+      "n_usable": 32,
+      "n_bad": 2,
+      "note": "too few frames; seed kept"
+    }
+  },
+  "tune": {
+    "seed": {
+      "frames": 112,
+      "bad_frames": 42,
+      "usable_frames": 70,
+      "recall_bad": 0.738,
+      "false_retake_rate": 0.171,
+      "precision_retake": 0.721,
+      "per_reason_recall": {
+        "blurry": "5/9",
+        "cut_off": "1/4",
+        "dark": "24/25",
+        "too_far": "1/4"
+      }
+    },
+    "fitted": {
+      "frames": 112,
+      "bad_frames": 42,
+      "usable_frames": 70,
+      "recall_bad": 0.762,
+      "false_retake_rate": 0.143,
+      "precision_retake": 0.762,
+      "per_reason_recall": {
+        "blurry": "7/9",
+        "cut_off": "1/4",
+        "dark": "23/25",
+        "too_far": "1/4"
+      }
+    }
+  },
+  "test": {
+    "seed": {
+      "frames": 74,
+      "bad_frames": 28,
+      "usable_frames": 46,
+      "recall_bad": 0.679,
+      "false_retake_rate": 0.196,
+      "precision_retake": 0.679,
+      "per_reason_recall": {
+        "blurry": "6/10",
+        "cut_off": "0/2",
+        "dark": "7/9",
+        "too_far": "6/7"
+      }
+    },
+    "fitted": {
+      "frames": 74,
+      "bad_frames": 28,
+      "usable_frames": 46,
+      "recall_bad": 0.75,
+      "false_retake_rate": 0.196,
+      "precision_retake": 0.7,
+      "per_reason_recall": {
+        "blurry": "8/10",
+        "cut_off": "0/2",
+        "dark": "7/9",
+        "too_far": "6/7"
+      }
+    }
+  },
+  "counts": {
+    "frames": 186,
+    "scenes": 22,
+    "by_label": {
+      "blurry": 19,
+      "cut_off": 6,
+      "dark": 34,
+      "too_far": 11,
+      "usable": 116
+    },
+    "low_light_frames": 80
+  },
+  "medians_by_label": {
+    "blurry": {
+      "sharp": 38.619,
+      "luma": 80.591,
+      "clip": 0.0
+    },
+    "cut_off": {
+      "sharp": 386.384,
+      "luma": 74.636,
+      "clip": 0.0
+    },
+    "dark": {
+      "sharp": 65.592,
+      "luma": 27.347,
+      "clip": 0.0
+    },
+    "too_far": {
+      "sharp": 174.671,
+      "luma": 44.779,
+      "clip": 0.0
+    },
+    "usable": {
+      "sharp": 402.086,
+      "luma": 91.923,
+      "clip": 0.0
+    }
+  }
+}

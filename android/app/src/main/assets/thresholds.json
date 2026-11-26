@@ -1,0 +1,13 @@
+{
+  "version": "measured-n112",
+  "thresholds": {
+    "minSharpness": 97.9,
+    "minMeanLuma": 34.8,
+    "maxDarkFraction": 0.657,
+    "maxClippedFraction": 0.1,
+    "maxTextClippedFraction": 0.06,
+    "minTextLineHeight": 0.018,
+    "minEdgeMargin": 0.02
+  },
+  "operating_point": "<= 5% false retakes on usable TUNE frames"
+}
