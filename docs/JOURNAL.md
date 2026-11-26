@@ -465,3 +465,27 @@ A video feed plays **one source frame per stream frame at the stream's rate**: a
 
 ### For the real data (what's left is only the human part)
 pull → label (scene, condition, frame labels, ground truth) → `freeze` → review `eval/dataset` for privacy → the 5 commands in `eval/README.md` §3 → write `failure_causes.json` → re-run `report.py` → commit `eval/dataset`, `eval/labels`, `eval/llm-cache`, `eval/results` and `REPORT.md`.
+
+## 2026-11-26 14:39 IST: phone smoke test before filming: PASS
+
+### Why
+The user asked for one test of the phone before filming the dataset.
+
+### How
+New `tools/phone_smoke.ps1` (about 1 min). Its preflight matches the chaos run: no recent speech, no open job, nothing queued, and the dataset folder empty.
+- **A.** One job on the synthetic test feed with dataset mode ON: `capture nameplate`, `capture damage, kitchen, north wall`, a note, end job, then the record from the :8002 back office (extraction on).
+- **B.** The phone's back camera as the glasses feed: start a job, stream for 8 s, end it. No captures, so nothing from the home is recorded.
+
+### Result (installed build 12:02, the latest; seed thresholds)
+- **Phone:** all runtime permissions granted (camera, mic, notifications, Bluetooth, foreground service types). Standby bucket 10 (active). 52 GB free. On-device ASR engine, en-US.
+- **A:** streaming 1.3 s after start, 15.0 fps.
+  - **Nameplate:** the gate prompted "Label is cut off. Step back a little" twice (the test pattern's text runs to the frame edge), then kept the least-bad frame at the 7.3 s timeout. Dataset mode saved 26 frames. Upload 0.3 s.
+  - **Damage:** passed first time, 4 frames, saved in 38 ms.
+  - **Extraction:** ACME HEATERS / XE50M06 / Q011504893 at confidence 0.98. Date, capacity, power and voltage are blank, not invented: they aren't printed. On the damage frame the model called it a test pattern with no damage (`none`, 0.45), so **no line items were invented**.
+  - **Totals:** 3 model calls, $0.033, capture → extracted p50 5.7 s, schema valid.
+  - **Cleanup:** the smoke job's dataset frames were deleted.
+- **B:** streaming 2.2 s after start at 30 fps (the phone-camera feed ignores the requested 15 fps; RESEARCH §5a). The job ended and the outbox drained.
+- **Left on the phone:** feed = phone back camera, dataset mode OFF, no open job, empty dataset folder, `adb reverse` 8000 → 8002.
+
+### Next
+The user films the dataset (Dataset ON, then the shot list in `eval/README.md` §1), then pull → label.
