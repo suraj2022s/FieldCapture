@@ -117,6 +117,10 @@ class WalkController(
   @Volatile private var lastActedUtterance = -1
   @Volatile private var lastHintAt = 0L
   @Volatile private var roomTipGiven = false
+  /** When a spoken "end job" asked for confirmation (0 = not asked). See [confirmEnd]. */
+  @Volatile private var endAskedAt = 0L
+  /** The damage command named no room, so the previous room was used: say so in the confirmation. */
+  @Volatile private var roomFromEarlier = false
   private val history = ArrayDeque<Any>()
   private var lastCaptureRequest: Triple<Purpose, String?, String?>? = null
 
@@ -294,9 +298,13 @@ class WalkController(
   }
 
   private suspend fun handle(p: Parsed, h: Heard) {
+    if (p.command != Command.EndJob) endAskedAt = 0L // anything else said in between cancels a pending "end job?"
     when (val c = p.command) {
       Command.CaptureNameplate -> capture(Purpose.NAMEPLATE, p, h, null, null, null, null)
       is Command.CaptureDamage -> {
+        // Dataset walk 2026-11-26: "capture damage" with no room filed the loft under the previous
+        // room (bathroom) and the kitchen window under "attic". The confirmation now says so.
+        roomFromEarlier = c.room == null && room != null
         c.room?.let { setRoom(it) }
         capture(Purpose.DAMAGE, p, h, c.room ?: room, c.surface, c.unparsed.ifBlank { null }, null)
       }
@@ -312,10 +320,28 @@ class WalkController(
         glasses.resumeWalk()
         speaker.say("Resuming.")
       }
-      Command.EndJob -> endJob()
+      Command.EndJob -> confirmEnd()
       Command.StartJob -> speaker.say("Job already running.")
       Command.CaptureAnyway -> Unit
     }
+  }
+
+  /**
+   * A spoken "end job" needs saying twice within [END_CONFIRM_MS]. On 2026-11-26 the recogniser turned
+   * "Please end the job" into "Please enter the job" and the fuzzy parser ended the job: cheap to
+   * confirm, costly to get wrong mid-walk. The End job button (an explicit tap) ends at once.
+   */
+  private fun confirmEnd() {
+    val now = SystemClock.elapsedRealtime()
+    if (endAskedAt != 0L && now - endAskedAt <= END_CONFIRM_MS) {
+      endAskedAt = 0L
+      endJob()
+      return
+    }
+    endAskedAt = now
+    log.log("command", "end job: waiting for confirmation")
+    speaker.say("End the job? Say end job again.")
+    _ui.update { it.copy(last = "Say \"end job\" again to end the job") }
   }
 
   private fun setRoom(r: String) {
@@ -587,6 +613,8 @@ class WalkController(
         when {
           override -> "Saved, but ${v.issues.firstOrNull()?.let { issueWord(it.name) } ?: "it's not great"}. Say retake to try again."
           purpose == Purpose.NAMEPLATE -> "Nameplate saved." + (serial?.let { " Serial ends ${spell(it.takeLast(4))}." } ?: "")
+          roomFromEarlier && room != null ->
+              "Damage saved${surface?.let { ", $it" }.orEmpty()}. Room kept from before: $room. Say undo if that's wrong."
           else -> "Damage saved" + listOfNotNull(room, surface).joinToString(", ", prefix = ", ").takeIf { room != null || surface != null }.orEmpty() + "."
         } + roomTip(purpose, room)
     speaker.say(confirmation)
@@ -762,6 +790,8 @@ class WalkController(
     const val PHOTO_TIMEOUT_MS = 6_000L
     const val MIN_PHOTO_EDGE = 120
     const val HINT_GAP_MS = 10_000L
+    /** A second spoken "end job" within this window ends the job; after it, the first one is forgotten. */
+    const val END_CONFIRM_MS = 10_000L
     /**
      * A job killed mid-walk is resumed if it saw activity this recently; otherwise it is closed.
      * A tech notices a dead app within minutes; hours later they may be at another address.

@@ -49,4 +49,30 @@ class VoiceToCaptureTest {
     app.walk.endJob()
     assertTrue(app.store.pendingItems().any { it.kind == "finalize" })
   }
+
+  /**
+   * Fixes from the 2026-11-26 dataset walk: a damage command with no room says the room was kept, and
+   * a spoken "end job" (once misheard from "enter the job") must be said twice.
+   */
+  @Test
+  fun keptRoomIsSpokenAndSpokenEndJobNeedsConfirming(): Unit = runBlocking {
+    val app = mock.context.applicationContext as FieldCaptureApp
+    app.initSdk(useMockGlasses = false)
+    app.walk.startJob()
+    withTimeout(30_000) { app.glasses.status.first { it.phase == WalkPhase.ACTIVE } }
+    delay(2000)
+
+    app.walk.simulateHeard(heard("capture damage bathroom ceiling", 9101))
+    withTimeout(20_000) { app.walk.ui.first { it.captures == 1 } }
+    app.walk.simulateHeard(heard("capture damage", 9102))
+    val second = withTimeout(20_000) { app.walk.ui.first { it.captures == 2 } }
+    assertTrue(second.last.orEmpty(), second.last.orEmpty().contains("Room kept from before: bathroom"))
+
+    app.walk.simulateHeard(heard("end job", 9103))
+    delay(1500)
+    assertTrue("one 'end job' must not end the walk", app.walk.isJobActive)
+    app.walk.simulateHeard(heard("please end the job", 9104))
+    withTimeout(10_000) { app.walk.ui.first { it.jobId == null } }
+    assertTrue(app.store.pendingItems().any { it.kind == "finalize" })
+  }
 }

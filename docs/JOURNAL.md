@@ -897,3 +897,14 @@ Damage sizes from the user. Then `run_extraction` (3 models, ~$5, waiting on the
   - Debug `backend` command (code in its own extra, never logged).
   - `NormalizeUrlTest`; app JVM tests pass.
 - **Still to do:** an end-to-end run over the hotspot Wi-Fi (needs a Windows Firewall allow for python on the PC). Debug builds allow cleartext HTTP; a release build would need HTTPS.
+
+## 2026-11-27 02:00 IST: voice fixes from the dataset walk
+
+- **A spoken "end job" must be said twice within 10 s.** The first time, the app answers "End the job? Say end job again." Any other command in between cancels it.
+  - Why: on 2026-11-26 the recogniser heard "Please end the job" as "Please enter the job", and the fuzzy parser ended the walk.
+  - The End job button and the debug `end` command still end at once. Every script uses `end`, so none needed changing.
+- **The kept room is now said out loud.** A damage command with no room now confirms "Damage saved. Room kept from before: bathroom. Say undo if that's wrong."
+  - Why: during the walk, the loft was filed under bathroom and the kitchen window under attic.
+- **Verified on the phone:** new `VoiceToCaptureTest.keptRoomIsSpokenAndSpokenEndJobNeedsConfirming` (one "end job" keeps the walk going; a second, "please end the job", ends it). Both device tests pass.
+  - The test ran against a throwaway extraction-off back office on :8005, so no test jobs reached :8002.
+  - Dataset mode is now off on the phone.
