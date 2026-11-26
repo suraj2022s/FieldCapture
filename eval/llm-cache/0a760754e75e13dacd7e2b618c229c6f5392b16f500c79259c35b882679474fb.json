@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"water_stain\",\"damage_type_confidence\":0.35,\"material\":\"plaster\",\"material_confidence\":0.4,\"surface_seen\":\"wall\",\"surface_confidence\":0.7,\"severity\":\"minor\",\"severity_confidence\":0.4,\"damage_box\":{\"x0\":0.82,\"y0\":0.55,\"x1\":0.95,\"y1\":0.72},\"damage_box_confidence\":0.2,\"reference_objects\":[{\"kind\":\"door\",\"box\":{\"x0\":0.23,\"y0\":0.14,\"x1\":0.92,\"y1\":0.9},\"confidence\":0.4}],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.1,\"description\":\"Very dark photo of a plaster wall with faint dark stains or mottling near the top and beside a dark door or opening; damage type is uncertain.\",\"issues\":[\"low_light\",\"blur\",\"angle\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 311,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.008416,
+  "latency_ms": 3233,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwnYrrn2ouWrnraxNg7",
+  "from_cache": false
+ }
+}

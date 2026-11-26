@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"refrigerator\",\"make\":{\"value\":\"LG\",\"evidence\":\"Brand : LG\",\"confidence\":0.95},\"model\":{\"value\":\"GL-205KMGS/2012\",\"evidence\":\"Model/Year : GL-205KMGS/2012\",\"confidence\":0.5},\"serial\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":\"180 Liter\",\"evidence\":\"Storage volume : 180 Liter\",\"confidence\":0.6},\"fuel_or_power\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"voltage\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"legibility\":\"partial\",\"issues\":[\"glare\",\"low_light\",\"too_small\",\"angle\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 283,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00649,
+  "latency_ms": 2985,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwm4bxdh8WnFcg7vSPn",
+  "from_cache": false
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"peeling_bubbling_paint\",\"damage_type_confidence\":0.6,\"material\":\"plaster\",\"material_confidence\":0.6,\"surface_seen\":\"wall\",\"surface_confidence\":0.8,\"severity\":\"moderate\",\"severity_confidence\":0.4,\"damage_box\":{\"x0\":0.44,\"y0\":0.38,\"x1\":0.7,\"y1\":0.65},\"damage_box_confidence\":0.55,\"reference_objects\":[],\"estimated_width_in\":20.0,\"estimated_height_in\":14.0,\"size_confidence\":0.2,\"description\":\"Flaking, peeling plaster with blue-tinted patches on a beige interior wall, with no clear scale reference in the same plane.\",\"issues\":[]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 2654,
+  "output_tokens": 804,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0006674000000000001,
+  "latency_ms": 4641,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwUBr3wuGRbEEpuUkXr",
+  "from_cache": false
+ }
+}

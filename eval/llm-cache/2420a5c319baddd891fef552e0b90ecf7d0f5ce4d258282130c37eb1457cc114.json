@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"other\",\"make\":{\"value\":\"SEN & PANDIT EQUIPMENT PVT. LTD.\",\"evidence\":\"MFD. BY: SEN & PANDIT EQUIPMENT PVT. LTD. KOLKATA - 700 032\",\"confidence\":0.9},\"model\":{\"value\":\"SPE 56\",\"evidence\":\"SPE 56\",\"confidence\":0.75},\"serial\":{\"value\":null,\"evidence\":\"SL. NO.\",\"confidence\":0.0},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":\"0.5 KVA\",\"evidence\":\"KVA 0.5 MAX OUTPUT 2.2 AMP\",\"confidence\":0.8},\"fuel_or_power\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"voltage\":{\"value\":\"INPUT 130-280V, OUTPUT 200-240V \u00b1 2%\",\"evidence\":\"INPUT 130-280V OUTPUT 200-240V \u00b1 2%\",\"confidence\":0.75},\"legibility\":\"partial\",\"issues\":[\"glare\",\"angle\",\"low_light\"]}",
+ "stats": {
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 610,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.01952,
+  "latency_ms": 6953,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRx6cnVtE8YdAvVrSbAE",
+  "from_cache": false
+ }
+}

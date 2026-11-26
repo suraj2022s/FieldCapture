@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"water_heater\",\"make\":{\"value\":\"Bajaj\",\"evidence\":\"Manufactured by: Bajaj Electricals Limited / BAJAJ logo\",\"confidence\":0.9},\"model\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"serial\":{\"value\":\"091606027\",\"evidence\":\"SERIAL NO 091606027\",\"confidence\":0.35},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"fuel_or_power\":{\"value\":\"2.0KW\",\"evidence\":\"INPUT 2.0KW\",\"confidence\":0.5},\"voltage\":{\"value\":\"230V~50Hz\",\"evidence\":\"VOLTS 230V~50Hz\",\"confidence\":0.5},\"legibility\":\"partial\",\"issues\":[\"angle\",\"blur\",\"glare\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 1253,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0008095,
+  "latency_ms": 6812,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwS5chpEtVaH2vm9Rsu",
+  "from_cache": false
+ }
+}

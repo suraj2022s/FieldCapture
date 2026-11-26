@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"mold_mildew\",\"damage_type_confidence\":0.5,\"material\":\"plaster\",\"material_confidence\":0.5,\"surface_seen\":\"wall\",\"surface_confidence\":0.8,\"severity\":\"minor\",\"severity_confidence\":0.4,\"damage_box\":{\"x0\":0.0,\"y0\":0.0,\"x1\":0.95,\"y1\":0.22},\"damage_box_confidence\":0.4,\"reference_objects\":[{\"kind\":\"door\",\"box\":{\"x0\":0.36,\"y0\":0.2,\"x1\":0.97,\"y1\":0.85},\"confidence\":0.4}],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.1,\"description\":\"Dark spotting, likely mold or mildew, scattered along the upper part of a plaster wall above a dark doorway in a very dim scene.\",\"issues\":[\"low_light\",\"blur\",\"angle\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 312,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.008426,
+  "latency_ms": 4125,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwnLXhE5FfHeJknyNZU",
+  "from_cache": false
+ }
+}

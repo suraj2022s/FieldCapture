@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"other\",\"make\":{\"value\":null,\"evidence\":\"INDUSTRIES LTD., KOCHI - 28, INDIA\",\"confidence\":0.0},\"model\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"serial\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":\"ONE AIR CONDITIONER UP TO 1.5 TON\",\"evidence\":\"ONE AIR CONDITIONER UP TO 1.5 TON\",\"confidence\":0.6},\"fuel_or_power\":{\"value\":null,\"evidence\":\"VAC - 300 VAC, 50Hz\",\"confidence\":0.0},\"voltage\":{\"value\":\"200 VAC - 250 VAC (FROM 100 VAC - 300 VAC INPUT)\",\"evidence\":\"200 VAC - 250 VAC (FROM 100 VAC - 300 VAC INPUT)\",\"confidence\":0.45},\"legibility\":\"poor\",\"issues\":[\"cut_off\",\"angle\",\"low_light\",\"too_small\",\"blur\"]}",
+ "stats": {
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 778,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.02288,
+  "latency_ms": 7422,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwqfQbQoCBweVZLndBi",
+  "from_cache": false
+ }
+}

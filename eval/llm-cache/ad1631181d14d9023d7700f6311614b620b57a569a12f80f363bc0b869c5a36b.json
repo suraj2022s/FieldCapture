@@ -1,0 +1,16 @@
+{
+ "text": "{\"category\":\"access\",\"category_confidence\":0.95,\"component\":\"attic access\",\"component_confidence\":0.6,\"condition\":\"accessed through the bedroom closet\",\"condition_confidence\":0.6,\"location\":\"bedroom closet\",\"location_confidence\":0.85,\"severity\":\"unknown\",\"severity_confidence\":0.9,\"measurement_value\":null,\"measurement_unit\":null,\"measurement_confidence\":0.98,\"follow_up_needed\":false,\"summary\":\"Attic access is through the bedroom closet.\"}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "low",
+  "input_tokens": 1179,
+  "output_tokens": 169,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.004048,
+  "latency_ms": 2313,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRxFmPRmQMfWFQbE3FAP",
+  "from_cache": false
+ }
+}

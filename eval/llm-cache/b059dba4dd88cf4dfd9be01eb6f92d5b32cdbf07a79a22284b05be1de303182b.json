@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":false,\"damage_type\":\"none\",\"damage_type_confidence\":0.6,\"material\":\"unknown\",\"material_confidence\":0.2,\"surface_seen\":\"unknown\",\"surface_confidence\":0.2,\"severity\":\"minor\",\"severity_confidence\":0.2,\"damage_box\":null,\"damage_box_confidence\":0.5,\"reference_objects\":[],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.0,\"description\":\"Image is almost entirely black; no damage or surface details can be identified, only a faint light patch near the lower right and a lighter surface at lower left.\",\"issues\":[\"low_light\",\"blur\",\"angle\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 225,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.007556,
+  "latency_ms": 3358,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwnUdbvyc1DE2gq2Exd",
+  "from_cache": false
+ }
+}

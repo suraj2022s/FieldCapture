@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"refrigerator\",\"make\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"model\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"serial\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"fuel_or_power\":{\"value\":null,\"evidence\":\"ELECTRICITY CONSUMPTION 245* UNITS PER YEAR\",\"confidence\":0.3},\"voltage\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"legibility\":\"poor\",\"issues\":[\"angle\",\"too_small\",\"blur\",\"low_light\",\"glare\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 267,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00633,
+  "latency_ms": 2437,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwmFS5iPK5Y8Ng4H4zc",
+  "from_cache": false
+ }
+}

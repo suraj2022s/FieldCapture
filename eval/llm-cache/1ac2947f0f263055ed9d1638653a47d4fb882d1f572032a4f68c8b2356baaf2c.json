@@ -1,0 +1,16 @@
+{
+ "text": "{\"category\":\"safety_hazard\",\"category_confidence\":0.75,\"component\":\"electrical outlet\",\"component_confidence\":0.9,\"condition\":\"not working, possible water in the electrical box\",\"condition_confidence\":0.85,\"location\":\"near the sink\",\"location_confidence\":0.85,\"severity\":\"high\",\"severity_confidence\":0.6,\"measurement_value\":null,\"measurement_unit\":null,\"measurement_confidence\":0.95,\"follow_up_needed\":true,\"summary\":\"Outlet near the sink is not working; possible water intrusion in the electrical box.\"}",
+ "stats": {
+  "model": "claude-opus-5-5",
+  "effort": "low",
+  "input_tokens": 1181,
+  "output_tokens": 186,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.008444,
+  "latency_ms": 2625,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRxDLUR5pZY749WUvTQt",
+  "from_cache": false
+ }
+}

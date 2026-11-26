@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"microwave\",\"make\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"model\":{\"value\":\"MC2844PB.DBKOILN\",\"evidence\":\"MC2844PB.DBKOILN\",\"confidence\":0.5},\"serial\":{\"value\":\"601NMOM009844\",\"evidence\":\"S/No. 601NMOM009844\",\"confidence\":0.45},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"capacity\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"fuel_or_power\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"voltage\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"legibility\":\"partial\",\"issues\":[\"angle\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 789,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0005775,
+  "latency_ms": 4437,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwcQ6yaZPZmwb1nkYh8",
+  "from_cache": false
+ }
+}

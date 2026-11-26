@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":false,\"damage_type\":\"none\",\"damage_type_confidence\":0.7,\"material\":\"unknown\",\"material_confidence\":0.3,\"surface_seen\":\"unknown\",\"surface_confidence\":0.3,\"severity\":\"minor\",\"severity_confidence\":0.5,\"damage_box\":null,\"damage_box_confidence\":0.7,\"reference_objects\":[],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.9,\"description\":\"Overhead cabinet cavity with stored boxes and a pipe along the top; no clear water damage, staining, or material failure is visible in this dim photo.\",\"issues\":[\"low_light\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 2655,
+  "output_tokens": 509,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00052,
+  "latency_ms": 3781,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwaLrTZwnU2z6iKoZ2K",
+  "from_cache": false
+ }
+}

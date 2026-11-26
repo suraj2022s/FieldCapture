@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"other\",\"make\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"model\":{\"value\":null,\"evidence\":\"MDS0A4SPB-DXCOILA (barely visible, characters uncertain)\",\"confidence\":0.1},\"serial\":{\"value\":null,\"evidence\":\"S No.60 ... (barcode label text too dark to read)\",\"confidence\":0.05},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"fuel_or_power\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"voltage\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"legibility\":\"poor\",\"issues\":[\"low_light\",\"too_small\",\"angle\",\"blur\",\"occluded\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 282,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00648,
+  "latency_ms": 3360,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwockYdgkBpchxgGHLU",
+  "from_cache": false
+ }
+}

@@ -1,0 +1,44 @@
+{
+  "model": "claude-haiku-5-5",
+  "method": "leave-one-scene-out",
+  "answered_fields": 131,
+  "wrong_answers": 25,
+  "scenes": 9,
+  "abstained_correctly": 329,
+  "abstained_but_printed": 150,
+  "fitted": true,
+  "coefficients": {
+    "bias": -5.9037,
+    "self": 8.2202,
+    "ocr_agree": 0.1186,
+    "format_ok": 1.4136,
+    "legible": 1.5607,
+    "qc_pass": 0.4448
+  },
+  "test": {
+    "model_self_confidence": {
+      "n": 131,
+      "accuracy": 0.809,
+      "mean_conf_correct": 0.787,
+      "mean_conf_wrong": 0.444,
+      "auroc": 0.938,
+      "ece": 0.147
+    },
+    "prior_combined_confidence": {
+      "n": 131,
+      "accuracy": 0.809,
+      "mean_conf_correct": 0.829,
+      "mean_conf_wrong": 0.565,
+      "auroc": 0.858,
+      "ece": 0.062
+    },
+    "calibrated_confidence": {
+      "n": 131,
+      "accuracy": 0.809,
+      "mean_conf_correct": 0.872,
+      "mean_conf_wrong": 0.531,
+      "auroc": 0.894,
+      "ece": 0.041
+    }
+  }
+}

@@ -74,6 +74,19 @@ class DebugCommandReceiver : BroadcastReceiver() {
         if (f == null || !f.isFile) app.events.log("debug_cmd", "feed_file: no such file $text")
         else app.mock.useVideo(android.net.Uri.fromFile(f), "file ${f.name}")
       }
+      // Back office address (text) and access code (extra "code", never logged); backend_usb goes back
+      // to the build default 127.0.0.1:8000 that `adb reverse` serves.
+      "backend" -> {
+        text?.let { app.settings.backendUrl = it }
+        intent.getStringExtra("code")?.let { app.settings.accessCode = it }
+        app.events.log("settings", "back office ${app.settings.backendUrl}")
+        UploadWorker.kick(app)
+      }
+      "backend_usb" -> {
+        app.settings.backendUrl = ""
+        app.settings.accessCode = ""
+        app.events.log("settings", "back office ${app.settings.backendUrl} (USB)")
+      }
       "dataset_on" -> app.settings.datasetMode = true
       "dataset_off" -> app.settings.datasetMode = false
       else -> app.events.log("debug_cmd", "unknown cmd $cmd")

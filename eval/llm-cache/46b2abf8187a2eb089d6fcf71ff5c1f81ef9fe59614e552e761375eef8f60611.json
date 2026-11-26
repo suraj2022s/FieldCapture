@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"other\",\"make\":{\"value\":null,\"evidence\":null,\"confidence\":0.2},\"model\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"serial\":{\"value\":null,\"evidence\":null,\"confidence\":0.05},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.05},\"capacity\":{\"value\":\"8.4W\",\"evidence\":\"230V~ 8.4W 50Hz CE\",\"confidence\":0.3},\"fuel_or_power\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"voltage\":{\"value\":\"230V~\",\"evidence\":\"230V~ 8.4W 50Hz CE\",\"confidence\":0.5},\"legibility\":\"poor\",\"issues\":[\"low_light\",\"blur\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 804,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.000585,
+  "latency_ms": 5358,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwXoz2nVQGsxLE4738X",
+  "from_cache": false
+ }
+}

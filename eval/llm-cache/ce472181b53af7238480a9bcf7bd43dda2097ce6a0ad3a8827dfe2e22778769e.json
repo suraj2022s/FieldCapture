@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"other\",\"make\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"model\":{\"value\":\"MC2844SPB.DBKQLN\",\"evidence\":\"MC2844SPB.DBKQLN\",\"confidence\":0.5},\"serial\":{\"value\":\"60TNMOM009644\",\"evidence\":\"S. No:60TNMOM009644\",\"confidence\":0.4},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"fuel_or_power\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"voltage\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"legibility\":\"partial\",\"issues\":[\"angle\",\"occluded\",\"too_small\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 273,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00639,
+  "latency_ms": 2860,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwoi242vFb35jwa51DR",
+  "from_cache": false
+ }
+}

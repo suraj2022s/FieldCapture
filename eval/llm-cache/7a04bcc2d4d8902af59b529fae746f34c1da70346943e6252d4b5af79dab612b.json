@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"water_heater\",\"make\":{\"value\":\"Bajaj\",\"evidence\":\"BAJAJ Majesty\",\"confidence\":0.9},\"model\":{\"value\":null,\"evidence\":null,\"confidence\":0.2},\"serial\":{\"value\":\"G155\",\"evidence\":\"SERIAL NO G155\",\"confidence\":0.45},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"capacity\":{\"value\":\"15 LTR\",\"evidence\":\"MODEL 15 LTR\",\"confidence\":0.35},\"fuel_or_power\":{\"value\":\"ELECTRIC\",\"evidence\":\"TYPE ELECTRIC\",\"confidence\":0.4},\"voltage\":{\"value\":\"230V~50Hz\",\"evidence\":\"230V~50Hz\",\"confidence\":0.4},\"legibility\":\"partial\",\"issues\":[\"angle\",\"glare\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 1455,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0009105,
+  "latency_ms": 7516,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwRm9wzcTJR9eZMCvGf",
+  "from_cache": false
+ }
+}

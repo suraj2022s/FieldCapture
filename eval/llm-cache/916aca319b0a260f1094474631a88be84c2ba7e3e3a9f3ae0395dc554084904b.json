@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":false,\"damage_type\":\"none\",\"damage_type_confidence\":0.6,\"material\":\"unknown\",\"material_confidence\":0.3,\"surface_seen\":\"unknown\",\"surface_confidence\":0.3,\"severity\":\"minor\",\"severity_confidence\":0.3,\"damage_box\":null,\"damage_box_confidence\":0.6,\"reference_objects\":[{\"kind\":\"window\",\"box\":{\"x0\":0.24,\"y0\":0.0,\"x1\":0.72,\"y1\":0.55},\"confidence\":0.4}],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.05,\"description\":\"Blurry, tilted view of a window with an air conditioner, curtain, and a green surface in the foreground; no clear damage is visible.\",\"issues\":[\"blur\",\"angle\",\"low_light\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 275,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.008056,
+  "latency_ms": 3187,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwo2BfVfvNZXfCEmCvP",
+  "from_cache": false
+ }
+}

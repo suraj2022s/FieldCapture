@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"other\",\"make\":{\"value\":\"NEKTRON\",\"evidence\":\"NEKTRON TM\",\"confidence\":0.6},\"model\":{\"value\":null,\"evidence\":\"...EL- NT-650 (blurred)\",\"confidence\":0.15},\"serial\":{\"value\":null,\"evidence\":\"barcode number (illegible)\",\"confidence\":0.0},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":null,\"evidence\":\"...ACITY - 400VA Automatic (blurred)\",\"confidence\":0.25},\"fuel_or_power\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"voltage\":{\"value\":\"50V TO 300V AC\",\"evidence\":\"- 50V TO 300V AC\",\"confidence\":0.3},\"legibility\":\"poor\",\"issues\":[\"blur\",\"low_light\",\"angle\",\"cut_off\"]}",
+ "stats": {
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 533,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.01798,
+  "latency_ms": 6358,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwpU1D7PjbGhXhuNxNj",
+  "from_cache": false
+ }
+}

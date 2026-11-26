@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"other\",\"make\":{\"value\":\"ROXY\",\"evidence\":\"ROXY\",\"confidence\":0.85},\"model\":{\"value\":null,\"evidence\":null,\"confidence\":0.2},\"serial\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.05},\"capacity\":{\"value\":null,\"evidence\":null,\"confidence\":0.2},\"fuel_or_power\":{\"value\":\"electric\",\"evidence\":\"ELECTRIC IRON THERMOSTATICS WITH ALLUMINIUM ALLOY SOLEPLATE\",\"confidence\":0.8},\"voltage\":{\"value\":\"230V AC 50 Hz\",\"evidence\":\"230V AC 50 Hz\",\"confidence\":0.55},\"legibility\":\"partial\",\"issues\":[\"blur\",\"too_small\",\"occluded\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 1009,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0006875,
+  "latency_ms": 5218,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwSuR4QXtSwXjHUPYTh",
+  "from_cache": false
+ }
+}

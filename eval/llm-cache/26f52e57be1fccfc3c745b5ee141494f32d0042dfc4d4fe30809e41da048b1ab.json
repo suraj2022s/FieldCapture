@@ -1,0 +1,16 @@
+{
+ "text": "{\"category\":\"customer_info\",\"category_confidence\":0.85,\"component\":null,\"component_confidence\":0.9,\"condition\":\"leak started last Tuesday per customer\",\"condition_confidence\":0.7,\"location\":\"living room\",\"location_confidence\":0.6,\"severity\":\"unknown\",\"severity_confidence\":0.8,\"measurement_value\":null,\"measurement_unit\":null,\"measurement_confidence\":0.95,\"follow_up_needed\":false,\"summary\":\"Customer reports the leak started last Tuesday. Room context is the living room; the leak's exact location and source were not stated.\"}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "low",
+  "input_tokens": 1176,
+  "output_tokens": 191,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.004262,
+  "latency_ms": 1906,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRxBCVdwTQEprunuXgqE",
+  "from_cache": false
+ }
+}

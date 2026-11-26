@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":false,\"damage_type\":\"none\",\"damage_type_confidence\":0.85,\"material\":\"unknown\",\"material_confidence\":0.4,\"surface_seen\":\"window\",\"surface_confidence\":0.8,\"severity\":\"minor\",\"severity_confidence\":0.5,\"damage_box\":null,\"damage_box_confidence\":0.85,\"reference_objects\":[],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.9,\"description\":\"Barred kitchen window in dim light with no visible damage to the frame, bars, or adjacent wall.\",\"issues\":[\"low_light\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 436,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00048330000000000004,
+  "latency_ms": 3077,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwauZxn3LBqTYQSDESN",
+  "from_cache": false
+ }
+}

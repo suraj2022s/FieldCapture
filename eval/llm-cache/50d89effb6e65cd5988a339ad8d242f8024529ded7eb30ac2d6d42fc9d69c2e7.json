@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"water_stain\",\"damage_type_confidence\":0.35,\"material\":\"plaster\",\"material_confidence\":0.3,\"surface_seen\":\"wall\",\"surface_confidence\":0.6,\"severity\":\"minor\",\"severity_confidence\":0.3,\"damage_box\":{\"x0\":0.05,\"y0\":0.0,\"x1\":0.95,\"y1\":0.22},\"damage_box_confidence\":0.3,\"reference_objects\":[],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.1,\"description\":\"Dark mottled discoloration across the upper wall, possibly water staining or mildew, but the image is too dim to confirm.\",\"issues\":[\"low_light\",\"blur\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 594,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0005623,
+  "latency_ms": 3860,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwad2YhbBVbQi7PJeca",
+  "from_cache": false
+ }
+}

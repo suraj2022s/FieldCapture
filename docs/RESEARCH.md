@@ -124,6 +124,35 @@ Third-party note: the GemGlasses README reports **"the first frame takes ~5 s"**
 - **Hands-free wearables:** RealWear HMT + IBM Inspector Wearable (voice control, noise-robust, gloves) and Zuper Glass.
 - **The gap none of them fill:** consumer AI glasses with an offline-first, quality-gated capture loop.
 
+### 4.3a Refresh (2026-11-27)
+
+- **Same-brief repos:** both were last pushed on 2026-11-24 and are unchanged since §4.1 (`gh api`). A GitHub search for newer DAT field-capture projects found one adjacent project.
+  - **`sandrobl/hands-free-incident-report-smartglasses`** records DAT video and audio.
+  - It encrypts the payload (AES session key wrapped with RSA) and uploads it with GPS and compass heading, behind Auth0 login.
+  - It does no extraction. It's the useful contrast for our weakest production gap: our uploads have **no auth and no encryption**, because they go over USB to a local back office.
+- **Nameplate scanners** (ServiceTrade Smart Scan, Parts Town data-plate scanner, ACLogics, measureQuick):
+  - All are phone-photo apps (hands busy).
+  - **None publish an accuracy figure**; the claims are marketing.
+  - Several add **serial → manufacture-date decoding** per brand (HVAC Decoder, SerialCheck). We report a date only when it's printed.
+- **Photo-to-estimate:**
+  - Verisk ships XactGen (photos + measurements → Xactimate estimate), XactGen Capture (policyholder room photos → measurements and sketch), XactAI (photo naming) and the XactRestore AI Estimator.
+  - They use **real price lists and room sketches**; we use a small rules table and single-photo sizing.
+  - Industry coverage still calls photo-to-line-item suggestion "maturing".
+- **Meta glasses at work:**
+  - TruVideo (auto service) starts and stops inspection recordings by voice on Meta AI glasses.
+  - ACES Pest Control uses them for hands-free documentation.
+  - Both record video; neither extracts structured fields at capture time.
+- Sources:
+  - [ServiceTrade Smart Scan](https://fireandsafetyjournalamericas.com/servicetrade-launches-ai-powered-smart-scan/)
+  - [Parts Town scanner](https://www.phcppros.com/articles/19769-parts-town-launches-innovative-hvac-data-plate-scanner)
+  - [ACLogics](https://play.google.com/store/apps/details?id=com.aclogics.app)
+  - [SerialCheck](https://apps.apple.com/us/app/-/id6759895640)
+  - [XactGen](https://www.xactware.com/xactgen.html)
+  - [XactGen Capture webinar](https://www.verisk.com/resources/webinars/on-demand/2026/faster-interior-water-settlements-with-xactgen-capture/)
+  - [XactAI](https://www.verisk.com/blog/xactai-built-from-your-insights-delivered-through-your-workflows/)
+  - [TruVideo + Meta glasses](https://techedgeai.com/truvideo-brings-meta-ai-glasses-into-auto-service/)
+  - [ACES Pest Control](https://www.trendhunter.com/trends/aces-pest-control-meta)
+
 ### 4.4 More findings while building (2026-11-25)
 
 - **MediaTek hardware HEVC decoder is blocked by Meta.** Meta's own CameraAccess decoder (`samples/CameraAccess/.../stream/HevcDecoder.kt`) blocks `OMX.Exynos.hevc.dec` and **`c2.mtk.hevc.decoder`**. The reason given is that they "corrupt this stream into fragments/trash; the SDK's own decoder skips them too". Our test phone (Dimensity 6300) is MediaTek, so decoding falls back to a software decoder (CPU cost on a 4 GB phone). [sample]

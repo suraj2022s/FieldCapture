@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"other\",\"make\":{\"value\":\"Godrej\",\"evidence\":\"Godrej (logo embossed near bottom of the vaporiser body)\",\"confidence\":0.6},\"model\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"serial\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":\"5.3W\",\"evidence\":\"230V~5.3W 50Hz\",\"confidence\":0.5},\"fuel_or_power\":{\"value\":\"Electric 50Hz\",\"evidence\":\"230V~5.3W 50Hz\",\"confidence\":0.5},\"voltage\":{\"value\":\"230V\",\"evidence\":\"230V~5.3W 50Hz\",\"confidence\":0.7},\"legibility\":\"poor\",\"issues\":[\"angle\",\"glare\",\"low_light\",\"occluded\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 301,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00667,
+  "latency_ms": 3327,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwjzWcqsPhP6MB5auSG",
+  "from_cache": false
+ }
+}

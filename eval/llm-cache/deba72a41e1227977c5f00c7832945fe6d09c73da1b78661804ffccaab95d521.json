@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"peeling_bubbling_paint\",\"damage_type_confidence\":0.55,\"material\":\"concrete\",\"material_confidence\":0.5,\"surface_seen\":\"wall\",\"surface_confidence\":0.8,\"severity\":\"severe\",\"severity_confidence\":0.6,\"damage_box\":{\"x0\":0.0,\"y0\":0.0,\"x1\":0.25,\"y1\":0.95},\"damage_box_confidence\":0.4,\"reference_objects\":[],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.1,\"description\":\"Heavily deteriorated painted concrete wall with extensive peeling paint, water staining and streaking below the openings, plus cracks in the ceiling.\",\"issues\":[\"low_light\",\"angle\",\"glare\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 269,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.007996,
+  "latency_ms": 2687,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwmoPwLNP7BwsncQr7w",
+  "from_cache": false
+ }
+}

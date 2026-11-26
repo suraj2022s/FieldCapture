@@ -10,7 +10,6 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import app.fieldcapture.BuildConfig
 import app.fieldcapture.FieldCaptureApp
 import app.fieldcapture.store.JobStore
 import app.fieldcapture.store.OutboxItem
@@ -34,9 +33,14 @@ enum class UploadOutcome {
   RETRY,
   /** The server will never accept this item (4xx). Move it aside; don't block the queue, don't delete. */
   REJECTED,
+  /** Wrong or missing access code (401/403): a setting to fix, not a bad item. Keep everything queued. */
+  UNAUTHORIZED,
 }
 
-class BackendClient(private val baseUrl: String, private val store: JobStore) {
+class BackendClient(private val baseUrl: String, private val accessCode: String, private val store: JobStore) {
+  private fun Request.Builder.auth(): Request.Builder =
+      if (accessCode.isBlank()) this else header("Authorization", "Bearer $accessCode")
+
   private val http =
       OkHttpClient.Builder()
           .connectTimeout(10, TimeUnit.SECONDS)
@@ -63,11 +67,13 @@ class BackendClient(private val baseUrl: String, private val store: JobStore) {
         Request.Builder()
             .url("$baseUrl/v1/jobs/${item.jobId}/items")
             .header("Idempotency-Key", item.id)
+            .auth()
             .post(body.build())
             .build()
     http.newCall(request).execute().use { resp ->
       return when {
         resp.isSuccessful || resp.code == 409 -> UploadOutcome.ACKED
+        resp.code == 401 || resp.code == 403 -> UploadOutcome.UNAUTHORIZED
         resp.code == 408 || resp.code == 429 || resp.code >= 500 -> UploadOutcome.RETRY
         else -> UploadOutcome.REJECTED
       }
@@ -79,6 +85,20 @@ class BackendClient(private val baseUrl: String, private val store: JobStore) {
             http.newCall(Request.Builder().url("$baseUrl/healthz").get().build()).execute().use { it.isSuccessful }
           }
           .getOrDefault(false)
+
+  /** For the settings screen: is the address reachable, and does it accept the access code? */
+  fun check(): String =
+      runCatching {
+            if (!ping()) return@runCatching "Can't reach $baseUrl"
+            http.newCall(Request.Builder().url("$baseUrl/v1/jobs").auth().get().build()).execute().use {
+              when {
+                it.isSuccessful -> "Connected"
+                it.code == 401 || it.code == 403 -> "Reached, but the access code is wrong"
+                else -> "Reached, but it answered ${it.code}"
+              }
+            }
+          }
+          .getOrElse { "Can't reach $baseUrl (${it.javaClass.simpleName})" }
 
   companion object {
     private val JSON = "application/json".toMediaType()
@@ -102,7 +122,7 @@ class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker
           app.events.log("upload", "simulated no-signal: ${app.store.pending.value} items held")
           return@withContext Result.retry()
         }
-        val client = BackendClient(BuildConfig.BACKEND_URL, app.store)
+        val client = BackendClient(app.settings.backendUrl, app.settings.accessCode, app.store)
         repeat(MAX_ROUNDS) {
           val items = app.store.pendingItems()
           if (items.isEmpty()) return@withContext Result.success()
@@ -121,6 +141,10 @@ class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker
               }
               UploadOutcome.RETRY -> {
                 app.events.log("upload", "back office busy on ${item.kind} ${item.id.take(8)}; will retry")
+                return@withContext Result.retry()
+              }
+              UploadOutcome.UNAUTHORIZED -> {
+                app.events.log("upload", "back office refused the access code; ${app.store.pending.value} items kept until it's fixed")
                 return@withContext Result.retry()
               }
               UploadOutcome.REJECTED -> {

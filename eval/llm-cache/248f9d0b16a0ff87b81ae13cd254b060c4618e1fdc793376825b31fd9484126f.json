@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":false,\"damage_type\":\"none\",\"damage_type_confidence\":0.4,\"material\":\"unknown\",\"material_confidence\":0.3,\"surface_seen\":\"window\",\"surface_confidence\":0.6,\"severity\":\"minor\",\"severity_confidence\":0.2,\"damage_box\":null,\"damage_box_confidence\":0.4,\"reference_objects\":[],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.1,\"description\":\"Dark, low-light view of a kitchen window with a metal grille and items on the sill; no clear damage is visible.\",\"issues\":[\"low_light\",\"blur\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 382,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00045630000000000003,
+  "latency_ms": 2969,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwav4jH7K944Aj14nJa",
+  "from_cache": false
+ }
+}

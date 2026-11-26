@@ -51,6 +51,9 @@ class Settings:
     # Long edge sent to the model; keeps image tokens bounded (~1.6K tokens per image).
     max_image_edge: int = int(os.environ.get("FIELDCAPTURE_MAX_IMAGE_EDGE", "1568"))
     llm_cache_dir: Path = field(default_factory=lambda: _path("FIELDCAPTURE_LLM_CACHE", BACKEND_DIR / "data" / "llm-cache"))
+    # Access code. When set, every route except /healthz needs it: the phone sends "Bearer <code>", a
+    # browser gets a password prompt (any user name, the code as password). Required off loopback.
+    token: str = os.environ.get("FIELDCAPTURE_TOKEN", "")
 
 
 def _path(env: str, default: Path) -> Path:

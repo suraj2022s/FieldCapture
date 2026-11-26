@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"refrigerator\",\"make\":{\"value\":\"LG\",\"evidence\":\"Brand : LG\",\"confidence\":0.95},\"model\":{\"value\":\"GL-205KMG5\",\"evidence\":\"Model/Year : GL-205KMG5/2012\",\"confidence\":0.7},\"serial\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"manufacture_date\":{\"value\":\"2012\",\"evidence\":\"Model/Year : GL-205KMG5/2012\",\"confidence\":0.6},\"capacity\":{\"value\":\"Gross volume 190 Liter; Storage volume 180 Liter\",\"evidence\":\"Gross volume : 190 Liter / Storage volume : 180 Liter\",\"confidence\":0.8},\"fuel_or_power\":{\"value\":\"245* UNITS PER YEAR\",\"evidence\":\"ELECTRICITY CONSUMPTION 245* UNITS PER YEAR\",\"confidence\":0.75},\"voltage\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"legibility\":\"good\",\"issues\":[]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 1058,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.000712,
+  "latency_ms": 5764,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwYHaD4a4Hn4wzyUeUL",
+  "from_cache": false
+ }
+}

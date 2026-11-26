@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"peeling_bubbling_paint\",\"damage_type_confidence\":0.5,\"material\":\"plaster\",\"material_confidence\":0.55,\"surface_seen\":\"wall\",\"surface_confidence\":0.9,\"severity\":\"severe\",\"severity_confidence\":0.6,\"damage_box\":{\"x0\":0.0,\"y0\":0.0,\"x1\":0.98,\"y1\":1.0},\"damage_box_confidence\":0.4,\"reference_objects\":[{\"kind\":\"window\",\"box\":{\"x0\":0.38,\"y0\":0.32,\"x1\":0.71,\"y1\":0.58},\"confidence\":0.4}],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.1,\"description\":\"Heavily deteriorated plaster walls with peeling paint, dark water streaking below the recessed opening, cracks and staining across the corner and ceiling.\",\"issues\":[\"low_light\",\"angle\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 319,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.008496,
+  "latency_ms": 3358,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwmkSbTpgB2fde32tVA",
+  "from_cache": false
+ }
+}

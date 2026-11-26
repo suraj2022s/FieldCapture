@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"peeling_bubbling_paint\",\"damage_type_confidence\":0.6,\"material\":\"plaster\",\"material_confidence\":0.55,\"surface_seen\":\"wall\",\"surface_confidence\":0.9,\"severity\":\"moderate\",\"severity_confidence\":0.5,\"damage_box\":{\"x0\":0.13,\"y0\":0.2,\"x1\":0.6,\"y1\":0.58},\"damage_box_confidence\":0.55,\"reference_objects\":[],\"estimated_width_in\":36.0,\"estimated_height_in\":30.0,\"size_confidence\":0.25,\"description\":\"Living room north wall shows flaking and peeling plaster with blue paint remnants and dark staining near the upper left, roughly 3 by 2.5 feet.\",\"issues\":[]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 726,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0006282999999999999,
+  "latency_ms": 4688,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwUeqHRk7FRVTpgEqTm",
+  "from_cache": false
+ }
+}

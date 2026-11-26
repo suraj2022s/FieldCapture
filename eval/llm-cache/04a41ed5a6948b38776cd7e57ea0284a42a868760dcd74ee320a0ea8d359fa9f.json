@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":false,\"damage_type\":\"none\",\"damage_type_confidence\":0.6,\"material\":\"unknown\",\"material_confidence\":0.3,\"surface_seen\":\"window\",\"surface_confidence\":0.55,\"severity\":\"minor\",\"severity_confidence\":0.3,\"damage_box\":null,\"damage_box_confidence\":0.5,\"reference_objects\":[],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.05,\"description\":\"Very dark photo of a metal-grilled window or opening with a strainer and cups below; no clear damage can be seen.\",\"issues\":[\"low_light\",\"blur\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 212,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.007426,
+  "latency_ms": 2937,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwneZfR2fLeqy5tbAFx",
+  "from_cache": false
+ }
+}

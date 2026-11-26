@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"other\",\"make\":{\"value\":\"SEN & PANDIT EQUIPMENT PVT. LTD.\",\"evidence\":\"MFD. BY: SEN & PANDIT EQUIPMENT PVT. LTD. KOLKATA - 700 032\",\"confidence\":0.85},\"model\":{\"value\":\"SPE 56\",\"evidence\":\"SPE 56 SL. NO.\",\"confidence\":0.5},\"serial\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.95},\"capacity\":{\"value\":\"KVA 0.5\",\"evidence\":\"KVA 0.5\",\"confidence\":0.7},\"fuel_or_power\":{\"value\":null,\"evidence\":null,\"confidence\":0.9},\"voltage\":{\"value\":\"200-240V \u00b1 2%\",\"evidence\":\"OUTPUT 200-240V \u00b1 2%\",\"confidence\":0.6},\"legibility\":\"partial\",\"issues\":[\"glare\",\"angle\",\"cut_off\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 1072,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.000719,
+  "latency_ms": 5375,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwbxgmSyMmPB5Tiqa4R",
+  "from_cache": false
+ }
+}

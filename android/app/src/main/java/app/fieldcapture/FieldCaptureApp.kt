@@ -92,11 +92,12 @@ class FieldCaptureApp : Application() {
    */
   private fun watchBackOffice() {
     appScope.launch(Dispatchers.IO) {
-      val client = BackendClient(BuildConfig.BACKEND_URL, store)
       store.pending.collectLatest { n ->
         while (n > 0) {
           delay(PROBE_MS)
           if (settings.simulateOffline) continue
+          // Read the address each round: the user may have just changed it in Back office settings.
+          val client = BackendClient(settings.backendUrl, settings.accessCode, store)
           if (client.ping() && UploadWorker.retryNow(this@FieldCaptureApp)) {
             events.log("upload", "back office answers; retrying now instead of waiting out the back-off")
           }

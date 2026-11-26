@@ -1,0 +1,16 @@
+{
+ "text": "{\"category\":\"moisture\",\"category_confidence\":0.8,\"component\":\"water heater pan\",\"component_confidence\":0.85,\"condition\":\"standing water\",\"condition_confidence\":0.9,\"location\":null,\"location_confidence\":0.9,\"severity\":\"unknown\",\"severity_confidence\":0.4,\"measurement_value\":null,\"measurement_unit\":null,\"measurement_confidence\":0.95,\"follow_up_needed\":true,\"summary\":\"Standing water observed in the water heater pan.\"}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "low",
+  "input_tokens": 1174,
+  "output_tokens": 160,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0001974,
+  "latency_ms": 2483,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRxBzJCZ6CHvT6qrr9Ta",
+  "from_cache": false
+ }
+}

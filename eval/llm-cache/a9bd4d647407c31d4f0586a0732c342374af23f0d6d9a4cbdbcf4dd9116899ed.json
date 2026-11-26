@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"other\",\"make\":{\"value\":\"DELL\",\"evidence\":\"DELL\",\"confidence\":0.97},\"model\":{\"value\":\"D17M\",\"evidence\":\"Reg Model:D17M\",\"confidence\":0.85},\"serial\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":\"A: 3.0A\",\"evidence\":\"A: 3.0A\",\"confidence\":0.55},\"fuel_or_power\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"voltage\":{\"value\":\"V: 200-240V~\",\"evidence\":\"V: 200-240V~ Hz:50-60 Hz\",\"confidence\":0.6},\"legibility\":\"partial\",\"issues\":[\"glare\",\"low_light\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 829,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0005975,
+  "latency_ms": 6250,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwQ3CJKizL7oxTuAhme",
+  "from_cache": false
+ }
+}

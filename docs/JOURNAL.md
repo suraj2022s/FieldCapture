@@ -862,3 +862,38 @@ Damage sizes from the user. Then `run_extraction` (3 models, ~$5, waiting on the
 
 ### Eval
 `run_extraction.py --per-capture 3` over the 201 scored frames × Haiku, Sonnet and Opus, plus the 19 notes. The user approved ~$5.
+
+## 2026-11-27 01:30 IST: eval run done; confidence choice; uploads no longer need USB
+
+### Eval run (`run_extraction.py --per-capture 3`, user-approved ~$5)
+- 201 frames × Haiku/Sonnet/Opus: 603 calls, 0 errors, plus 18 notes × 3. Report: `eval/REPORT.md`. Headlines:
+  - **Nameplates (Opus):** it reads 120 of 280 printed fields exactly and leaves 149 blank. **It invents a value for 0 of 330 fields that are not printed.** When it answers, it is right 92% of the time (131 answered, 11 wrong).
+  - **Damage type 29–37%, surface 42–51%.** 3 of the 5 worst failures are ground-truth ambiguity (seepage vs peeling paint; wall vs ceiling at the junction; ventilator vs the wall under it). The damage type/material/surface labels were drafted by Claude and are not yet confirmed by the user. Disclosed.
+  - **Size from one photo is not usable:** median area error 255% (model estimate), 505% (reference scaling). The model sizes a different extent than the tape (the whole stained wall vs the ventilator opening). This matches the design, which flags low-confidence sizes for measurement.
+  - **Notes:** category 100% on all three models; location 72–83%.
+  - **Cost per image:** Haiku $0.0005, Sonnet $0.0067, Opus $0.016.
+- `failure_causes.json` was written for the five worst; the report was regenerated.
+
+### Confidence: the fit was refused, the model's own confidence ships
+- The all-feature Opus calibration fitted out-of-fold to AUROC **0.709**, against **0.908** for the model's own confidence. It also raised mean confidence on wrong answers from 0.48 to 0.87, which would have pushed wrong values past the 0.6 auto-accept line. A self-only fit got 0.824.
+- `calibrate.py --write` now **refuses** a fit that ranks worse than self-confidence (tolerance 0.02), and gained `--features`.
+- New `eval/choose_confidence.py` compares the priors with fixed monotone mappings of self-confidence against the auto-accept line:
+
+| option | wrong values auto-accepted | auto-accepted | accuracy of auto-accepted |
+|---|---|---|---|
+| priors (shipping until now) | 6/11 | 85% | 95% |
+| **sigmoid(−5 + 9·self)** | **1/11** | 70% | 99% |
+
+  It ships in `backend/calibration.json`. It was chosen among 3 options on the same rows; this is stated in the report.
+
+### Uploads without USB (the user's point: a real tech has no cable and no Claude Code)
+- **Back office:**
+  - Optional access code `FIELDCAPTURE_TOKEN`. The phone sends `Bearer`; a browser gets a Basic prompt (code as password); `/healthz` stays open.
+  - The server refuses to listen off loopback without a code, and logs the LAN address to type on the phone.
+  - 4 new tests; backend 89/89.
+- **App:**
+  - New **Back office** card (outside developer tools): address and access code, with "Save and test" (reachable? code accepted?). It replaces the build-time `127.0.0.1:8000`, which only works with `adb reverse`.
+  - A 401/403 now keeps items queued (new `UNAUTHORIZED` outcome) instead of moving them aside as rejected.
+  - Debug `backend` command (code in its own extra, never logged).
+  - `NormalizeUrlTest`; app JVM tests pass.
+- **Still to do:** an end-to-end run over the hotspot Wi-Fi (needs a Windows Firewall allow for python on the PC). Debug builds allow cleartext HTTP; a release build would need HTTPS.

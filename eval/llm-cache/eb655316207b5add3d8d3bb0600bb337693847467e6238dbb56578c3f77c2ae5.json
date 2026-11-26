@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"hole\",\"damage_type_confidence\":0.8,\"material\":\"concrete\",\"material_confidence\":0.45,\"surface_seen\":\"ceiling\",\"surface_confidence\":0.6,\"severity\":\"moderate\",\"severity_confidence\":0.6,\"damage_box\":{\"x0\":0.37,\"y0\":0.34,\"x1\":0.93,\"y1\":0.59},\"damage_box_confidence\":0.7,\"reference_objects\":[{\"kind\":\"outlet_or_switch_plate\",\"box\":{\"x0\":0.07,\"y0\":0.43,\"x1\":0.2,\"y1\":0.61},\"confidence\":0.35}],\"estimated_width_in\":24.0,\"estimated_height_in\":12.0,\"size_confidence\":0.25,\"description\":\"Plaster has chipped away at the wall-ceiling junction in a roughly triangular patch, exposing the concrete substrate and embedded metal bars.\",\"issues\":[\"low_light\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 2656,
+  "output_tokens": 828,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0006796,
+  "latency_ms": 4750,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwVXne6G12v8rsLNkir",
+  "from_cache": false
+ }
+}

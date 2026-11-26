@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"water_heater\",\"make\":{\"value\":\"BAJAJ\",\"evidence\":\"BAJAJ Majesty\",\"confidence\":0.95},\"model\":{\"value\":null,\"evidence\":\"MODEL 15GPU (1505T4E) STATIONARY STORAGE TYPE ELECTRIC WATER HEATER\",\"confidence\":0.1},\"serial\":{\"value\":\"091605027\",\"evidence\":\"SERIAL NO. G155 091605027\",\"confidence\":0.5},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":null,\"evidence\":\"CAPACITY 15 LITER\",\"confidence\":0.3},\"fuel_or_power\":{\"value\":\"2.0KW\",\"evidence\":\"INPUT 2.0KW\",\"confidence\":0.5},\"voltage\":{\"value\":\"230V~50Hz\",\"evidence\":\"VOLTS 230V~50Hz\",\"confidence\":0.45},\"legibility\":\"partial\",\"issues\":[\"angle\",\"too_small\",\"blur\",\"glare\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 349,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00715,
+  "latency_ms": 3671,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwgJnrmsKtA45Jqn5Ny",
+  "from_cache": false
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"peeling_bubbling_paint\",\"damage_type_confidence\":0.6,\"material\":\"plaster\",\"material_confidence\":0.4,\"surface_seen\":\"wall\",\"surface_confidence\":0.9,\"severity\":\"moderate\",\"severity_confidence\":0.4,\"damage_box\":{\"x0\":0.0,\"y0\":0.0,\"x1\":1.0,\"y1\":0.95},\"damage_box_confidence\":0.5,\"reference_objects\":[],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.1,\"description\":\"Grey wall surface shows widespread peeling and flaking paint or plaster with patchy bare areas, no clear scale reference in frame.\",\"issues\":[\"angle\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 2655,
+  "output_tokens": 666,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0005985,
+  "latency_ms": 4078,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwVUXgyGxhoZWBofVSQ",
+  "from_cache": false
+ }
+}

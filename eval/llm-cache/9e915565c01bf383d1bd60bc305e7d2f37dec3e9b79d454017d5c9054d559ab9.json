@@ -1,0 +1,16 @@
+{
+ "text": "{\"category\":\"moisture\",\"category_confidence\":0.9,\"component\":\"drywall\",\"component_confidence\":0.9,\"condition\":\"wet\",\"condition_confidence\":0.85,\"location\":\"living room\",\"location_confidence\":0.9,\"severity\":\"unknown\",\"severity_confidence\":0.4,\"measurement_value\":18.0,\"measurement_unit\":\"in\",\"measurement_confidence\":0.85,\"follow_up_needed\":false,\"summary\":\"Drywall in the living room is wet up to about 18 inches.\"}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "low",
+  "input_tokens": 1176,
+  "output_tokens": 164,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00019960000000000003,
+  "latency_ms": 1483,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRx9DpDXHFg9GsvYSGKb",
+  "from_cache": false
+ }
+}

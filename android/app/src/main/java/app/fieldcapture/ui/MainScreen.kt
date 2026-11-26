@@ -22,6 +22,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -39,6 +40,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -48,6 +50,7 @@ import app.fieldcapture.glasses.GlassesStatus
 import app.fieldcapture.glasses.PhotoCodec
 import app.fieldcapture.glasses.PhotoResult
 import app.fieldcapture.glasses.WalkPhase
+import app.fieldcapture.sync.BackendClient
 import app.fieldcapture.sync.UploadWorker
 import app.fieldcapture.walk.counts
 import com.meta.wearable.dat.core.types.ThermalLevel
@@ -151,6 +154,9 @@ fun MainScreen(app: FieldCaptureApp, actions: MainActions) {
         }
       }
     }
+
+    // Set up once, before walking: where uploads go. Hidden during a walk to keep that screen short.
+    if (!jobActive) item { BackOfficeSettings(app) }
 
     item {
       TextButton(onClick = { devOpen = !devOpen }, modifier = Modifier.padding(horizontal = 4.dp)) {
@@ -266,6 +272,52 @@ private fun plainStatus(phase: WalkPhase, jobActive: Boolean): Pair<String, Colo
             WalkPhase.IDLE, WalkPhase.ENDED -> "Ready" to SLATE
           }
     }
+
+/**
+ * Where uploads go, over Wi-Fi or mobile data: the back office's address and access code. The build
+ * default (127.0.0.1) only works with a USB cable and `adb reverse`, which no real tech has.
+ */
+@Composable
+private fun BackOfficeSettings(app: FieldCaptureApp) {
+  var url by rememberSaveable { mutableStateOf(app.settings.backendUrl) }
+  var code by rememberSaveable { mutableStateOf(app.settings.accessCode) }
+  var editing by rememberSaveable { mutableStateOf(false) }
+  var result by remember { mutableStateOf<String?>(null) }
+  val scope = rememberCoroutineScope()
+  Section("Back office") {
+    if (!editing) {
+      Text("Uploads go to $url" + if (code.isBlank()) " (no access code)" else "", color = MaterialTheme.colorScheme.secondary)
+      result?.let { Text(it) }
+      TextButton(onClick = { editing = true }) { Text("Change") }
+    } else {
+      OutlinedTextField(url, { url = it }, label = { Text("Address, e.g. 192.168.1.20:8002") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+      OutlinedTextField(
+          code,
+          { code = it },
+          label = { Text("Access code") },
+          singleLine = true,
+          visualTransformation = PasswordVisualTransformation(),
+          modifier = Modifier.fillMaxWidth(),
+      )
+      Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Button(onClick = {
+          app.settings.backendUrl = url
+          app.settings.accessCode = code
+          url = app.settings.backendUrl
+          editing = false
+          result = "Checking…"
+          app.events.log("settings", "back office set to $url (access code ${if (code.isBlank()) "none" else "set"})")
+          scope.launch {
+            val r = kotlinx.coroutines.withContext(Dispatchers.IO) { BackendClient(url, code, app.store).check() }
+            result = r
+            if (r == "Connected") UploadWorker.kick(app)
+          }
+        }) { Text("Save and test") }
+        TextButton(onClick = { editing = false; url = app.settings.backendUrl; code = app.settings.accessCode }) { Text("Cancel") }
+      }
+    }
+  }
+}
 
 @Composable
 private fun StatusBanner(s: GlassesStatus, jobActive: Boolean) {

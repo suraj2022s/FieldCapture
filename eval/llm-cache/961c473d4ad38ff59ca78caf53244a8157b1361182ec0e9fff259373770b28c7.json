@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"other\",\"make\":{\"value\":\"SEN & PANDIT EQUIPMENT PVT. LTD.\",\"evidence\":\"MFD. BY: SEN & PANDIT EQUIPMENT PVT. LTD. KOLKATA - 700 032\",\"confidence\":0.8},\"model\":{\"value\":\"SPE 56\",\"evidence\":\"SPE 56 SL. NO.\",\"confidence\":0.45},\"serial\":{\"value\":null,\"evidence\":\"SL. NO. [handwritten/stamped digits illegible]\",\"confidence\":0.0},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":\"KVA 0.5\",\"evidence\":\"KVA 0'5\",\"confidence\":0.5},\"fuel_or_power\":{\"value\":\"AC\",\"evidence\":\"AUTOMATIC TRANSISTORISED SOLID STATE A. C. VOLTAGE STABILISER\",\"confidence\":0.5},\"voltage\":{\"value\":\"INPUT 130-280V; OUTPUT 200-240V\",\"evidence\":\"INPUT 130-280V OUTPUT 200-240V\",\"confidence\":0.6},\"legibility\":\"partial\",\"issues\":[\"angle\",\"glare\",\"low_light\",\"occluded\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 424,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0079,
+  "latency_ms": 3733,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwo5BVqMB8dZURLf5sF",
+  "from_cache": false
+ }
+}

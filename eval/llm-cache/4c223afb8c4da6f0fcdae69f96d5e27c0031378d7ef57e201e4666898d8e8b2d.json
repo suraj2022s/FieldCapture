@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"other\",\"make\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"model\":{\"value\":\"MC2844SPB.DBKQLN\",\"evidence\":\"MC2844SPB.DBKQLN\",\"confidence\":0.5},\"serial\":{\"value\":\"601NMOM009844\",\"evidence\":\"S No:601NMOM009844\",\"confidence\":0.4},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"capacity\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"fuel_or_power\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"voltage\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"legibility\":\"partial\",\"issues\":[\"angle\",\"too_small\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 769,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0005675,
+  "latency_ms": 4266,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwcSSsJrwjiY1Pv2qrR",
+  "from_cache": false
+ }
+}

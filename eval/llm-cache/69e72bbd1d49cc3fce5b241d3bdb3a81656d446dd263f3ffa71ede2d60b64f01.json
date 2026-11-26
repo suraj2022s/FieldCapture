@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"water_heater\",\"make\":{\"value\":\"BAJAJ\",\"evidence\":\"BAJAJ Majesty\",\"confidence\":0.9},\"model\":{\"value\":null,\"evidence\":\"MODEL 15GPU (...)\",\"confidence\":0.0},\"serial\":{\"value\":null,\"evidence\":\"SERIAL NO. G155 / 091605027\",\"confidence\":0.0},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":\"15 LITER\",\"evidence\":\"CAPACITY 15 LITER\",\"confidence\":0.55},\"fuel_or_power\":{\"value\":\"2.0KW\",\"evidence\":\"INPUT 2.0KW\",\"confidence\":0.4},\"voltage\":{\"value\":\"230V~50Hz\",\"evidence\":\"VOLTS 230V~50Hz\",\"confidence\":0.5},\"legibility\":\"partial\",\"issues\":[\"angle\",\"too_small\",\"glare\"]}",
+ "stats": {
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 706,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.02144,
+  "latency_ms": 7687,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwunmUFX7iyTNsUBxJ7",
+  "from_cache": false
+ }
+}

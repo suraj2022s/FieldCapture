@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"other\",\"make\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"model\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"serial\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"fuel_or_power\":{\"value\":null,\"evidence\":\"230V~ 8.3W 50Hz\",\"confidence\":0.2},\"voltage\":{\"value\":\"230V\",\"evidence\":\"230V~ 8.3W 50Hz\",\"confidence\":0.4},\"legibility\":\"poor\",\"issues\":[\"low_light\",\"blur\",\"too_small\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 256,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00622,
+  "latency_ms": 2625,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwkTdXEKkgnhTvqqzvf",
+  "from_cache": false
+ }
+}

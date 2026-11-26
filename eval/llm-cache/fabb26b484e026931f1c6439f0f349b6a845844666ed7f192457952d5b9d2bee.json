@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"peeling_bubbling_paint\",\"damage_type_confidence\":0.8,\"material\":\"plaster\",\"material_confidence\":0.45,\"surface_seen\":\"wall\",\"surface_confidence\":0.9,\"severity\":\"moderate\",\"severity_confidence\":0.6,\"damage_box\":{\"x0\":0.23,\"y0\":0.22,\"x1\":0.92,\"y1\":0.6},\"damage_box_confidence\":0.6,\"reference_objects\":[],\"estimated_width_in\":120.0,\"estimated_height_in\":36.0,\"size_confidence\":0.2,\"description\":\"Painted living room wall shows flaking, peeling paint and loose plaster across the upper section, with blue paint patches and no clear scale reference.\",\"issues\":[]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 688,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0006092999999999999,
+  "latency_ms": 4343,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwb8jyvPNqYJBEu5Y4i",
+  "from_cache": false
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "text": "{\"category\":\"moisture\",\"category_confidence\":0.85,\"component\":\"water heater drain pan\",\"component_confidence\":0.9,\"condition\":\"standing water in pan\",\"condition_confidence\":0.92,\"location\":null,\"location_confidence\":0.9,\"severity\":\"medium\",\"severity_confidence\":0.5,\"measurement_value\":null,\"measurement_unit\":null,\"measurement_confidence\":0.95,\"follow_up_needed\":true,\"summary\":\"Standing water observed in the water heater drain pan; the source and possible leak need to be checked.\"}",
+ "stats": {
+  "model": "claude-opus-5-5",
+  "effort": "low",
+  "input_tokens": 1174,
+  "output_tokens": 179,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.008276,
+  "latency_ms": 2125,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRxCLcpSZPCG8NhpbrFw",
+  "from_cache": false
+ }
+}

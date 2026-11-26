@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"peeling_bubbling_paint\",\"damage_type_confidence\":0.8,\"material\":\"plaster\",\"material_confidence\":0.55,\"surface_seen\":\"wall\",\"surface_confidence\":0.9,\"severity\":\"severe\",\"severity_confidence\":0.65,\"damage_box\":{\"x0\":0.0,\"y0\":0.2,\"x1\":1.0,\"y1\":0.72},\"damage_box_confidence\":0.6,\"reference_objects\":[{\"kind\":\"outlet_or_switch_plate\",\"box\":{\"x0\":0.96,\"y0\":0.28,\"x1\":1.0,\"y1\":0.39},\"confidence\":0.3},{\"kind\":\"door\",\"box\":{\"x0\":0.83,\"y0\":0.57,\"x1\":1.0,\"y1\":1.0},\"confidence\":0.3}],\"estimated_width_in\":96.0,\"estimated_height_in\":40.0,\"size_confidence\":0.2,\"description\":\"Wall plaster in the corner near the ceiling has widespread peeling paint, exposed layers and blue patches, consistent with long-term moisture damage.\",\"issues\":[\"low_light\",\"angle\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 380,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.009106,
+  "latency_ms": 3391,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwiST3Cv77CNtYTJbuv",
+  "from_cache": false
+ }
+}

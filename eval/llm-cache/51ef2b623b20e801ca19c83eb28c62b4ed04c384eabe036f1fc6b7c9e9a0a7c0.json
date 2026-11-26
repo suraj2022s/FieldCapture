@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":false,\"damage_type\":\"none\",\"damage_type_confidence\":0.6,\"material\":\"unknown\",\"material_confidence\":0.3,\"surface_seen\":\"window\",\"surface_confidence\":0.85,\"severity\":\"minor\",\"severity_confidence\":0.3,\"damage_box\":null,\"damage_box_confidence\":0.6,\"reference_objects\":[{\"kind\":\"window\",\"box\":{\"x0\":0.13,\"y0\":0.14,\"x1\":0.98,\"y1\":0.94},\"confidence\":0.5}],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.1,\"description\":\"Dark photo of a barred window with a strainer and cups on the sill; no clear damage is visible, though the frame and wall look weathered.\",\"issues\":[\"low_light\",\"blur\",\"angle\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 273,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.008036,
+  "latency_ms": 3733,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwnZGupz2JKReFtmR5J",
+  "from_cache": false
+ }
+}

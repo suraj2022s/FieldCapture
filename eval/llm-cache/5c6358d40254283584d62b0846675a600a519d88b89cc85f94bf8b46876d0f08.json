@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"other\",\"make\":{\"value\":\"ROXY\",\"evidence\":\"ROXY\",\"confidence\":0.9},\"model\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"serial\":{\"value\":null,\"evidence\":null,\"confidence\":0.05},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.05},\"capacity\":{\"value\":\"1000W\",\"evidence\":\"1000W 230V AC\",\"confidence\":0.4},\"fuel_or_power\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"voltage\":{\"value\":\"230V AC\",\"evidence\":\"230V AC\",\"confidence\":0.45},\"legibility\":\"partial\",\"issues\":[\"angle\",\"too_small\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 826,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.000596,
+  "latency_ms": 4577,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwTUZNRzLzGVWxQDziB",
+  "from_cache": false
+ }
+}

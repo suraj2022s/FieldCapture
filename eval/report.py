@@ -14,7 +14,7 @@ from pathlib import Path
 
 EVAL_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(EVAL_DIR))
-from common import LABELS, RESULTS, load_json  # noqa: E402
+from common import LABELS, REPO, RESULTS, load_json  # noqa: E402
 
 NP_FIELDS = ("make", "model", "serial", "manufacture_date")
 DM_FIELDS = ("damage_type", "material", "surface")
@@ -144,6 +144,16 @@ def section_confidence(rows, models, calib) -> str:
         for name, s in c["test"].items():
             out.append(f"| {name} | {s['n']} | {pct(s['accuracy'])} | {s['mean_conf_correct']} | {s['mean_conf_wrong']} | {s['auroc']} | {s['ece']} |")
         out += ["", f"Coefficients fitted on all rows: `{json.dumps(c['coefficients'])}`."]
+    shipped = load_json(REPO / "backend" / "calibration.json", {})
+    if shipped.get("compared"):
+        out += ["", f"**What the back office ships** (`backend/calibration.json`, `{shipped['model']}`): **{shipped['chosen']}**, {shipped['method']}. "
+                "The rows above measure the confidence computed during the run (the priors); the options on the same answered fields:", "",
+                "| Confidence | AUROC | ECE | Mean conf. wrong | Auto-accepted (≥ 0.6) | Accuracy of auto-accepted | Wrong values auto-accepted |", "|---|---|---|---|---|---|---|"]
+        for name, s in shipped["compared"].items():
+            mark = "**" if name == shipped["chosen"] else ""
+            out.append(f"| {mark}{name}{mark} | {s['auroc']} | {s['ece']} | {s['mean_conf_wrong']} | {pct(s['auto_accepted_share'])} | "
+                       f"{pct(s['accuracy_of_auto_accepted'])} | {s['wrong_auto_accepted']} |")
+        out += ["", "_Chosen among three mappings on the same rows, so slightly optimistic; with 11 wrong answers, one more or fewer moves the last column by 9 points._"]
     return "\n".join(out) + "\n"
 
 

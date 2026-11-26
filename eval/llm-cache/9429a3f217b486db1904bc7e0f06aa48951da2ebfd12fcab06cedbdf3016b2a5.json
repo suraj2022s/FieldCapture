@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"peeling_bubbling_paint\",\"damage_type_confidence\":0.7,\"material\":\"plaster\",\"material_confidence\":0.5,\"surface_seen\":\"wall\",\"surface_confidence\":0.9,\"severity\":\"moderate\",\"severity_confidence\":0.6,\"damage_box\":{\"x0\":0.25,\"y0\":0.2,\"x1\":0.95,\"y1\":0.6},\"damage_box_confidence\":0.6,\"reference_objects\":[{\"kind\":\"outlet_or_switch_plate\",\"box\":{\"x0\":0.96,\"y0\":0.28,\"x1\":1.0,\"y1\":0.38},\"confidence\":0.5}],\"estimated_width_in\":120.0,\"estimated_height_in\":60.0,\"size_confidence\":0.3,\"description\":\"Plaster and paint on the upper living room wall are flaking and peeling in large patches, with bare, blue-stained areas showing underneath.\",\"issues\":[]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 943,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0007367999999999999,
+  "latency_ms": 5469,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwV57332YgdXocnQ9z6",
+  "from_cache": false
+ }
+}

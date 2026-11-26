@@ -1,0 +1,16 @@
+{
+ "text": "{\"category\":\"damage_observation\",\"category_confidence\":0.85,\"component\":\"laminate flooring\",\"component_confidence\":0.8,\"condition\":\"cupping\",\"condition_confidence\":0.85,\"location\":\"living room, in front of the dishwasher\",\"location_confidence\":0.7,\"severity\":\"unknown\",\"severity_confidence\":0.9,\"measurement_value\":null,\"measurement_unit\":null,\"measurement_confidence\":0.95,\"follow_up_needed\":true,\"summary\":\"Laminate flooring cupping in the living room in front of the dishwasher.\"}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "low",
+  "input_tokens": 1179,
+  "output_tokens": 184,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0002099,
+  "latency_ms": 1796,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRxAcXjN9Qf1hRW1pzbq",
+  "from_cache": false
+ }
+}

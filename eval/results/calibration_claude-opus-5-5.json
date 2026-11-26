@@ -1,0 +1,51 @@
+{
+  "model": "claude-opus-5-5",
+  "method": "leave-one-scene-out",
+  "features": [
+    "self",
+    "ocr_agree",
+    "format_ok",
+    "legible",
+    "qc_pass"
+  ],
+  "answered_fields": 131,
+  "wrong_answers": 11,
+  "scenes": 10,
+  "abstained_correctly": 330,
+  "abstained_but_printed": 149,
+  "fitted": true,
+  "coefficients": {
+    "bias": -0.1329,
+    "self": 6.7844,
+    "ocr_agree": 0.2793,
+    "format_ok": -1.8214,
+    "legible": 0.7301,
+    "qc_pass": -0.922
+  },
+  "test": {
+    "model_self_confidence": {
+      "n": 131,
+      "accuracy": 0.916,
+      "mean_conf_correct": 0.786,
+      "mean_conf_wrong": 0.482,
+      "auroc": 0.908,
+      "ece": 0.156
+    },
+    "prior_combined_confidence": {
+      "n": 131,
+      "accuracy": 0.916,
+      "mean_conf_correct": 0.811,
+      "mean_conf_wrong": 0.65,
+      "auroc": 0.757,
+      "ece": 0.119
+    },
+    "calibrated_confidence": {
+      "n": 131,
+      "accuracy": 0.916,
+      "mean_conf_correct": 0.912,
+      "mean_conf_wrong": 0.866,
+      "auroc": 0.709,
+      "ece": 0.064
+    }
+  }
+}

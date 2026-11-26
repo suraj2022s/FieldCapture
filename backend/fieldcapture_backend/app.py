@@ -2,16 +2,19 @@
 
 from __future__ import annotations
 
+import base64
 import dataclasses
 import html
 import json
 import logging
 import os
+import secrets
+import socket
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from fastapi import FastAPI, File, Form, Header, HTTPException, Request, UploadFile
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, PlainTextResponse
 
 from .config import settings
 from .llm import Llm
@@ -25,17 +28,45 @@ log = logging.getLogger("fieldcapture.app")
 KINDS = {"job", "capture", "note", "events", "finalize"}
 
 
-def create_app(data_dir: Path | None = None, extract: bool | None = None) -> FastAPI:
+def authorized(header: str | None, token: str) -> bool:
+    """'Bearer <token>' (the phone) or HTTP Basic with the token as password (a browser)."""
+    if not token:
+        return True
+    if not header:
+        return False
+    scheme, _, value = header.partition(" ")
+    if scheme.lower() == "bearer":
+        return secrets.compare_digest(value.strip(), token)
+    if scheme.lower() == "basic":
+        try:
+            _, _, password = base64.b64decode(value.strip()).decode("utf-8").partition(":")
+        except (ValueError, UnicodeDecodeError):
+            return False
+        return secrets.compare_digest(password, token)
+    return False
+
+
+def create_app(data_dir: Path | None = None, extract: bool | None = None, token: str | None = None) -> FastAPI:
     s = settings()
     if data_dir is not None:
         s = dataclasses.replace(s, data_dir=data_dir, llm_cache_dir=data_dir / "llm-cache")
     if extract is not None:
         s = dataclasses.replace(s, extract=extract)
+    if token is not None:
+        s = dataclasses.replace(s, token=token)
     store = Store(s.data_dir)
     processor = Processor(store, s, Llm(s.llm_cache_dir))
     app = FastAPI(title="FieldCapture back office", version="0.1.0")
     app.state.store = store
     app.state.processor = processor
+
+    @app.middleware("http")
+    async def access_code(request: Request, call_next):
+        if request.url.path != "/healthz" and not authorized(request.headers.get("authorization"), s.token):
+            return PlainTextResponse(
+                "access code required", status_code=401, headers={"WWW-Authenticate": 'Basic realm="FieldCapture back office"'}
+            )
+        return await call_next(request)
 
     @app.get("/healthz")
     def healthz():
@@ -218,6 +249,11 @@ def main() -> None:
 
     host = os.environ.get("FIELDCAPTURE_HOST", "127.0.0.1")
     port = int(os.environ.get("FIELDCAPTURE_PORT", "8000"))
+    if host not in ("127.0.0.1", "localhost", "::1"):
+        if not settings().token:
+            raise SystemExit("Refusing to listen on the network without an access code: set FIELDCAPTURE_TOKEN (backend/.env).")
+        addrs = sorted({ai[4][0] for ai in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET)})
+        log.info("On the phone, set Back office to one of: %s (port %d) and enter the access code.", ", ".join(f"http://{a}:{port}" for a in addrs), port)
     uvicorn.run("fieldcapture_backend.app:app", host=host, port=port, log_level="info")
 
 

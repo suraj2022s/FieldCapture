@@ -1,0 +1,16 @@
+{
+ "text": "{\"category\":\"damage_observation\",\"category_confidence\":0.6,\"component\":\"pipe\",\"component_confidence\":0.7,\"condition\":\"stripping\",\"condition_confidence\":0.5,\"location\":\"under the kitchen sink\",\"location_confidence\":0.85,\"severity\":\"unknown\",\"severity_confidence\":0.3,\"measurement_value\":null,\"measurement_unit\":null,\"measurement_confidence\":0.95,\"follow_up_needed\":true,\"summary\":\"Pipe under the kitchen sink is stripping.\"}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "low",
+  "input_tokens": 1179,
+  "output_tokens": 170,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0002029,
+  "latency_ms": 2077,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRxG6ZqjdrcWeUuAG5Xu",
+  "from_cache": false
+ }
+}

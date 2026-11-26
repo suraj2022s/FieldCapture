@@ -1,0 +1,16 @@
+{
+ "text": "{\"category\":\"structural\",\"category_confidence\":0.6,\"component\":\"subfloor\",\"component_confidence\":0.9,\"condition\":\"soft\",\"condition_confidence\":0.9,\"location\":\"living room, by cabinet\",\"location_confidence\":0.75,\"severity\":\"medium\",\"severity_confidence\":0.5,\"measurement_value\":null,\"measurement_unit\":null,\"measurement_confidence\":0.95,\"follow_up_needed\":true,\"summary\":\"Soft subfloor near the cabinet in the living room.\"}",
+ "stats": {
+  "model": "claude-opus-5-5",
+  "effort": "low",
+  "input_tokens": 1175,
+  "output_tokens": 167,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00804,
+  "latency_ms": 2796,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRx8V6SeTupRUUNohJfC",
+  "from_cache": false
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":false,\"damage_type\":\"none\",\"damage_type_confidence\":0.6,\"material\":\"unknown\",\"material_confidence\":0.3,\"surface_seen\":\"ceiling\",\"surface_confidence\":0.4,\"severity\":\"minor\",\"severity_confidence\":0.4,\"damage_box\":null,\"damage_box_confidence\":0.5,\"reference_objects\":[],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.05,\"description\":\"Storage loft space with boxes and a textured ceiling; no clear water damage, mold, or structural damage is visible, though the dim light limits inspection.\",\"issues\":[\"low_light\",\"angle\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 226,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.007566,
+  "latency_ms": 3000,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwnFdmbH5NRqSHH88Ft",
+  "from_cache": false
+ }
+}

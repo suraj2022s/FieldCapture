@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"water_heater\",\"make\":{\"value\":\"Bajaj\",\"evidence\":\"BAJAJ (brand logo, shown twice on plate)\",\"confidence\":0.7},\"model\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"serial\":{\"value\":null,\"evidence\":null,\"confidence\":0.05},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.05},\"capacity\":{\"value\":null,\"evidence\":null,\"confidence\":0.05},\"fuel_or_power\":{\"value\":null,\"evidence\":null,\"confidence\":0.05},\"voltage\":{\"value\":null,\"evidence\":null,\"confidence\":0.05},\"legibility\":\"poor\",\"issues\":[\"blur\",\"low_light\",\"too_small\",\"angle\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 605,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0004855,
+  "latency_ms": 6796,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwRizipfKXZo7D8GWwg",
+  "from_cache": false
+ }
+}

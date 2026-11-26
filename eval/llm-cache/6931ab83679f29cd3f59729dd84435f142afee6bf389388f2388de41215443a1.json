@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"other\",\"make\":{\"value\":\"MEKTRON\",\"evidence\":\"MEKTRON\",\"confidence\":0.9},\"model\":{\"value\":\"MT450\",\"evidence\":\"MODEL- MT450\",\"confidence\":0.9},\"serial\":{\"value\":\"450AW55230192\",\"evidence\":\"450AW55230192\",\"confidence\":0.5},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.95},\"capacity\":{\"value\":\"4KVA\",\"evidence\":\"CAPACITY - 4KVA Automatic\",\"confidence\":0.9},\"fuel_or_power\":{\"value\":null,\"evidence\":null,\"confidence\":0.9},\"voltage\":{\"value\":\"50V TO 300V.AC\",\"evidence\":\"IPV - 50V TO 300V.AC\",\"confidence\":0.8},\"legibility\":\"good\",\"issues\":[]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 960,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.000663,
+  "latency_ms": 6891,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwLy6QVgTDFga3oTkXB",
+  "from_cache": false
+ }
+}

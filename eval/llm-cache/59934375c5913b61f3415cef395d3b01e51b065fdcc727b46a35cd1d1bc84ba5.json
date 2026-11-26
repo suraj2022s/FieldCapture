@@ -1,0 +1,16 @@
+{
+ "text": "{\"category\":\"damage_observation\",\"category_confidence\":0.5,\"component\":\"pipe under kitchen sink\",\"component_confidence\":0.6,\"condition\":\"stripping\",\"condition_confidence\":0.2,\"location\":\"kitchen sink\",\"location_confidence\":0.75,\"severity\":\"unknown\",\"severity_confidence\":0.5,\"measurement_value\":null,\"measurement_unit\":null,\"measurement_confidence\":0.95,\"follow_up_needed\":true,\"summary\":\"Pipe under the kitchen sink noted as 'stripping'; likely a speech recognition error (possibly 'dripping' or 'leaking'), so the actual condition should be verified.\"}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "low",
+  "input_tokens": 1179,
+  "output_tokens": 218,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.004538,
+  "latency_ms": 2531,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRxGEYpPwdyrAgHnwzC8",
+  "from_cache": false
+ }
+}

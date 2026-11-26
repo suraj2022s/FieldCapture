@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":false,\"damage_type\":\"none\",\"damage_type_confidence\":0.6,\"material\":\"unknown\",\"material_confidence\":0.3,\"surface_seen\":\"unknown\",\"surface_confidence\":0.4,\"severity\":\"minor\",\"severity_confidence\":0.3,\"damage_box\":null,\"damage_box_confidence\":0.6,\"reference_objects\":[],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.0,\"description\":\"Dim photo of a bedroom corner with a green mattress, window AC unit, and barbell on a patterned floor; no clear building damage is visible.\",\"issues\":[\"low_light\",\"angle\",\"blur\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 227,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.007576,
+  "latency_ms": 2889,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwo2eCAtUUMeAHWrdwS",
+  "from_cache": false
+ }
+}

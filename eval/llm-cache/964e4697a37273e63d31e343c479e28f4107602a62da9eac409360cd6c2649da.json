@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"peeling_bubbling_paint\",\"damage_type_confidence\":0.4,\"material\":\"concrete\",\"material_confidence\":0.5,\"surface_seen\":\"floor\",\"surface_confidence\":0.55,\"severity\":\"moderate\",\"severity_confidence\":0.4,\"damage_box\":{\"x0\":0.0,\"y0\":0.05,\"x1\":1.0,\"y1\":0.95},\"damage_box_confidence\":0.35,\"reference_objects\":[],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.1,\"description\":\"Concrete-looking surface, likely a floor, with mottled blue-gray coating that is worn and patchy with white residue and fine cracks, which suggests failed paint or sealer.\",\"issues\":[\"low_light\",\"angle\",\"blur\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 2655,
+  "output_tokens": 279,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0081,
+  "latency_ms": 2827,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwiYq1T5mk68SyD2u4N",
+  "from_cache": false
+ }
+}

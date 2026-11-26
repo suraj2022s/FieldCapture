@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"crack\",\"damage_type_confidence\":0.6,\"material\":\"plaster\",\"material_confidence\":0.4,\"surface_seen\":\"ceiling\",\"surface_confidence\":0.9,\"severity\":\"moderate\",\"severity_confidence\":0.4,\"damage_box\":{\"x0\":0.2,\"y0\":0.38,\"x1\":0.98,\"y1\":0.5},\"damage_box_confidence\":0.5,\"reference_objects\":[],\"estimated_width_in\":36.0,\"estimated_height_in\":4.0,\"size_confidence\":0.2,\"description\":\"Cracking along the ceiling near the wall junction in a dim kitchen, with a possible stain or dark patches on the wall below.\",\"issues\":[\"low_light\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 2656,
+  "output_tokens": 737,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0006341000000000001,
+  "latency_ms": 4453,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwUwtwh9DMeho7wziuE",
+  "from_cache": false
+ }
+}

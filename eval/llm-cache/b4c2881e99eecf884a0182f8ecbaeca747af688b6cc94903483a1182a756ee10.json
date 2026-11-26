@@ -1,0 +1,16 @@
+{
+ "text": "{\"category\":\"damage_observation\",\"category_confidence\":0.85,\"component\":\"tile\",\"component_confidence\":0.9,\"condition\":\"cracked\",\"condition_confidence\":0.93,\"location\":\"next to the shower\",\"location_confidence\":0.8,\"severity\":\"unknown\",\"severity_confidence\":0.8,\"measurement_value\":null,\"measurement_unit\":null,\"measurement_confidence\":0.95,\"follow_up_needed\":false,\"summary\":\"Crack observed in the tile next to the shower; severity not stated.\"}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "low",
+  "input_tokens": 1176,
+  "output_tokens": 170,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.004052,
+  "latency_ms": 2282,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRxEkhxuK9QqzHv12SYW",
+  "from_cache": false
+ }
+}

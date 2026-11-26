@@ -1,6 +1,7 @@
 package app.fieldcapture.core
 
 import android.content.Context
+import app.fieldcapture.BuildConfig
 import app.fieldcapture.glasses.PhotoCodec
 import app.fieldcapture.quality.Thresholds
 import kotlinx.serialization.json.Json
@@ -33,6 +34,19 @@ class AppSettings(context: Context) {
   var mockTestFeed: Boolean
     get() = prefs.getBoolean("mockTestFeed", false)
     set(v) = prefs.edit().putBoolean("mockTestFeed", v).apply()
+
+  /**
+   * Where uploads go. The build default (127.0.0.1:8000) only works over USB with `adb reverse`; a
+   * real phone uses the back office's network address, e.g. http://192.168.1.20:8002.
+   */
+  var backendUrl: String
+    get() = prefs.getString("backendUrl", null)?.takeIf { it.isNotBlank() } ?: BuildConfig.BACKEND_URL
+    set(v) = prefs.edit().putString("backendUrl", normalizeUrl(v)).apply()
+
+  /** The back office's access code (FIELDCAPTURE_TOKEN); blank when it runs without one (USB). */
+  var accessCode: String
+    get() = prefs.getString("accessCode", "") ?: ""
+    set(v) = prefs.edit().putString("accessCode", v.trim()).apply()
 
   /** Prefer the glasses' capturePhoto() still as evidence when it passes QC. */
   var usePhotoEvidence: Boolean
@@ -74,4 +88,11 @@ class AppSettings(context: Context) {
   }
 
   @Suppress("unused") private fun JsonObject.str(k: String) = this[k]?.jsonPrimitive?.content
+}
+
+/** "192.168.1.20:8002" -> "http://192.168.1.20:8002"; trims spaces and a trailing slash. Blank stays blank. */
+fun normalizeUrl(raw: String): String {
+  val s = raw.trim().trimEnd('/')
+  if (s.isEmpty()) return s
+  return if (s.startsWith("http://", ignoreCase = true) || s.startsWith("https://", ignoreCase = true)) s else "http://$s"
 }

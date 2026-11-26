@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"water_heater\",\"make\":{\"value\":\"BAJAJ\",\"evidence\":\"BAJAJ\",\"confidence\":0.6},\"model\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"serial\":{\"value\":\"091806021\",\"evidence\":\"SERIAL NO. 091806021\",\"confidence\":0.4},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"capacity\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"fuel_or_power\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"voltage\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"legibility\":\"partial\",\"issues\":[\"glare\",\"blur\",\"too_small\",\"angle\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 1053,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0007095,
+  "latency_ms": 6077,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwRddkjDug8qKYNL4Xi",
+  "from_cache": false
+ }
+}

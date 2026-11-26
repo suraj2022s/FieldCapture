@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"other\",\"make\":{\"value\":\"DELL\",\"evidence\":\"DELL\",\"confidence\":0.9},\"model\":{\"value\":\"D17M\",\"evidence\":\"Reg Model:D17M\",\"confidence\":0.6},\"serial\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"fuel_or_power\":{\"value\":\"A: 3.0A, Hz:50-60 Hz\",\"evidence\":\"A: 3.0A  Hz:50-60 Hz\",\"confidence\":0.5},\"voltage\":{\"value\":\"200-240V~\",\"evidence\":\"V: 200-240V~\",\"confidence\":0.75},\"legibility\":\"partial\",\"issues\":[\"low_light\",\"angle\",\"too_small\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 290,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00656,
+  "latency_ms": 3264,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwejhznYRMSqDaPt3kn",
+  "from_cache": false
+ }
+}

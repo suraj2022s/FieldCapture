@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"peeling_bubbling_paint\",\"damage_type_confidence\":0.7,\"material\":\"plaster\",\"material_confidence\":0.5,\"surface_seen\":\"wall\",\"surface_confidence\":0.9,\"severity\":\"moderate\",\"severity_confidence\":0.6,\"damage_box\":{\"x0\":0.33,\"y0\":0.2,\"x1\":0.98,\"y1\":0.62},\"damage_box_confidence\":0.65,\"reference_objects\":[{\"kind\":\"door\",\"box\":{\"x0\":0.9,\"y0\":0.57,\"x1\":1.0,\"y1\":1.0},\"confidence\":0.4}],\"estimated_width_in\":72.0,\"estimated_height_in\":36.0,\"size_confidence\":0.2,\"description\":\"Plaster and blue paint flaking and peeling off the living room wall near the ceiling corner, with bare patches exposed.\",\"issues\":[]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 879,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0007048,
+  "latency_ms": 4843,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwUzrYb9PqSLzaQLGYg",
+  "from_cache": false
+ }
+}

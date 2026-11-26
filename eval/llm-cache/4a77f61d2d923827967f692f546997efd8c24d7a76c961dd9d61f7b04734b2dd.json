@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"other\",\"damage_type_confidence\":0.6,\"material\":\"concrete\",\"material_confidence\":0.8,\"surface_seen\":\"ceiling\",\"surface_confidence\":0.85,\"severity\":\"severe\",\"severity_confidence\":0.75,\"damage_box\":{\"x0\":0.36,\"y0\":0.34,\"x1\":0.93,\"y1\":0.59},\"damage_box_confidence\":0.75,\"reference_objects\":[],\"estimated_width_in\":30.0,\"estimated_height_in\":18.0,\"size_confidence\":0.25,\"description\":\"Spalled concrete on the bathroom ceiling slab, with plaster and cover concrete fallen away exposing corroded rebar, plus a hairline crack extending toward the upper right.\",\"issues\":[\"angle\",\"low_light\"]}",
+ "stats": {
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "input_tokens": 2656,
+  "output_tokens": 507,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.020764,
+  "latency_ms": 6391,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwyCqeRK3ZumoN36bpM",
+  "from_cache": false
+ }
+}

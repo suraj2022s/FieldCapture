@@ -1,0 +1,16 @@
+{
+ "text": "{\"category\":\"moisture\",\"category_confidence\":0.9,\"component\":\"carpet pad\",\"component_confidence\":0.9,\"condition\":\"soaked\",\"condition_confidence\":0.9,\"location\":\"by the patio door\",\"location_confidence\":0.85,\"severity\":\"unknown\",\"severity_confidence\":0.4,\"measurement_value\":null,\"measurement_unit\":null,\"measurement_confidence\":0.95,\"follow_up_needed\":true,\"summary\":\"Carpet pad soaked by the patio door.\"}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "low",
+  "input_tokens": 1178,
+  "output_tokens": 165,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00020030000000000002,
+  "latency_ms": 1937,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRxDXeNZvf6e3LAggPR9",
+  "from_cache": false
+ }
+}

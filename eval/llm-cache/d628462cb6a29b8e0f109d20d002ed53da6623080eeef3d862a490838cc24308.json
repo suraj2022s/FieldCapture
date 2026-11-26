@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"water_heater\",\"make\":{\"value\":\"BAJAJ\",\"evidence\":\"BAJAJ Majesty\",\"confidence\":0.9},\"model\":{\"value\":null,\"evidence\":\"MODEL 15GPU (15GT-L) TYPE CLOSED (partially legible, upside-down and small)\",\"confidence\":0.1},\"serial\":{\"value\":\"09160502?\",\"evidence\":\"SERIAL NO. G155 09160502?\",\"confidence\":0.2},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":\"15 LITRES\",\"evidence\":\"CAPACITY 15 LITRES\",\"confidence\":0.5},\"fuel_or_power\":{\"value\":\"2.0KW\",\"evidence\":\"INPUT 2.0KW\",\"confidence\":0.5},\"voltage\":{\"value\":\"230V~50Hz\",\"evidence\":\"230V~50Hz\",\"confidence\":0.5},\"legibility\":\"poor\",\"issues\":[\"angle\",\"blur\",\"too_small\",\"glare\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 344,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0071,
+  "latency_ms": 4093,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwgQsE2hCTgkA743qvg",
+  "from_cache": false
+ }
+}

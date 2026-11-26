@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":false,\"damage_type\":\"none\",\"damage_type_confidence\":0.5,\"material\":\"unknown\",\"material_confidence\":0.3,\"surface_seen\":\"window\",\"surface_confidence\":0.4,\"severity\":\"minor\",\"severity_confidence\":0.3,\"damage_box\":null,\"damage_box_confidence\":0.5,\"reference_objects\":[],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.1,\"description\":\"Very dark image of a grated window or cage with a strainer and mugs on the sill; no clear damage can be identified.\",\"issues\":[\"low_light\",\"blur\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 211,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.007416,
+  "latency_ms": 3217,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwnhK73WJzvaiEwn3wv",
+  "from_cache": false
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "text": "{\"category\":\"damage_observation\",\"category_confidence\":0.8,\"component\":\"ceiling\",\"component_confidence\":0.85,\"condition\":\"paint bubbling\",\"condition_confidence\":0.85,\"location\":\"bathroom\",\"location_confidence\":0.8,\"severity\":\"unknown\",\"severity_confidence\":0.5,\"measurement_value\":null,\"measurement_unit\":null,\"measurement_confidence\":0.95,\"follow_up_needed\":false,\"summary\":\"Paint bubbling on the bathroom ceiling.\"}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "low",
+  "input_tokens": 1181,
+  "output_tokens": 171,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00020360000000000002,
+  "latency_ms": 2156,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRxF6XaKa1gnXJ9wyfNP",
+  "from_cache": false
+ }
+}

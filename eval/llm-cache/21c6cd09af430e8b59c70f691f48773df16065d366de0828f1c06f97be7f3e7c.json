@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"hole\",\"damage_type_confidence\":0.6,\"material\":\"plaster\",\"material_confidence\":0.6,\"surface_seen\":\"wall\",\"surface_confidence\":0.55,\"severity\":\"severe\",\"severity_confidence\":0.6,\"damage_box\":{\"x0\":0.37,\"y0\":0.34,\"x1\":0.93,\"y1\":0.59},\"damage_box_confidence\":0.8,\"reference_objects\":[{\"kind\":\"outlet_or_switch_plate\",\"box\":{\"x0\":0.07,\"y0\":0.44,\"x1\":0.2,\"y1\":0.61},\"confidence\":0.5}],\"estimated_width_in\":18.0,\"estimated_height_in\":12.0,\"size_confidence\":0.3,\"description\":\"Large patch of plaster has fallen away from the wall/ceiling junction, exposing rough concrete and rusting rebar, with a stained, worn floor and a water heater below.\",\"issues\":[\"angle\",\"low_light\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 2656,
+  "output_tokens": 326,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.008572,
+  "latency_ms": 3750,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwihtToaUut6UDhxvRi",
+  "from_cache": false
+ }
+}

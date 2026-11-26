@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"peeling_bubbling_paint\",\"damage_type_confidence\":0.8,\"material\":\"plaster\",\"material_confidence\":0.5,\"surface_seen\":\"wall\",\"surface_confidence\":0.9,\"severity\":\"moderate\",\"severity_confidence\":0.55,\"damage_box\":{\"x0\":0.0,\"y0\":0.2,\"x1\":0.95,\"y1\":0.72},\"damage_box_confidence\":0.5,\"reference_objects\":[{\"kind\":\"other\",\"box\":{\"x0\":0.91,\"y0\":0.29,\"x1\":1.0,\"y1\":0.4},\"confidence\":0.3}],\"estimated_width_in\":120.0,\"estimated_height_in\":36.0,\"size_confidence\":0.2,\"description\":\"Wall near the ceiling corner shows widespread peeling and flaking paint with blue underlayer patches and stain marks, consistent with past moisture exposure.\",\"issues\":[\"angle\",\"low_light\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 321,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.008516,
+  "latency_ms": 3358,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwnpmZja6hfK63eLXs6",
+  "from_cache": false
+ }
+}

@@ -1,0 +1,59 @@
+{
+  "model": "claude-opus-5-5",
+  "nameplate": {
+    "bias": -5.0,
+    "self": 9.0,
+    "ocr_agree": 0.0,
+    "format_ok": 0.0,
+    "legible": 0.0,
+    "qc_pass": 0.0
+  },
+  "method": "chosen, not fitted (eval/choose_confidence.py): fitted combinations ranked worse out-of-fold",
+  "chosen": "sigmoid(-5 + 9*self)",
+  "compared": {
+    "priors (no calibration.json)": {
+      "n": 131,
+      "accuracy": 0.916,
+      "mean_conf_correct": 0.811,
+      "mean_conf_wrong": 0.65,
+      "auroc": 0.757,
+      "ece": 0.119,
+      "auto_accepted_share": 0.847,
+      "accuracy_of_auto_accepted": 0.946,
+      "wrong_auto_accepted": "6/11"
+    },
+    "sigmoid(-3 + 6*self)": {
+      "n": 131,
+      "accuracy": 0.916,
+      "mean_conf_correct": 0.806,
+      "mean_conf_wrong": 0.471,
+      "auroc": 0.908,
+      "ece": 0.144,
+      "auto_accepted_share": 0.771,
+      "accuracy_of_auto_accepted": 0.98,
+      "wrong_auto_accepted": "2/11"
+    },
+    "sigmoid(-4 + 8*self)": {
+      "n": 131,
+      "accuracy": 0.916,
+      "mean_conf_correct": 0.844,
+      "mean_conf_wrong": 0.46,
+      "auroc": 0.908,
+      "ece": 0.108,
+      "auto_accepted_share": 0.771,
+      "accuracy_of_auto_accepted": 0.98,
+      "wrong_auto_accepted": "2/11"
+    },
+    "sigmoid(-5 + 9*self)": {
+      "n": 131,
+      "accuracy": 0.916,
+      "mean_conf_correct": 0.81,
+      "mean_conf_wrong": 0.359,
+      "auroc": 0.908,
+      "ece": 0.144,
+      "auto_accepted_share": 0.702,
+      "accuracy_of_auto_accepted": 0.989,
+      "wrong_auto_accepted": "1/11"
+    }
+  }
+}

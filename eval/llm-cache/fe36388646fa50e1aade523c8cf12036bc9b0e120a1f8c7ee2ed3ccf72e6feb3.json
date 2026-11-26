@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"other\",\"make\":{\"value\":null,\"evidence\":\"Goodknight-style script at bottom, illegible\",\"confidence\":0.1},\"model\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"serial\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":null,\"evidence\":\"230V~ 5.3W 50Hz (partially legible)\",\"confidence\":0.2},\"fuel_or_power\":{\"value\":null,\"evidence\":\"ACTIVE+ Liquid Mosquito Vaporiser\",\"confidence\":0.1},\"voltage\":{\"value\":\"230V~\",\"evidence\":\"230V~5.3W 50Hz\",\"confidence\":0.55},\"legibility\":\"poor\",\"issues\":[\"low_light\",\"blur\",\"too_small\",\"angle\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 301,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00667,
+  "latency_ms": 3500,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwkSse7KcY8SA8DYY6c",
+  "from_cache": false
+ }
+}

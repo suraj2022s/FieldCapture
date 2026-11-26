@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"crack\",\"damage_type_confidence\":0.35,\"material\":\"plaster\",\"material_confidence\":0.4,\"surface_seen\":\"ceiling\",\"surface_confidence\":0.5,\"severity\":\"minor\",\"severity_confidence\":0.35,\"damage_box\":{\"x0\":0.2,\"y0\":0.2,\"x1\":0.9,\"y1\":0.35},\"damage_box_confidence\":0.25,\"reference_objects\":[],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.1,\"description\":\"Storage loft opening with a thin crack or gap along the upper back edge of the textured ceiling and wall; no clear water damage is visible.\",\"issues\":[\"low_light\",\"angle\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 254,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.007846,
+  "latency_ms": 3812,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwnH2MJQR9tsRYxHqkK",
+  "from_cache": false
+ }
+}

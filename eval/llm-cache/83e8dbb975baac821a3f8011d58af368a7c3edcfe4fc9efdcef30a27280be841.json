@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"peeling_bubbling_paint\",\"damage_type_confidence\":0.55,\"material\":\"plaster\",\"material_confidence\":0.6,\"surface_seen\":\"wall\",\"surface_confidence\":0.95,\"severity\":\"moderate\",\"severity_confidence\":0.5,\"damage_box\":{\"x0\":0.2,\"y0\":0.25,\"x1\":0.75,\"y1\":0.68},\"damage_box_confidence\":0.5,\"reference_objects\":[{\"kind\":\"outlet_or_switch_plate\",\"box\":{\"x0\":0.1,\"y0\":0.9,\"x1\":0.29,\"y1\":1.0},\"confidence\":0.5}],\"estimated_width_in\":30.0,\"estimated_height_in\":40.0,\"size_confidence\":0.2,\"description\":\"Wall plaster with flaking, peeling paint and blue-green stained patches, likely moisture-related, with exposed wiring running across the surface.\",\"issues\":[\"angle\",\"low_light\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 2654,
+  "output_tokens": 326,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.008568,
+  "latency_ms": 3641,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwhkmaPzPMXVFopUapJ",
+  "from_cache": false
+ }
+}

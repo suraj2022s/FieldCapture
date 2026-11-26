@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"water_heater\",\"make\":{\"value\":\"BAJAJ\",\"evidence\":\"BAJAJ Majesty\",\"confidence\":0.85},\"model\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"serial\":{\"value\":\"091606027\",\"evidence\":\"SERIAL NO. Q155 091606027\",\"confidence\":0.4},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"fuel_or_power\":{\"value\":\"Electric\",\"evidence\":\"STATIONARY STORAGE TYPE ELECTRIC WATER HEATER\",\"confidence\":0.7},\"voltage\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"legibility\":\"poor\",\"issues\":[\"angle\",\"low_light\",\"blur\",\"too_small\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 295,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00661,
+  "latency_ms": 3391,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwgRE4VpDd7SLsU8QZM",
+  "from_cache": false
+ }
+}

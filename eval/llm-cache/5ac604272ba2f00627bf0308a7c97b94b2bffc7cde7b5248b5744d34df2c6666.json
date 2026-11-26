@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"other\",\"make\":{\"value\":\"ROXY\",\"evidence\":\"ROXY\",\"confidence\":0.93},\"model\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"serial\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":\"750W\",\"evidence\":\"750W 230V. AC 50 Hz\",\"confidence\":0.75},\"fuel_or_power\":{\"value\":\"AC 50 Hz\",\"evidence\":\"750W 230V. AC 50 Hz\",\"confidence\":0.7},\"voltage\":{\"value\":\"230V\",\"evidence\":\"750W 230V. AC 50 Hz\",\"confidence\":0.78},\"legibility\":\"partial\",\"issues\":[\"glare\",\"angle\",\"too_small\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 282,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00648,
+  "latency_ms": 2952,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwgm69L73KRBF2wzCXX",
+  "from_cache": false
+ }
+}

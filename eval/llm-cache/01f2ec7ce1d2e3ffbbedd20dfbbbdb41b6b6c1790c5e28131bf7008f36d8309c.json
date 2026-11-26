@@ -1,0 +1,16 @@
+{
+ "text": "{\"category\":\"moisture\",\"category_confidence\":0.85,\"component\":\"insulation\",\"component_confidence\":0.93,\"condition\":\"wet\",\"condition_confidence\":0.9,\"location\":\"attic above the hallway\",\"location_confidence\":0.88,\"severity\":\"unknown\",\"severity_confidence\":0.7,\"measurement_value\":null,\"measurement_unit\":null,\"measurement_confidence\":0.95,\"follow_up_needed\":false,\"summary\":\"Insulation in the attic above the hallway appears wet.\"}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "low",
+  "input_tokens": 1180,
+  "output_tokens": 167,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00403,
+  "latency_ms": 2391,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRx9or6A7CJoT5Y8YduJ",
+  "from_cache": false
+ }
+}

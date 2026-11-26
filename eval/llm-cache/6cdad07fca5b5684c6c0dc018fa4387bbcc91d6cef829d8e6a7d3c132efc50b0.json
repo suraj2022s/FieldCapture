@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"other\",\"make\":{\"value\":\"godrej\",\"evidence\":\"godrej (faint embossed logo)\",\"confidence\":0.45},\"model\":{\"value\":\"ACTIV+\",\"evidence\":\"ACTIV+ Liquid Mosquito Vaporizer\",\"confidence\":0.6},\"serial\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"fuel_or_power\":{\"value\":null,\"evidence\":\"230V~ 5.3W 50Hz\",\"confidence\":0.0},\"voltage\":{\"value\":\"230V~\",\"evidence\":\"230V~ 5.3W 50Hz\",\"confidence\":0.6},\"legibility\":\"poor\",\"issues\":[\"low_light\",\"angle\",\"too_small\"]}",
+ "stats": {
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 518,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.01768,
+  "latency_ms": 6188,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRx17YTVFgQVNFvFk1tb",
+  "from_cache": false
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "text": "{\"category\":\"damage_observation\",\"category_confidence\":0.8,\"component\":\"baseboard\",\"component_confidence\":0.9,\"condition\":\"swollen\",\"condition_confidence\":0.9,\"location\":\"north wall\",\"location_confidence\":0.85,\"severity\":\"unknown\",\"severity_confidence\":0.3,\"measurement_value\":null,\"measurement_unit\":null,\"measurement_confidence\":0.95,\"follow_up_needed\":true,\"summary\":\"Baseboard swollen along the north wall.\"}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "low",
+  "input_tokens": 1177,
+  "output_tokens": 163,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0001992,
+  "latency_ms": 1797,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRxCVaph3A5DKMxgWMb7",
+  "from_cache": false
+ }
+}

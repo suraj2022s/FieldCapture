@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"other\",\"damage_type_confidence\":0.6,\"material\":\"concrete\",\"material_confidence\":0.8,\"surface_seen\":\"ceiling\",\"surface_confidence\":0.85,\"severity\":\"severe\",\"severity_confidence\":0.75,\"damage_box\":{\"x0\":0.38,\"y0\":0.35,\"x1\":0.95,\"y1\":0.6},\"damage_box_confidence\":0.75,\"reference_objects\":[{\"kind\":\"outlet_or_switch_plate\",\"box\":{\"x0\":0.09,\"y0\":0.45,\"x1\":0.23,\"y1\":0.62},\"confidence\":0.35}],\"estimated_width_in\":30.0,\"estimated_height_in\":18.0,\"size_confidence\":0.25,\"description\":\"Concrete ceiling spalling in bathroom with plaster/cover fallen away exposing corroded steel rebar, about 2.5 ft x 1.5 ft, plus hairline cracking nearby; likely long-term moisture from above.\",\"issues\":[\"low_light\",\"angle\"]}",
+ "stats": {
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "input_tokens": 2656,
+  "output_tokens": 353,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.017684,
+  "latency_ms": 4250,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwyNMdbJy2wFNUZnnDJ",
+  "from_cache": false
+ }
+}

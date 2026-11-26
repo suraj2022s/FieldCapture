@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"peeling_bubbling_paint\",\"damage_type_confidence\":0.6,\"material\":\"plaster\",\"material_confidence\":0.5,\"surface_seen\":\"wall\",\"surface_confidence\":0.8,\"severity\":\"moderate\",\"severity_confidence\":0.5,\"damage_box\":{\"x0\":0.0,\"y0\":0.0,\"x1\":0.55,\"y1\":0.75},\"damage_box_confidence\":0.5,\"reference_objects\":[],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.1,\"description\":\"Interior living room walls and ceiling show peeling and flaking paint and plaster, cracks in the ceiling, and dark staining near the top of the walls; no scale reference is visible.\",\"issues\":[]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 815,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0006728,
+  "latency_ms": 4703,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwZvTWt1aE8LfU49Xq3",
+  "from_cache": false
+ }
+}

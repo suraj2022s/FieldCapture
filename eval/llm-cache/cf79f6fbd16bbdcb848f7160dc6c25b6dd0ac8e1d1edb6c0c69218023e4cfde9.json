@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"water_heater\",\"make\":{\"value\":\"BAJAJ\",\"evidence\":\"BAJAJ Majesty\",\"confidence\":0.9},\"model\":{\"value\":null,\"evidence\":\"MODEL ISQPU (150714) TYPE ELECTRIC WATER HEATER\",\"confidence\":0.1},\"serial\":{\"value\":\"09160502T\",\"evidence\":\"SERIAL NO. 09160502T\",\"confidence\":0.3},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.0},\"capacity\":{\"value\":\"15 LITER\",\"evidence\":\"CAPACITY 15 LITER\",\"confidence\":0.5},\"fuel_or_power\":{\"value\":\"3 KW\",\"evidence\":\"INPUT 3.0KW\",\"confidence\":0.3},\"voltage\":{\"value\":\"230V~50Hz\",\"evidence\":\"VOLTS 230V~50Hz\",\"confidence\":0.5},\"legibility\":\"poor\",\"issues\":[\"angle\",\"too_small\",\"blur\",\"low_light\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 339,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00705,
+  "latency_ms": 3609,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwgLLdHzn725FqKVwz8",
+  "from_cache": false
+ }
+}

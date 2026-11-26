@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"peeling_bubbling_paint\",\"damage_type_confidence\":0.6,\"material\":\"plaster\",\"material_confidence\":0.55,\"surface_seen\":\"wall\",\"surface_confidence\":0.9,\"severity\":\"moderate\",\"severity_confidence\":0.5,\"damage_box\":{\"x0\":0.05,\"y0\":0.12,\"x1\":0.58,\"y1\":0.6},\"damage_box_confidence\":0.5,\"reference_objects\":[{\"kind\":\"outlet_or_switch_plate\",\"box\":{\"x0\":0.09,\"y0\":0.77,\"x1\":0.17,\"y1\":0.84},\"confidence\":0.6},{\"kind\":\"door\",\"box\":{\"x0\":0.67,\"y0\":0.42,\"x1\":1.0,\"y1\":1.0},\"confidence\":0.4}],\"estimated_width_in\":36.0,\"estimated_height_in\":42.0,\"size_confidence\":0.25,\"description\":\"Wall plaster has widespread peeling and flaking paint with water staining and blue-tinted patches near ceiling and wiring, covering a large area of the wall.\",\"issues\":[\"low_light\",\"angle\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 383,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.009136,
+  "latency_ms": 3171,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwi5i74sSrM6zTNxZZg",
+  "from_cache": false
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"inverter_ups\",\"make\":{\"value\":\"MEKTRON\",\"evidence\":\"MEKTRON TM\",\"confidence\":0.9},\"model\":{\"value\":\"MT450\",\"evidence\":\"MODEL- MT450\",\"confidence\":0.85},\"serial\":{\"value\":\"4SDAW05230192\",\"evidence\":\"4SDAW05230192\",\"confidence\":0.4},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.9},\"capacity\":{\"value\":\"4KVA\",\"evidence\":\"CAPACITY - 4KVA Automatic\",\"confidence\":0.8},\"fuel_or_power\":{\"value\":null,\"evidence\":null,\"confidence\":0.9},\"voltage\":{\"value\":\"50V TO 300V AC\",\"evidence\":\"IPV - 50V TO 300V.AC\",\"confidence\":0.6},\"legibility\":\"partial\",\"issues\":[\"blur\",\"angle\",\"low_light\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 993,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0006795,
+  "latency_ms": 5375,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwMfSHtMjdbscRcBsWi",
+  "from_cache": false
+ }
+}

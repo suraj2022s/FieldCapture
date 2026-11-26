@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":true,\"damage_type\":\"peeling_bubbling_paint\",\"damage_type_confidence\":0.45,\"material\":\"concrete\",\"material_confidence\":0.4,\"surface_seen\":\"floor\",\"surface_confidence\":0.5,\"severity\":\"moderate\",\"severity_confidence\":0.4,\"damage_box\":{\"x0\":0.0,\"y0\":0.08,\"x1\":1.0,\"y1\":0.98},\"damage_box_confidence\":0.4,\"reference_objects\":[],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.1,\"description\":\"Large area of worn, patchy blue-gray coating or paint with exposed lighter substrate on what looks like a concrete floor, with a toilet base at left and small objects in front.\",\"issues\":[\"angle\",\"low_light\"]}",
+ "stats": {
+  "model": "claude-sonnet-5-5",
+  "effort": "medium",
+  "input_tokens": 2655,
+  "output_tokens": 274,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.00805,
+  "latency_ms": 3671,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwiTZWV6td5MpF2Q1Cc",
+  "from_cache": false
+ }
+}

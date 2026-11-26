@@ -1,0 +1,16 @@
+{
+ "text": "{\"equipment_type\":\"water_heater\",\"make\":{\"value\":\"Bajaj\",\"evidence\":\"Bajaj Electricals Limited\",\"confidence\":0.8},\"model\":{\"value\":null,\"evidence\":null,\"confidence\":0.2},\"serial\":{\"value\":\"091656027\",\"evidence\":\"SERIAL NO. G155 091656027\",\"confidence\":0.35},\"manufacture_date\":{\"value\":null,\"evidence\":null,\"confidence\":0.1},\"capacity\":{\"value\":\"15 LTR\",\"evidence\":\"CAPACITY 15 LTR\",\"confidence\":0.45},\"fuel_or_power\":{\"value\":\"2 KW\",\"evidence\":\"INPUT 2 KW\",\"confidence\":0.45},\"voltage\":{\"value\":null,\"evidence\":null,\"confidence\":0.2},\"legibility\":\"partial\",\"issues\":[\"angle\",\"blur\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 1830,
+  "output_tokens": 1061,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0007135,
+  "latency_ms": 5719,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwRuV1MQ8x1aMW6rwzB",
+  "from_cache": false
+ }
+}

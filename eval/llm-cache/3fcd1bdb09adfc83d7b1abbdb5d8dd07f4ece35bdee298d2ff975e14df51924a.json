@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":false,\"damage_type\":\"none\",\"damage_type_confidence\":0.55,\"material\":\"plaster\",\"material_confidence\":0.4,\"surface_seen\":\"wall\",\"surface_confidence\":0.35,\"severity\":\"minor\",\"severity_confidence\":0.5,\"damage_box\":null,\"damage_box_confidence\":0.4,\"reference_objects\":[],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.1,\"description\":\"Overhead storage loft above a bathroom with a pipe along its edge; no clear water damage is visible, though the dim lighting may hide faint staining on the loft interior and ceiling.\",\"issues\":[\"low_light\",\"angle\"]}",
+ "stats": {
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "input_tokens": 2655,
+  "output_tokens": 384,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0183,
+  "latency_ms": 5312,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRx4ovfa6XuRSa9LmBuk",
+  "from_cache": false
+ }
+}

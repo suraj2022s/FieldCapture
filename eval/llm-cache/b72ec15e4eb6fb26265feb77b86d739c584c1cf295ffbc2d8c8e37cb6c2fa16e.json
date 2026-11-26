@@ -1,0 +1,16 @@
+{
+ "text": "{\"damage_visible\":false,\"damage_type\":\"none\",\"damage_type_confidence\":0.6,\"material\":\"other\",\"material_confidence\":0.3,\"surface_seen\":\"window\",\"surface_confidence\":0.6,\"severity\":\"minor\",\"severity_confidence\":0.3,\"damage_box\":null,\"damage_box_confidence\":0.7,\"reference_objects\":[],\"estimated_width_in\":null,\"estimated_height_in\":null,\"size_confidence\":0.1,\"description\":\"Dark kitchen photo of a metal grille or security grate over a window, with no clearly visible water damage, staining, or other defect.\",\"issues\":[\"low_light\",\"blur\"]}",
+ "stats": {
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "input_tokens": 2653,
+  "output_tokens": 450,
+  "cache_read_tokens": 0,
+  "cache_write_tokens": 0,
+  "cost_usd": 0.0004903,
+  "latency_ms": 3343,
+  "stop_reason": "end_turn",
+  "request_id": "req_011ChRwb5rM5K5FuefVEU3Zi",
+  "from_cache": false
+ }
+}
