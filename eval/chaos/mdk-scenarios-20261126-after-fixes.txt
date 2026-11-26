@@ -1,0 +1,157 @@
+﻿# Mock Device Kit scenarios, 2026-11-26 ~18:20 IST, after the permission and update-required fixes. Produced by the
+# scratchpad version of tools/mdk_scenarios.ps1 (same steps). The run before the fixes: scenario 2 stuck in CONNECTING
+# after PERMISSIONS_DENIED (never recovered after the grant), scenario 3 never said the glasses needed an update.
+
+
+start: phase=ACTIVE session=STARTED stream=STREAMING frames=0 fps=0.0 captures=0 notes=0 pending=0 offline=false
+   capture baseline -> [capture] damage saved af55c840
+
+=== 1a. touchpad tap on the glasses (the glasses pause the camera), tap again
+   after tap: phase=SUSPENDED session=PAUSED stream=PAUSED frames=8 fps=1.7 captures=1 notes=0 pending=0 offline=false
+   capture while device-paused -> [capture_refused] damage: glasses SUSPENDED
+       0.1s [say] The glasses paused the camera.
+       0.1s [phase] ACTIVE -> SUSPENDED (The glasses paused the camera.)
+       3.5s [say] The glasses paused the camera. Capture not taken.
+       4.2s [phase] SUSPENDED -> ACTIVE
+       4.2s [say] Glasses back.
+   second tap: back to ACTIVE
+   capture after -> [capture] damage saved 0d61437e
+
+=== 1b. touchpad tap, then the tech says 'resume the job'
+       0.1s [say] The glasses paused the camera.
+       0.1s [phase] ACTIVE -> SUSPENDED (The glasses paused the camera.)
+       3.2s [walk] resume requested (session=PAUSED)
+       3.2s [say] Resuming.
+       3.4s [phase] SUSPENDED -> ACTIVE
+       3.4s [say] Glasses back.
+   voice resume: back to ACTIVE
+   capture after -> [capture] damage saved 573ba166
+
+=== 1c. touchpad tap-and-hold (stops the session)
+   8 s later: phase=ACTIVE session=STARTED stream=STREAMING frames=108 fps=14.9 captures=3 notes=0 pending=0 offline=false
+       0.1s [session_error] SESSION_ENDED_BY_DEVICE: Session ended by device
+       0.1s [reconnect] session ended after 20517 ms; next attempt in 500 ms (#1)
+       0.1s [phase] ACTIVE -> RECONNECTING (Glasses disconnected. Reconnecting.)
+       0.1s [say] Glasses disconnected. Notes still work.
+       0.6s [phase] RECONNECTING -> CONNECTING (Connecting to the glasses.)
+       0.7s [phase] CONNECTING -> ACTIVE
+       0.7s [say] Glasses back.
+   after tap-and-hold: back to ACTIVE
+   capture after -> [capture] damage saved 0a460b64
+
+=== 2. camera permission revoked in Meta AI, glasses reconnect, permission granted again
+   denied + reconnect: phase=NEEDS_PERMISSION session=STOPPED stream=null frames=124 fps=0.0 captures=4 notes=0 pending=0 offline=false
+   capture while denied -> [capture_refused] damage: glasses NEEDS_PERMISSION
+       0.1s [device] link CONNECTED -> DISCONNECTED
+       5.1s [reconnect] session ended after 13424 ms; next attempt in 1000 ms (#2)
+       5.1s [phase] ACTIVE -> RECONNECTING (Glasses disconnected. Reconnecting.)
+       5.1s [say] Glasses disconnected. Notes still work.
+       6.1s [permission] camera check failed: All discovered devices are powered off or disconnected; trying anyway
+       7.1s [device] link DISCONNECTED -> CONNECTING
+       7.1s [device] link CONNECTING -> CONNECTED
+       7.1s [phase] RECONNECTING -> CONNECTING (Connecting to the glasses.)
+       7.2s [stream_error] PERMISSIONS_DENIED
+       7.2s [phase] CONNECTING -> NEEDS_PERMISSION (Allow camera access for FieldCapture in Meta AI.)
+       7.2s [say] Allow camera access for FieldCapture in Meta AI.
+       7.2s [reconnect] session ended after 99 ms; next attempt in 2000 ms (#3)
+       9.2s [permission] glasses camera not granted
+      16.3s [say] Glasses aren't connected. Capture not taken.
+      19.2s [permission] glasses camera granted again (or can't tell for 0 s)
+      19.2s [phase] NEEDS_PERMISSION -> RECONNECTING (Glasses disconnected. Reconnecting.)
+      19.3s [phase] RECONNECTING -> CONNECTING (Connecting to the glasses.)
+      19.4s [phase] CONNECTING -> ACTIVE
+      19.4s [say] Glasses back.
+   granted again: back to ACTIVE
+   capture after -> [capture] damage saved c05c7916
+
+=== 3. glasses firmware too old (update required), then updated
+   update required: phase=RECONNECTING session=STOPPED stream=null frames=36 fps=0.0 captures=5 notes=0 pending=0 offline=false
+   capture while update required -> [capture_refused] damage: glasses RECONNECTING
+       0.1s [device] link CONNECTED -> DISCONNECTED
+       5.1s [reconnect] session ended after 7507 ms; next attempt in 4000 ms (#4)
+       5.1s [phase] ACTIVE -> RECONNECTING (Glasses disconnected. Reconnecting.)
+       5.2s [say] Glasses disconnected. Notes still work.
+       7.1s [device] link DISCONNECTED -> CONNECTING
+       7.1s [device] link CONNECTING -> CONNECTED
+       7.1s [reconnect] glasses ready again; retrying now
+       7.2s [device] compatibility COMPATIBLE -> DEVICE_UPDATE_REQUIRED
+       7.2s [alert] The glasses need a software update. Update them in the Meta AI app.
+       7.2s [say] The glasses need a software update. Update them in the Meta AI app.
+       7.2s [phase] RECONNECTING -> CONNECTING (Connecting to the glasses.)
+       7.2s [session_error] NO_ELIGIBLE_DEVICE: No eligible device available
+      22.2s [reconnect] session ended after 15009 ms; next attempt in 8000 ms (#5)
+      22.2s [phase] CONNECTING -> RECONNECTING (Glasses disconnected. Reconnecting.)
+      22.4s [say] Glasses aren't connected. Capture not taken.
+      23.0s [device] link CONNECTED -> DISCONNECTED
+      29.0s [device] link DISCONNECTED -> CONNECTING
+      29.0s [device] link CONNECTING -> CONNECTED
+      29.0s [reconnect] glasses ready again; retrying now
+      29.0s [device] compatibility DEVICE_UPDATE_REQUIRED -> COMPATIBLE
+      29.0s [phase] RECONNECTING -> CONNECTING (Connecting to the glasses.)
+      29.2s [phase] CONNECTING -> ACTIVE
+      29.2s [say] Glasses back.
+   firmware updated: back to ACTIVE
+   capture after -> [capture] damage saved 17ed7fa4
+
+=== 4. glasses report charging, then not
+   charging: phase=ACTIVE session=STARTED stream=STREAMING frames=132 fps=15.0 captures=6 notes=0 pending=0 offline=false
+   capture while charging -> [capture] damage saved b6623069
+       4.4s [say] Damage saved, kitchen, north wall.
+
+=== 5. glasses unpaired mid-walk, then paired again
+   unpaired: phase=RECONNECTING session=STOPPED stream=null frames=172 fps=0.0 captures=7 notes=0 pending=0 offline=false
+   capture while unpaired -> [capture_refused] damage: glasses RECONNECTING
+   new pair: test feed set
+       0.1s [device] link CONNECTED -> DISCONNECTED
+       0.1s [phase] ACTIVE -> CONNECTING (Glasses camera stopped. Restarting it.)
+       0.1s [stream_error] CRITICAL_STREAM_ERROR
+       0.1s [reconnect] session ended after 11915 ms; next attempt in 10000 ms (#6)
+       0.1s [phase] CONNECTING -> RECONNECTING (Glasses disconnected. Reconnecting.)
+       0.1s [device] no glasses visible
+       0.2s [say] Glasses disconnected. Notes still work.
+       8.4s [say] Glasses aren't connected. Capture not taken.
+       8.5s [device] Simulated Ray-Ban Meta #2: link=DISCONNECTED don=UNKNOWN hinge=UNKNOWN battery=0 thermal=UNKNOWN compat=COMPATIBLE
+       8.5s [device] link DISCONNECTED -> CONNECTING
+       8.5s [device] link CONNECTING -> CONNECTED
+       8.5s [reconnect] glasses ready again; retrying now
+       8.6s [device] don UNKNOWN -> DOFFED
+       8.6s [device] hinge UNKNOWN -> CLOSED
+       8.6s [device] thermal UNKNOWN -> NONE
+       8.6s [device] battery 0% -> 100%
+       8.6s [device] hinge CLOSED -> OPEN
+       8.6s [device] don DOFFED -> DONNED
+       8.6s [phase] RECONNECTING -> CONNECTING (Connecting to the glasses.)
+       8.7s [phase] CONNECTING -> ACTIVE
+       8.7s [say] Glasses back.
+   re-paired: back to ACTIVE
+   capture after -> [capture] damage saved 7bc4ea30
+
+=== 6. registration with Meta AI revoked (kit re-enabled unregistered), then registered again
+   unregistered: phase=RECONNECTING session=STOPPED stream=null frames=99 fps=0.0 captures=8 notes=0 pending=0 offline=false
+   capture while unregistered -> [capture_refused] damage: glasses RECONNECTING
+       0.0s [registration] UNAVAILABLE
+       0.1s [reconnect] session ended after 6993 ms; next attempt in 10000 ms (#7)
+       0.1s [phase] ACTIVE -> RECONNECTING (Glasses disconnected. Reconnecting.)
+       0.1s [device] link CONNECTED -> DISCONNECTED
+       0.1s [device] no glasses visible
+       0.1s [say] Glasses disconnected. Notes still work.
+       8.4s [say] Glasses aren't connected. Capture not taken.
+       8.5s [registration] REGISTERED
+       8.5s [device] Simulated Ray-Ban Meta #3: link=DISCONNECTED don=UNKNOWN hinge=UNKNOWN battery=0 thermal=UNKNOWN compat=COMPATIBLE
+       8.6s [device] link DISCONNECTED -> CONNECTING
+       8.6s [device] link CONNECTING -> CONNECTED
+       8.6s [reconnect] glasses ready again; retrying now
+       8.6s [device] don UNKNOWN -> DOFFED
+       8.6s [device] hinge UNKNOWN -> CLOSED
+       8.6s [device] thermal UNKNOWN -> NONE
+       8.6s [device] battery 0% -> 100%
+       8.6s [device] hinge CLOSED -> OPEN
+       8.6s [device] don DOFFED -> DONNED
+       8.6s [phase] RECONNECTING -> CONNECTING (Connecting to the glasses.)
+       8.8s [phase] CONNECTING -> ACTIVE
+       8.8s [say] Glasses back.
+   re-registered: back to ACTIVE
+   capture after -> [capture] damage saved 20e7af11
+
+=== end
+crash buffer: clean

@@ -691,3 +691,41 @@ The user approved running the six recommended tools before filming. The detekt C
 - **mutmut re-check, run uninterrupted: 15/15 representative survivors are now killed** (vocabularies 11, 16, 22, 28, 36, 44, 50; drying days 58; Draft default 64; 1-unit minimum 69; missing confidence 80; room 88; baseboard width 94; surface confidence 105; trust boundary 108). The other 34 survivors and the 354 untested mutants weren't re-run (about 1 hour).
 - `git diff` of `lineitems.py` shows only the intended changes.
 - `phone_smoke.ps1` PASS.
+
+## 2026-11-26 18:25 IST: is there a glasses emulator? Mock Device Kit is it; 6 untested events: 2 bugs fixed
+
+### Question
+The user asked for a thorough web search for a glasses emulator.
+
+### Search
+Meta's docs (DAT and Web Apps) and an extended web search.
+- **Mock Device Kit is the only official way to run a DAT camera app without glasses, and we already use it.**
+- Not usable for our app:
+  - Meta's Ray-Ban Display Simulator is a Chrome extension for *display* web apps.
+  - Google's Android XR AI-glasses emulator is Google's platform.
+  - The xg.glass simulator (Apache-2.0) has older DAT and no Meta video.
+- No cloud device lab exists. For real glasses, Meta's release channels allow up to 100 testers.
+- Sources are in RESEARCH §5a.
+
+### Mock Device Kit events not tested yet
+Six events, driven over its test server (`tools/mdk_scenarios.ps1`), each with a capture before and after.
+
+**Fine:**
+- Touchpad tap, both with a second tap and with "resume the job".
+- Tap-and-hold: reconnects in 0.8 s.
+- Charging: no effect.
+- Unpair, then re-pair: back in 8.7 s.
+- Registration revoked: "Open FieldCapture to connect to Meta AI", then back after re-registering.
+
+**Two bugs, fixed in `GlassesController`:**
+1. **Camera permission revoked → stuck in CONNECTING forever, silently, even after access was granted again.**
+   - The stream failed with `PERMISSIONS_DENIED` under a STARTED session, and nothing retried it.
+   - Now: NEEDS_PERMISSION with *"Allow camera access for FieldCapture in Meta AI."*, the session ends, and the loop waits for the grant. After a denial, "can't tell" means wait (a fresh try after 30 s).
+   - Re-run: back to ACTIVE 0.2 s after the grant.
+2. **Firmware update required → the tech only heard "Glasses disconnected".**
+   - Now a spoken alert on `DeviceCompatibility.DEVICE_UPDATE_REQUIRED` (and on `SDK_UPDATE_REQUIRED`): *"The glasses need a software update. Update them in the Meta AI app."*
+
+### Verified
+- All 6 scenarios recover, crash buffer clean (`eval/chaos/mdk-scenarios-20261126-after-fixes.txt`).
+- Instrumented 9/9 (8 lifecycle + accessibility).
+- App JVM tests pass.

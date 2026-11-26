@@ -190,6 +190,8 @@ class GlassesController(
     }
   /** We called pause() and the session hasn't come back to STARTED since (tells our pause from the device's). */
   @Volatile private var ourPause = false
+  /** The glasses refused the camera stream (Meta AI permission): wait for the grant before retrying. */
+  @Volatile private var permissionDenied = false
   @Volatile private var cameraStarted = false
   @Volatile private var streamedOnce = false
   @Volatile private var streamRestarts = 0
@@ -288,6 +290,12 @@ class GlassesController(
     }
     if (old.compatibility != new.compatibility) {
       log.log("device", "compatibility ${old.compatibility} -> ${new.compatibility}")
+      // Otherwise the tech only hears "Glasses disconnected" on a loop (scenario test 2026-11-26).
+      when (new.compatibility) {
+        DeviceCompatibility.DEVICE_UPDATE_REQUIRED -> alert("The glasses need a software update. Update them in the Meta AI app.")
+        DeviceCompatibility.SDK_UPDATE_REQUIRED -> alert("This FieldCapture version is too old for these glasses. Update FieldCapture.")
+        else -> Unit
+      }
     }
   }
 
@@ -324,6 +332,7 @@ class GlassesController(
       return
     }
     userPaused = false
+    permissionDenied = false
     _status.update {
       it.copy(phase = WalkPhase.WAITING_FOR_GLASSES, reconnects = 0, guidance = null, lastError = null)
     }
@@ -414,7 +423,8 @@ class GlassesController(
       _status.update { it.copy(reconnects = it.reconnects + 1) }
       val backoff = (500L shl (attempt - 1).coerceIn(0, 5)).coerceAtMost(MAX_BACKOFF_MS)
       log.log("reconnect", "session ended after ${ranMs} ms; next attempt in $backoff ms (#$attempt)")
-      setPhase(WalkPhase.RECONNECTING, "Glasses disconnected. Reconnecting.")
+      // A refused camera isn't a disconnect: keep telling the tech what to fix.
+      if (!permissionDenied) setPhase(WalkPhase.RECONNECTING, "Glasses disconnected. Reconnecting.")
       // Wake early when the glasses become wearable again (connected, unfolded, on), so a tech
       // doesn't wait out the back-off after putting them back on (UI test 2026-11-26: 3.7 s idle).
       // Only a change counts: glasses that already look ready but keep failing still back off.
@@ -437,17 +447,26 @@ class GlassesController(
    */
   private suspend fun awaitCameraPermission() {
     var asked = false
+    var unknown = 0
     while (true) {
       val granted =
           Wearables.checkPermissionStatus(Permission.CAMERA)
               .fold(
                   onSuccess = { it == PermissionStatus.Granted },
                   onFailure = { e, _ ->
-                    log.log("permission", "camera check failed: ${e.description}; trying anyway")
-                    true
+                    // After the stream was refused, "can't tell" means wait, not try again (each try
+                    // would announce the same denial), but not forever: the stream itself will say.
+                    unknown++
+                    val tryAnyway = !permissionDenied || unknown >= UNKNOWN_PERMISSION_CHECKS
+                    log.log("permission", "camera check failed: ${e.description}; ${if (tryAnyway) "trying anyway" else "waiting"}")
+                    tryAnyway
                   },
               )
-      if (granted) return
+      if (granted) {
+        if (permissionDenied) log.log("permission", "glasses camera granted again (or can't tell for ${unknown * PERMISSION_RECHECK_MS / 1000} s)")
+        permissionDenied = false
+        return
+      }
       if (!asked) {
         log.log("permission", "glasses camera not granted")
         setPhase(WalkPhase.NEEDS_PERMISSION, "Allow camera access for FieldCapture in Meta AI.")
@@ -678,6 +697,15 @@ class GlassesController(
           else -> null // STREAM_ERROR is informational and doesn't stop the stream
         }
     _status.update { it.copy(lastError = e.name, guidance = guidance ?: it.guidance) }
+    if (e == StreamError.PERMISSIONS_DENIED) {
+      // Nothing retries a stream that was refused, so the walk sat in CONNECTING forever, silently,
+      // even after access was granted again (Mock Device Kit scenario test 2026-11-26). Say what to
+      // do, end the session, and let the loop wait for the grant before it tries again.
+      permissionDenied = true
+      setPhase(WalkPhase.NEEDS_PERMISSION, "Allow camera access for FieldCapture in Meta AI.")
+      s.stop()
+      return
+    }
     if (e == StreamError.CRITICAL_STREAM_ERROR || e == StreamError.TIMEOUT) s.stop()
     // Folding and stream failures are announced through the phase change; these would be silent.
     else if (guidance != null && e in setOf(StreamError.THERMAL_HOT, StreamError.BATTERY_LOW, StreamError.PEAK_POWER_LIMIT)) {
@@ -781,6 +809,8 @@ class GlassesController(
     const val STARTING_WATCHDOG_MS = 15_000L
     /** How long a resume waits for our pause to reach the stream before resuming anyway. */
     const val PAUSE_SETTLE_MS = 1_000L
+    /** After a refused stream, failed permission checks (can't tell) before trying again anyway: 30 s. */
+    const val UNKNOWN_PERMISSION_CHECKS = 6
     const val LINK_LOSS_GRACE_MS = 5_000L
     /** The same warning is spoken at most once a minute. */
     const val ALERT_REPEAT_MS = 60_000L
