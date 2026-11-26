@@ -908,3 +908,15 @@ Damage sizes from the user. Then `run_extraction` (3 models, ~$5, waiting on the
 - **Verified on the phone:** new `VoiceToCaptureTest.keptRoomIsSpokenAndSpokenEndJobNeedsConfirming` (one "end job" keeps the walk going; a second, "please end the job", ends it). Both device tests pass.
   - The test ran against a throwaway extraction-off back office on :8005, so no test jobs reached :8002.
   - Dataset mode is now off on the phone.
+
+## 2026-11-27 02:15 IST: the OCR-aware gate idea, measured and rejected
+
+- **Idea:** cut the 20% false retakes by trusting the phone's OCR. If it already read a code-like token, ignore "blurry" (A), or "blurry" and "dark" (B).
+- `eval/ocr_gate_experiment.py`, shipped thresholds, held-out test scenes:
+  - A: no change (21/28 bad frames caught, 9/46 false retakes).
+  - B: false retakes 9 → 8, but bad frames caught 21 → 20.
+  - On tune scenes, both are no better or worse.
+- **Why it can't help:** 6 of the 9 falsely rejected test frames have **no OCR text at all**: 4 nameplates the phone couldn't read either, and 2 damage shots, which get no OCR. The phone agrees with the gate there.
+  - This also suggests my "usable" label on some dim Mektron frames is generous: readable to a person zooming in, not to on-device OCR.
+- **Not shipped.** The false-retake rate stays a disclosed limitation.
+  - Better levers: the glasses' full-resolution photo on real hardware (MDK gives 480×640), and a torch prompt in the dark.
