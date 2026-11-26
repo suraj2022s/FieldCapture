@@ -43,6 +43,7 @@ import app.fieldcapture.voice.Parsed
 import app.fieldcapture.voice.SpeechListener
 import app.fieldcapture.voice.Speaker
 import java.time.Instant
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -346,6 +347,8 @@ class WalkController(
       try {
         lastCaptureRequest = Triple(purpose, room, surface)
         doCapture(purpose, p, h, room, surface, unparsed, replaces)
+      } catch (e: CancellationException) {
+        throw e // a cancelled capture isn't a failed one: don't tell the tech to try again (detekt)
       } catch (e: Exception) {
         log.log("capture", "crashed: ${e.javaClass.simpleName} ${e.message}")
         speaker.failure()

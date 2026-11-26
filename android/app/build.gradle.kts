@@ -91,4 +91,13 @@ dependencies {
   androidTestImplementation(libs.androidx.test.ext.junit)
   androidTestImplementation(libs.androidx.test.runner)
   androidTestImplementation(libs.androidx.test.rules)
+  // Google's Accessibility Test Framework (Apache-2.0): AccessibilityTest checks touch targets, labels, contrast.
+  androidTestImplementation("com.google.android.apps.common.testing.accessibility.framework:accessibility-test-framework:4.1.1")
+  // ATF returns Guava types but declares Guava runtime-only; the same version it ships with, for compiling.
+  androidTestCompileOnly("com.google.guava:guava:31.0.1-android")
+  // LeakCanary (Apache-2.0) only on request: ./gradlew :app:installDebug -PleakCanary. Its heap dumps
+  // freeze the app for seconds, so it never goes into a build used for filming or the demo.
+  if (project.hasProperty("leakCanary")) {
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
+  }
 }

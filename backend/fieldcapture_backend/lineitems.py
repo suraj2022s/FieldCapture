@@ -56,7 +56,13 @@ class Draft:
 
 
 def _ceil(x: float | None) -> float | None:
-    return None if x is None else float(math.ceil(x - 1e-9))
+    """Whole units, never 0 for something that exists (Hypothesis found 0.0 from a tiny width)."""
+    return None if x is None else max(1.0, float(math.ceil(x - 1e-9)))
+
+
+def _positive(x: Any) -> float | None:
+    """A size the model or reference scaling gave: anything not a positive number is unknown, not a quantity."""
+    return float(x) if isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x) and x > 0 else None
 
 
 def _val(fields: dict, name: str):
@@ -70,8 +76,8 @@ def from_damage(capture_id: str, fields: dict) -> list[Draft]:
     surface, c_surf = _val(fields, "surface")
     room, _ = _val(fields, "room")
     size, c_size = _val(fields, "size")
-    area = size.get("area_sqft") if isinstance(size, dict) else None
-    width_in = size.get("width_in") if isinstance(size, dict) else None
+    area = _positive(size.get("area_sqft")) if isinstance(size, dict) else None
+    width_in = _positive(size.get("width_in")) if isinstance(size, dict) else None
     if not dtype or dtype == "none":
         return []
     surf = (surface or "").lower()
@@ -140,7 +146,9 @@ def from_damage(capture_id: str, fields: dict) -> list[Draft]:
     if dtype in WET_TYPES:
         out.append(Draft("WTR-DRY", None, float(DEFAULT_DRY_DAYS), 0.4, f"wet materials; {DEFAULT_DRY_DAYS}-day drying assumed (verify with moisture readings)", ev, assumption=True))
     if width_in and "wall" in surf and dtype in WET_TYPES:
-        out.append(Draft("BSB-RR", room, _ceil(width_in / 12.0), round(base_conf * 0.5, 3), "consider: baseboard below wet wall, width of damage", ev, assumption=True))
+        # The width is part of the same size estimate: a guessed one needs the tape (Hypothesis found this).
+        width_note = "" if c_size >= SIZE_TRUST else f" [width estimated from the photo at {c_size:.2f} confidence: measure]"
+        out.append(Draft("BSB-RR", room, _ceil(width_in / 12.0), round(base_conf * 0.5, 3), f"consider: baseboard below wet wall, width of damage{width_note}", ev, c_size < SIZE_TRUST, assumption=True))
     return out
 
 

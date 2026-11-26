@@ -71,6 +71,17 @@ flowchart LR
 - Run the tests: `cd backend && uv run pytest -q`, and `cd android && ./gradlew :quality-core:test :app:testDebugUnitTest`.
 - UI flows on the phone with [Maestro](https://github.com/mobile-dev-inc/maestro) (Apache-2.0): `powershell -File tools\maestro_run.ps1` runs the five flows in [`android/maestro/`](android/maestro/README.md) (settings, job buttons, double taps, glasses events mid-walk, leaving the app mid-walk). 5/5 pass.
 - Bad signal with [Toxiproxy](https://github.com/Shopify/toxiproxy) (MIT) between the phone and a throwaway back office: `powershell -File tools\toxiproxy_run.ps1 [-Suite faults|outages]` (latency, an 8 KB/s uplink, reset connections, lost replies, outages). Results in [`eval/chaos/`](eval/chaos/).
+- Property tests with [Hypothesis](https://github.com/HypothesisWorks/hypothesis) (MPL-2.0): `backend/tests/test_properties.py` throws thousands of random observations at the line-item rules and the size maths, and checks the rules that must always hold:
+  - real codes only
+  - a quantity is positive, or blank with "measure"
+  - a guessed size is always flagged
+  - "no damage" gives no lines
+  - capture order changes nothing
+
+  It found 5 bugs, now fixed. `backend/tests/test_rules_table.py` pins every category, written after mutation testing with [mutmut](https://github.com/boxed/mutmut) (BSD-3) showed which rules no test checked.
+- Load: [Locust](https://github.com/locustio/locust) (MIT), [`tools/locustfile.py`](tools/locustfile.py), many phones uploading walks with replays. 20 phones: 1,598 requests, 0 failures, p95 37 ms. 100 phones: 5,548 requests, 0 failures, photo upload p95 1.3 s on a laptop.
+- On the phone: `AccessibilityTest` (Google's [Accessibility Test Framework](https://github.com/google/Accessibility-Test-Framework-for-Android), Apache-2.0) checks the idle, recording and paused screens: 0 errors, 0 warnings, after fixing the banner contrast it found. [LeakCanary](https://github.com/square/leakcanary) (Apache-2.0), built in only with `-PleakCanary`: 0 leaks after 5 screen rebuilds around jobs.
+- Static checks: Android lint, [detekt](https://github.com/detekt/detekt) (Apache-2.0) and [Bandit](https://github.com/PyCQA/bandit) (Apache-2.0).
 - Fuzz the back office API with [Schemathesis](https://github.com/schemathesis/schemathesis) (MIT), against a throwaway server with extraction off: start one with `FIELDCAPTURE_PORT=8003 FIELDCAPTURE_EXTRACT=0 FIELDCAPTURE_DATA_DIR=<empty dir> uv run fieldcapture-server`, then `uv run --with schemathesis schemathesis run http://127.0.0.1:8003/openapi.json --checks all --exclude-checks positive_data_acceptance`. The excluded check flags our `item` form field, a JSON string, being rejected when it isn't JSON. On 2026-11-26 it found one crash (fixed, with a regression test); 1,759 generated requests then passed.
 - Replay the whole eval from committed model responses, with no key and no spend:
   ```bash

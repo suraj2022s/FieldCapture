@@ -635,3 +635,59 @@ The user asked for the four screen changes proposed at 14:53, and for more open-
 | Skipped | [MobSF](https://github.com/MobSF/Mobile-Security-Framework-MobSF) | GPL-3.0 | Heavy install for a debug APK |
 | Skipped | DroidBot / Fastbot | — | Random taps can reach quick settings, which hold this PC's hotspot |
 | Skipped | nlpaug | unverified | Parser noise; a hand-made ASR-variant list fits better |
+
+## 2026-11-26 17:52 IST: six more test tools: 8 bugs fixed, two blind spots in my own tests
+
+### Why
+The user approved running the six recommended tools before filming. The detekt CLI is 70 MB (I had estimated ~50), downloaded from the official GitHub release.
+
+### What each tool found
+
+**detekt 1.23.8 (Kotlin static analysis), 248 findings.**
+- Almost all style: 142 magic numbers, 49 long lines, 9 Compose PascalCase names.
+- One real latent bug: `catch (e: Exception)` around a capture also caught coroutine **cancellation**, so a cancelled capture would have said "Capture failed. Try again." It now rethrows `CancellationException`.
+- The other generic catch is in the service and outside coroutines, deliberately.
+- An unused `context` field is left as is.
+
+**Hypothesis (property tests, `backend/tests/test_properties.py`, 300 random cases per property).** 5 bugs:
+1. A positive but tiny width gave a **baseboard line with quantity 0**. `_ceil` now gives at least 1.
+2. The baseboard quantity came from a **guessed width without "measure"**. It now follows `SIZE_TRUST` like every other size.
+3. A model's zero, negative or non-finite size reached the rules as a quantity. Now `_positive()` makes it unknown, and `size_from_model` ignores anything under 0.01 in.
+4. A reference object with an **empty box gave 6.7e15 sq ft**. References under 1% of the frame are ignored, measured relative to the frame so the result doesn't depend on resolution (also a property).
+5. **Small damage rounded to 0.0 sq ft / 0.0 in.** It now keeps 2 significant figures below the rounding step.
+
+**mutmut 2 (mutation testing of `lineitems.py`).**
+- 470 mutants. In 115 tested before stopping: 66 killed, **49 survived**.
+- Survivors included removing "active_leak" from the water types, "laminate" from the floor coverings or "rotted" from the soft words, drying 3 → 4 days, dropping the room from line items, a missing confidence read as 1.0, and the baseboard line disappearing. None of these failed a test.
+- New `tests/test_rules_table.py` (59 cases) pins each category, the quantities, room and confidence.
+- **Two of my own mistakes, both caught:**
+  - My first table tests read the category lists from `lineitems` itself, so they followed a mutated list. Re-testing showed it (only 2 more killed). The tests now hold the specification as their own lists.
+  - Stopping mutmut mid-run **left a live mutant in the source** twice (`return None, False`; `"XXconcreteXX"`). Its `.bak` is recreated per run, so after an interrupted run it held a mutant too. A `git checkout` to discard was blocked as destructive, so I compared against git line by line: only that one line differed from my intended changes. The new spec tests failed on the planted mutant, which is how it was found.
+  - CLAUDE.md now says never interrupt mutmut.
+
+**Locust (`tools/locustfile.py`).**
+- Simulated phones upload walks, with 10% replays, to a throwaway back office (extraction off).
+- **20 phones × 60 s: 1,598 requests, 0 failures, p95 37 ms.**
+- **100 phones × 60 s: 5,548 requests, 0 failures, no server errors.** Photo uploads p50 0.44 s, p95 1.3 s, ~43 photos/s.
+- That's ~15× what 100 techs send (one photo per ~30 s). Single uvicorn process with SQLite, on the laptop.
+
+**Accessibility Test Framework (`AccessibilityTest`, idle + recording + paused).**
+- First run: everything NOT_RUN. It needed window access via `UiAutomation` flags, then a **screenshot** for the contrast checks, which otherwise skip silently. Coverage was proved by logging element counts and NOT_RUN reasons.
+- It then flagged the 80% white app name on the green banner at **3.91:1** (< 4.5).
+- White on the amber Paused/Glasses-off banner computes to **1.97:1**. The banner text is now dark on amber (~8.7:1) and full white elsewhere.
+- After the fix: **0 errors, 0 warnings**; touch targets pass.
+- Limit: ATF can't read text colour for some Compose text, so contrast coverage is partial.
+
+**LeakCanary 2.14 (built in only with `-PleakCanary`).**
+- 5 cycles of start job, pause/resume, capture, developer tools, end job, Back (activity destroyed), relaunch; then home.
+- LeakCanary: **"0 Distinct Leaks"**. Independent check: after a forced GC, `dumpsys meminfo` shows **Activities: 1**, ViewRootImpl 1.
+- ColorOS hides LeakCanary's debug-level logs, so its own screen was read instead.
+- The filming build was reinstalled without it (0 LeakCanary components).
+
+### Verified
+- Backend 85/85.
+- App JVM tests pass.
+- AccessibilityTest passes on the phone.
+- **mutmut re-check, run uninterrupted: 15/15 representative survivors are now killed** (vocabularies 11, 16, 22, 28, 36, 44, 50; drying days 58; Draft default 64; 1-unit minimum 69; missing confidence 80; room 88; baseboard width 94; surface confidence 105; trust boundary 108). The other 34 survivors and the 354 untested mutants weren't re-run (about 1 hour).
+- `git diff` of `lineitems.py` shows only the intended changes.
+- `phone_smoke.ps1` PASS.

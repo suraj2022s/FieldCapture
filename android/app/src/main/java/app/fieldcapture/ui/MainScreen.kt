@@ -256,8 +256,8 @@ private fun plainStatus(phase: WalkPhase, jobActive: Boolean): Pair<String, Colo
       else ->
           when (phase) {
             WalkPhase.ACTIVE -> "Recording" to Color(0xFF2E7D32)
-            WalkPhase.PAUSED -> "Paused" to Color(0xFFF9A825)
-            WalkPhase.SUSPENDED -> "Glasses off" to Color(0xFFF9A825)
+            WalkPhase.PAUSED -> "Paused" to BANNER_AMBER
+            WalkPhase.SUSPENDED -> "Glasses off" to BANNER_AMBER
             WalkPhase.RECONNECTING -> "Reconnecting…" to RED
             WalkPhase.CONNECTING -> "Connecting…" to SLATE
             WalkPhase.WAITING_FOR_GLASSES -> "Waiting for the glasses" to SLATE
@@ -277,10 +277,13 @@ private fun StatusBanner(s: GlassesStatus, jobActive: Boolean) {
             s.phase == WalkPhase.ACTIVE -> "Say a command."
             else -> null
           }
+  // Read at a glance in daylight: dark text on amber (white on amber is ~2:1), and full white elsewhere
+  // (the 80% white app name measured 3.91:1 on green; Accessibility Test Framework, 2026-11-26).
+  val onColor = if (color == BANNER_AMBER) Color(0xFF1B1B1B) else Color.White
   Column(Modifier.fillMaxWidth().background(color).padding(16.dp)) {
-    Text("FieldCapture", fontSize = 14.sp, color = Color.White.copy(alpha = 0.8f))
-    Text(title, fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
-    detail?.let { Text(it, fontSize = 16.sp, color = Color.White) }
+    Text("FieldCapture", fontSize = 14.sp, color = onColor)
+    Text(title, fontSize = 28.sp, fontWeight = FontWeight.Bold, color = onColor)
+    detail?.let { Text(it, fontSize = 16.sp, color = onColor) }
   }
 }
 
@@ -396,5 +399,6 @@ private val GREEN = Color(0xFF81C784)
 private val AMBER = Color(0xFFFFB74D)
 private val RED = Color(0xFFC62828)
 private val SLATE = Color(0xFF37474F)
+private val BANNER_AMBER = Color(0xFFF9A825)
 private const val PREVIEW_INTERVAL_MS = 250L
 private const val STALE_MS = 1_500L

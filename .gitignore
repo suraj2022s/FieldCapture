@@ -33,6 +33,9 @@ __pycache__/
 *.egg-info/
 # Schemathesis fuzzing cache (README "Without a phone")
 .schemathesis/
+# mutmut's results cache and its copy of the file it is mutating
+.mutmut-cache
+*.py.bak
 
 # --- Backend runtime data (job uploads, sqlite) ---
 backend/data/

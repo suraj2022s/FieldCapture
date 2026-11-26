@@ -9,6 +9,7 @@ eval can compare both against a tape measure.
 
 from __future__ import annotations
 
+import math
 import statistics
 from typing import Literal
 
@@ -108,6 +109,10 @@ def extract(llm: Llm, model: str, effort: str, jpeg: bytes, max_edge: int, room:
     return res.parsed, res.stats.to_dict(), size
 
 
+MIN_REF_FRACTION = 0.01
+MIN_DIM_IN = 0.01  # below a hundredth of an inch a "size" is noise
+
+
 def size_from_references(
     read: DamageRead,
     image_w: int,
@@ -124,9 +129,13 @@ def size_from_references(
     for ref in read.reference_objects:
         if ref.kind not in sizes or ref.confidence < 0.3:
             continue
+        # A reference smaller than 1% of the frame can't set a scale: an empty box made the damage
+        # 6.7e15 sq ft (Hypothesis). Relative to the frame, so the answer doesn't depend on resolution.
+        if ref.box.x1 - ref.box.x0 < MIN_REF_FRACTION or ref.box.y1 - ref.box.y0 < MIN_REF_FRACTION:
+            continue
         short_in, long_in, trust = sizes[ref.kind]
-        rw = max(1e-6, (ref.box.x1 - ref.box.x0) * image_w)
-        rh = max(1e-6, (ref.box.y1 - ref.box.y0) * image_h)
+        rw = (ref.box.x1 - ref.box.x0) * image_w
+        rh = (ref.box.y1 - ref.box.y0) * image_h
         # Match the reference's longer pixel side to its longer real side.
         ref_w_in, ref_h_in = (long_in, short_in) if rw >= rh else (short_in, long_in)
         ppi_x, ppi_y = rw / ref_w_in, rh / ref_h_in
@@ -135,12 +144,14 @@ def size_from_references(
         return None
     w = statistics.median(e[0] for e in estimates)
     h = statistics.median(e[1] for e in estimates)
+    if w < MIN_DIM_IN or h < MIN_DIM_IN:
+        return None  # an empty damage box: nothing to measure
     trust = max(e[2] for e in estimates)
     return {
         "method": "reference_scaling",
-        "width_in": round(w, 1),
-        "height_in": round(h, 1),
-        "area_sqft": round(w * h / 144.0, 2),
+        "width_in": inches(w),
+        "height_in": inches(h),
+        "area_sqft": sqft(w, h),
         "references": [e[3] for e in estimates],
         "confidence": round(min(0.9, trust * read.damage_box_confidence), 3),
     }
@@ -148,16 +159,31 @@ def size_from_references(
 
 def size_from_model(read: DamageRead) -> dict | None:
     """Method B: the vision model's own estimate."""
-    if read.estimated_width_in is None or read.estimated_height_in is None:
-        return None
     w, h = read.estimated_width_in, read.estimated_height_in
+    # A model can return any float: zero, negative, non-finite or below a hundredth of an inch is
+    # "no estimate", not a size.
+    if w is None or h is None or not (math.isfinite(w) and math.isfinite(h) and w >= MIN_DIM_IN and h >= MIN_DIM_IN):
+        return None
     return {
         "method": "model_estimate",
-        "width_in": round(w, 1),
-        "height_in": round(h, 1),
-        "area_sqft": round(w * h / 144.0, 2),
+        "width_in": inches(w),
+        "height_in": inches(h),
+        "area_sqft": sqft(w, h),
         "confidence": round(min(0.8, read.size_confidence), 3),
     }
+
+
+def inches(x: float) -> float:
+    """To 0.1 in, but a hairline crack 1/32 in wide isn't 0.0 in (Hypothesis)."""
+    r = round(x, 1)
+    return r if r > 0 or x <= 0 else float(f"{x:.2g}")
+
+
+def sqft(width_in: float, height_in: float) -> float:
+    """Area to 2 decimals, but a real mark never rounds to 0: 1 x 0.5 in was 0.0 sq ft (Hypothesis)."""
+    a = width_in * height_in / 144.0
+    r = round(a, 2)
+    return r if r > 0 or a <= 0 else float(f"{a:.2g}")
 
 
 def to_fields(read: DamageRead, room: str | None, surface: str | None, slot_conf: float, image_size: tuple[int, int], reference_sizes=None) -> dict:
