@@ -20,6 +20,11 @@ in a home we have permission to film, and no people appear in frame. Any staged 
 | Notes | 20 | read the note script (eval/notes_script.md) during walks |
 
 4. Pull to the PC: `powershell -ExecutionPolicy Bypass -File eval\pull_dataset.ps1` (copies into `eval/raw/`, which is gitignored).
+5. Upload the walks' items to a back office with extraction **off** and its own data dir, so the notes
+   reach a database without paying for extraction that `run_extraction.py` repeats anyway:
+   `FIELDCAPTURE_PORT=8001 FIELDCAPTURE_EXTRACT=0 FIELDCAPTURE_DATA_DIR=backend/data/dataset-walks`,
+   with `adb reverse tcp:8000 tcp:8001` until the outbox is empty. Then
+   `run_extraction.py --db backend/data/dataset-walks/fieldcapture.db` scores the notes from there.
 
 ## 2. Label (PC)
 

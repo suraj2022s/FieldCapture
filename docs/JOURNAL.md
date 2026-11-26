@@ -756,3 +756,24 @@ Six events, driven over its test server (`tools/mdk_scenarios.ps1`), each with a
 
 ### Not yet done
 The real-voice path should get its own check, e.g. a spoken command in `phone_smoke.ps1` once someone is at the phone.
+
+## 2026-11-26 22:20 IST: the dataset is filmed (2 sessions)
+
+### What was filmed
+Two dataset-mode jobs, `e6c515fe` and `cef9110b`, pulled to `eval/raw/`.
+- **75 captures.**
+- **~56 nameplate shots** (~11–12 appliances × good, dark, dark+torch, motion, angle). This includes 5 the parser filed as damage before the "name blade / name play it" fix.
+- **~18 damage shots** over ~12 spots (peeling plaster, ceiling cracks, seepage, wiring, ventilator, attic, kitchen window, AC).
+- **19 notes** (18 distinct; script #4 and #9 not read).
+- 27 captures got retake prompts; 15 kept the least-bad frame.
+
+### Checked
+- A sample of chosen frames is sharp and readable when close. The on-device OCR read e.g. "MEKTRON / MODEL MT450 / CAPACITY 4KVA".
+- No people or outdoors in the sample.
+
+### Uploads
+The 100 queued items went to a separate back office with extraction off (`backend/data/dataset-walks`) instead of :8002, to avoid ~$2 of extraction that `run_extraction.py` does anyway. 75 captures, 19 notes and 2 finalized jobs were stored. The phone route is back on :8002.
+
+### Next
+- Ground truth from the user's paper notes: plate fields and damage sizes. Spoken sizes like "40 into 30 cm" / "14 to 30 cm" are ambiguous, so they won't be used.
+- Then labelling, freeze, and the eval sequence.
