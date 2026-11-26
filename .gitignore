@@ -31,6 +31,8 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 *.egg-info/
+# Schemathesis fuzzing cache (README "Without a phone")
+.schemathesis/
 
 # --- Backend runtime data (job uploads, sqlite) ---
 backend/data/
