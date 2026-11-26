@@ -404,3 +404,19 @@ The newest entry is at the bottom. Each entry records what was done, the decisio
 1. Film the dataset per `eval/README.md`, with **Dataset: ON**.
 2. **Name the room** in each command, and **keep a reference object** in frame (a switch plate, an A4 sheet or an ID card) and tape-measure it. Both were missing on day 1, and they're what turn the size guesses into measured scaling.
 3. Frame the damage itself, not the whole room (#1 and #2 above).
+
+### External smoke test on openly licensed web images (user request) — NOT eval data
+- **Why:** the user asked to find sample images on the web and test them. The brief's hard rule is "every frame in the test set and demo comes from our own captures", so these images are **not** in the test set, `eval/REPORT.md`, the demo or the repo: they're kept local only, which also respects their licenses. The useful part: the nameplate extractor had never seen a real plate, because day 1 had none.
+- **Sources:** Wikimedia Commons, via its API (licenses checked per file), 8 images.
+  - Plates: Malmbergs motor plate (CC0), Prelude A550 CD-player data plate (CC BY-SA 4.0), Boles-Aero trailer plate (CC0), Rolls-Royce Buzzard gear-unit plate (CC0).
+  - Damage: "Ceiling water damage" (CC BY 3.0), "Drywall mould and water damage florida hotel 01" (CC BY 3.0), "Mold on Ceiling on House on Dublin Street New Orleans after Katrina" (CC BY 3.0), "Water Damage" (CC BY-SA 3.0).
+  - Three more (a PBY-5 plate and an aircraft tag, both with printed dates, and a peeling sheetrock ceiling) were refused with HTTP 429. I stopped retrying, as Wikimedia's message asks.
+- **Run:** the production code paths with production settings (Opus 5.5, medium effort): `nameplate.extract`/`to_fields` with no device OCR, and `damage.extract`/`to_fields` → `lineitems.derive` with no voice slots. **$0.167 for 8 calls** ($0.017–0.027 each), 5–9 s per call.
+- **Plates:** every make, model and serial matched my own reading of the plate. The CD player's "serial" is an unlabelled sticker, so its ground truth is itself uncertain.
+  - No plate prints a date, and the model returned null for all 4: **no invented dates**. It also returned no model number for the trailer, which has none.
+  - Confidence dropped on the small, glary Rolls-Royce plate (0.65–0.68).
+- **Calibration finding:** the unlabelled CD-player serial had a self-confidence of 0.60, but the **pre-data confidence prior raised it to 0.786**, above the 0.6 review bar. The constant bonuses (format looks plausible + "good" legibility + QC pass) outweigh a cautious self-score when there's no OCR agreement. `eval/calibrate.py` must be fitted on real captures before the demo; until then the default priors over-trust ambiguous fields.
+- **Damage:** readings are plausible; three of the four match what I see. On the "drywall mould" photo the model described cracked, lifting paint with tan water spots, which matches the image better than its file name (no mould visible in that frame).
+  - Line items under the new rules: board ceiling stains → `PNT-SPR` + `INS-RR` "consider" + `MST-MAP`; the Katrina mould ceiling → `MLD-REM` 120 SF (containment) + `ANT-APP` + `PNT-SPR`.
+  - Every size was a 0.2–0.4 guess, so every quantity is marked `needs_measurement`, as intended.
+- **Caveat:** these are sharp, well-lit, high-resolution web photos, much easier than 480×640 glasses frames. They show the extractors and rules work end to end and fail safe. They say nothing about accuracy on our captures, which is what the eval measures.
