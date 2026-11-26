@@ -8,8 +8,11 @@ import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import android.speech.RecognitionListener
+import android.speech.RecognitionSupport
+import android.speech.RecognitionSupportCallback
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import java.util.Locale
 import app.fieldcapture.core.EventLog
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -57,7 +60,6 @@ data class ListenState(
 class SpeechListener(
     private val context: Context,
     private val log: EventLog,
-    private val language: String = "en-US",
 ) {
   private val main = Handler(Looper.getMainLooper())
   private var recognizer: SpeechRecognizer? = null
@@ -66,7 +68,28 @@ class SpeechListener(
   private var speechStartMs: Long? = null
   private var utterance = 0
   private var consecutiveErrors = 0
-  private var useOnDevice = true
+  private val prefs = context.getSharedPreferences("fieldcapture_asr", Context.MODE_PRIVATE)
+  /**
+   * The offline engine first (works with no signal), unless it already failed on this phone: on the
+   * test phone it returned no words and no sound level at all, while the default service understood
+   * the same voice at once (2026-11-26). Remembered, so the mic isn't deaf for ~20 s after every start.
+   */
+  private var useOnDevice = !prefs.getBoolean(KEY_ON_DEVICE_FAILED, false)
+  /**
+   * The phone's own English (en-GB on the test phone), not a hard-coded en-US: asked for en-US
+   * without that offline model, the on-device engine heard speech and returned no words, with no
+   * error (2026-11-26, the user's first real walk of the day). Confirmed against the installed
+   * models in [chooseInstalledLanguage].
+   */
+  private var language: String = preferredEnglish()
+  /** Speech was detected in the current listen() but no words came back yet. */
+  private var speechSeen = false
+  private var speechWithoutWords = 0
+  /** The current listen() round, cleared when it ends (result or error); the watchdog checks it. */
+  private var activeRound = 0
+  private var roundCounter = 0
+  private var loudestDb = -100f
+  private var stuckRounds = 0
 
   private val _heard = MutableSharedFlow<Heard>(extraBufferCapacity = 32, onBufferOverflow = BufferOverflow.DROP_OLDEST)
   val heard: SharedFlow<Heard> = _heard.asSharedFlow()
@@ -118,6 +141,47 @@ class SpeechListener(
     val engine = if (onDevice) "on-device" else "default service"
     _state.update { it.copy(engine = engine) }
     log.log("asr", "engine=$engine (onDeviceAvailable=$onDeviceAvailable anyAvailable=$anyAvailable lang=$language)")
+    if (onDevice) chooseInstalledLanguage()
+  }
+
+  /**
+   * Android 13+: ask the on-device engine which languages it has installed and listen in an English
+   * one it really has, preferring the phone's own. None installed: request the model and use the
+   * default (online) service meanwhile, instead of listening in a language that returns nothing.
+   */
+  private fun chooseInstalledLanguage() {
+    if (Build.VERSION.SDK_INT < 33) return
+    val r = recognizer ?: return
+    runCatching {
+          r.checkRecognitionSupport(
+              Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).putExtra(RecognizerIntent.EXTRA_LANGUAGE, language),
+              context.mainExecutor,
+              object : RecognitionSupportCallback {
+                override fun onSupportResult(support: RecognitionSupport) {
+                  val installed = support.installedOnDeviceLanguages
+                  val wantedOrder = listOf(preferredEnglish(), "en-US", "en-GB", "en-IN", "en-AU")
+                  val pick =
+                      wantedOrder.firstOrNull { w -> installed.any { it.equals(w, ignoreCase = true) } }
+                          ?: installed.firstOrNull { it.lowercase().startsWith("en") }
+                  if (pick == null) {
+                    fallBackToDefaultEngine("English model unavailable on device (installed: ${installed.joinToString().ifEmpty { "none" }})")
+                  } else {
+                    if (!pick.equals(language, ignoreCase = true)) {
+                      language = pick
+                      runCatching { recognizer?.cancel() }
+                      restart(150)
+                    }
+                    log.log("asr", "on-device English model: $pick (installed: ${installed.joinToString()})")
+                  }
+                }
+
+                override fun onError(error: Int) {
+                  log.log("asr", "language check failed (${errorName(error)}); listening in $language")
+                }
+              },
+          )
+        }
+        .onFailure { log.log("asr", "language check unavailable: ${it.message}") }
   }
 
   private fun listen() {
@@ -133,11 +197,43 @@ class SpeechListener(
           putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 700L)
         }
     speechStartMs = null
+    speechSeen = false
+    loudestDb = -100f
+    val round = ++roundCounter
+    activeRound = round
     runCatching { recognizer?.startListening(intent) }
         .onFailure {
           log.log("asr", "startListening failed: ${it.message}")
           main.postDelayed({ listen() }, 1000)
         }
+    main.postDelayed({ checkStuck(round) }, MAX_ROUND_MS)
+  }
+
+  /**
+   * A round that never ends: seen on the test phone at night (2026-11-26), where the offline engine
+   * heard "speech" at 21:19:07 and then neither finished nor failed for minutes (steady noise, e.g. a
+   * ceiling fan, never gives it the silence it waits for). The app heard nothing at all. Ask the
+   * engine to finish with what it has, then restart; twice in a row on the offline engine, switch.
+   */
+  private fun checkStuck(round: Int) {
+    if (activeRound != round || !wanted || muted) return
+    log.log("asr", "no result after ${MAX_ROUND_MS / 1000} s (speech ${if (speechSeen) "detected" else "not detected"}, loudest %.1f dB); finishing it".format(loudestDb))
+    runCatching { recognizer?.stopListening() }
+    main.postDelayed(
+        {
+          if (activeRound == round && wanted && !muted) {
+            stuckRounds++
+            log.log("asr", "still nothing after stopListening; restarting (#$stuckRounds)")
+            activeRound = 0
+            runCatching { recognizer?.cancel() }
+            if (useOnDevice && stuckRounds >= STUCK_ROUNDS_BEFORE_FALLBACK) {
+              stuckRounds = 0
+              fallBackToDefaultEngine("on-device engine stuck $STUCK_ROUNDS_BEFORE_FALLBACK rounds in a row")
+            } else restart(100)
+          }
+        },
+        2_000,
+    )
   }
 
   private fun restart(delayMs: Long) {
@@ -159,10 +255,13 @@ class SpeechListener(
 
         override fun onBeginningOfSpeech() {
           speechStartMs = SystemClock.elapsedRealtime()
+          speechSeen = true
           utterance++
         }
 
-        override fun onRmsChanged(rmsdB: Float) = Unit
+        override fun onRmsChanged(rmsdB: Float) {
+          if (rmsdB > loudestDb) loudestDb = rmsdB
+        }
 
         override fun onBufferReceived(buffer: ByteArray?) = Unit
 
@@ -179,10 +278,13 @@ class SpeechListener(
         }
 
         override fun onResults(results: Bundle?) {
+          activeRound = 0
           consecutiveErrors = 0
           val (texts, conf) = results(results)
           val top = texts.firstOrNull()?.trim().orEmpty()
           if (top.isNotEmpty()) {
+            speechWithoutWords = 0
+            stuckRounds = 0
             _state.update { it.copy(lastFinal = top, lastPartial = "") }
             log.log("heard", "\"$top\"" + (conf?.firstOrNull()?.let { " (%.2f)".format(it) } ?: ""))
             _heard.tryEmit(Heard(texts, conf, true, speechStartMs, SystemClock.elapsedRealtime(), utterance))
@@ -191,9 +293,20 @@ class SpeechListener(
         }
 
         override fun onError(error: Int) {
+          activeRound = 0
           _state.update { it.copy(listening = false) }
           when (error) {
-            SpeechRecognizer.ERROR_NO_MATCH,
+            // Speech was heard but no words came back: say so in the log (this was invisible), and
+            // after a few in a row on the offline engine, switch to the default service.
+            SpeechRecognizer.ERROR_NO_MATCH ->
+                if (speechSeen) {
+                  speechWithoutWords++
+                  log.log("asr", "speech heard but no words (#$speechWithoutWords, engine=${_state.value.engine}, lang=$language, loudest %.1f dB)".format(loudestDb))
+                  if (useOnDevice && speechWithoutWords >= NO_WORDS_BEFORE_FALLBACK) {
+                    speechWithoutWords = 0
+                    fallBackToDefaultEngine("on-device engine returned no words $NO_WORDS_BEFORE_FALLBACK times in a row")
+                  } else restart(50)
+                } else restart(50)
             SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> restart(50) // silence: just listen again
             SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> {
               runCatching { recognizer?.cancel() }
@@ -241,6 +354,7 @@ class SpeechListener(
     }
     log.log("asr", "falling back to the default recognition service: $reason")
     useOnDevice = false
+    prefs.edit().putBoolean(KEY_ON_DEVICE_FAILED, true).apply()
     runCatching { recognizer?.destroy() }
     recognizer = null
     ensureRecognizer()
@@ -258,4 +372,19 @@ class SpeechListener(
         SpeechRecognizer.ERROR_TOO_MANY_REQUESTS -> "TOO_MANY_REQUESTS"
         else -> "code $e"
       }
+
+  private companion object {
+    /** Utterances in a row the offline engine may hear without returning words before we switch. */
+    const val NO_WORDS_BEFORE_FALLBACK = 3
+    /** A command is a few seconds of speech; a round with no result after this is stuck. */
+    const val MAX_ROUND_MS = 8_000L
+    const val STUCK_ROUNDS_BEFORE_FALLBACK = 2
+    const val KEY_ON_DEVICE_FAILED = "on_device_failed"
+
+    /** The phone's own language if it is English (en-GB, en-IN...), otherwise en-US. */
+    fun preferredEnglish(): String {
+      val tag = Locale.getDefault().toLanguageTag()
+      return if (tag.lowercase().startsWith("en")) tag else "en-US"
+    }
+  }
 }

@@ -329,8 +329,10 @@ private fun LiveView(app: FieldCaptureApp, status: GlassesStatus) {
 private fun renderPreview(app: FieldCaptureApp): Preview? {
   val f = app.glasses.frames.latest() ?: return null
   val age = SystemClock.elapsedRealtime() - f.tMs
-  val jpeg = PhotoCodec.yuvToJpeg(f, app.settings.yuvLayout, quality = 60) ?: return Preview(null, age)
-  val bmp = BitmapFactory.decodeByteArray(jpeg, 0, jpeg.size, BitmapFactory.Options().apply { inSampleSize = 2 })
+  // Full stream resolution: the phone-camera feed is only 480x640 (Mock Device Kit), and halving it
+  // made the view too blurry to aim with (the user, 2026-11-26).
+  val jpeg = PhotoCodec.yuvToJpeg(f, app.settings.yuvLayout, quality = 85) ?: return Preview(null, age)
+  val bmp = BitmapFactory.decodeByteArray(jpeg, 0, jpeg.size)
   return Preview(bmp?.asImageBitmap(), age)
 }
 

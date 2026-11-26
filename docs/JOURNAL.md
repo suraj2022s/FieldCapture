@@ -729,3 +729,30 @@ Six events, driven over its test server (`tools/mdk_scenarios.ps1`), each with a
 - All 6 scenarios recover, crash buffer clean (`eval/chaos/mdk-scenarios-20261126-after-fixes.txt`).
 - Instrumented 9/9 (8 lifecycle + accessibility).
 - App JVM tests pass.
+
+## 2026-11-26 21:30 IST: filming started: the app didn't hear the user at all; fixed
+
+### Report
+"It is not listening to any voice cmds", and "the resolution of camera is very bad".
+
+### Diagnosis on the phone (live logcat while the user spoke)
+- The mic wasn't blocked: sensor privacy off, no call, recording "not silenced", the app showed "Listening".
+- The on-device engine (Android System Intelligence, SODA) was recording but returned nothing: "no speech detected" every 5 s, and once a round that ran for minutes.
+- A first guess, en-US asked for on an en-GB phone, was wrong: `checkRecognitionSupport` lists en-US and en-GB installed.
+- The added level logging settled it: **no `onRmsChanged` at all ("loudest −100 dB")**.
+- The default service (Speech Services by Google) understood the user at once: "Pause", "resume", "Please end the job".
+- **Every test today injected text, which is why no test caught this.** It's the one path only a person can exercise.
+
+### Fix (`SpeechListener`)
+- Listen in an installed English model, preferring the phone's own.
+- Log "speech heard but no words", with the loudest level.
+- Watchdog: a round with no result after 8 s gets `stopListening()`, then a restart.
+- Fall back to the default service after 3 empty or 2 stuck rounds, and **remember it** (`fieldcapture_asr` prefs), so the mic isn't deaf for ~20 s after every start.
+- The test phone now starts on the default service.
+
+### Camera
+- The Mock Device Kit phone-camera feed is 480×640 (RESEARCH §5a), and the live view was halving it. It now shows full resolution at JPEG 85.
+- Captured evidence is the same 480×640: the user was told to get close so a plate fills the view.
+
+### Not yet done
+The real-voice path should get its own check, e.g. a spoken command in `phone_smoke.ps1` once someone is at the phone.
