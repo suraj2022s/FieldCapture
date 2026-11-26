@@ -138,5 +138,7 @@ try {
 } catch {
   W "ERROR: $($_.Exception.Message)"
 } finally {
+  # The test feed setting persists: put the phone camera back, or the next real walk films a test pattern.
+  Adb shell "am broadcast -n $pkg/.debug.DebugCommandReceiver --es cmd feed_camera" | Out-Null
   if ($logcat) { & taskkill /PID $logcat.Id /T /F 2>$null | Out-Null }
 }

@@ -1,4 +1,4 @@
-﻿# Bad-signal test of the upload path on the phone, with Toxiproxy (https://github.com/Shopify/toxiproxy, MIT)
+# Bad-signal test of the upload path on the phone, with Toxiproxy (https://github.com/Shopify/toxiproxy, MIT)
 # between the app and a throwaway back office:
 #   phone 127.0.0.1:8000 --adb reverse--> PC :8005 --Toxiproxy--> back office :8001 (extraction off, temp data)
 #
@@ -184,6 +184,8 @@ try {
 } catch {
   W "ERROR: $($_.Exception.Message)"
 } finally {
+  # The test feed setting persists: put the phone camera back, or the next real walk films a test pattern.
+  Adb shell "am broadcast -n $pkg/.debug.DebugCommandReceiver --es cmd feed_camera" | Out-Null
   try { TP POST '/proxies/bo' @{ enabled = $true } | Out-Null; foreach ($n in 'lat_down', 'lat_up', 'bw', 'rst', 'blackhole') { try { Untoxic $n } catch { } } } catch { }
   # Whole process trees: Stop-Process on `uv` left its Python server running on :8001 (and holding this
   # script's output pipe open), as chaos_run.ps1 had found before.
