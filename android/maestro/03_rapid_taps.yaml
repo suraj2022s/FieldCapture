@@ -4,6 +4,13 @@ appId: app.fieldcapture
 name: Rapid and double taps
 ---
 - launchApp
+# A job left open by an earlier failed flow would be resumed on launch: end it first.
+- tapOn:
+    text: "End job"
+    optional: true
+- tapOn:
+    text: "Show developer tools"
+    optional: true
 - scrollUntilVisible:
     element: "Test feed"
     direction: DOWN
@@ -20,7 +27,7 @@ name: Rapid and double taps
     optional: true
     waitToSettleTimeoutMs: 50
 - extendedWaitUntil:
-    visible: "ACTIVE"
+    visible: "Recording"
     timeout: 15000
 # Pause/Resume hammered, ending on Resume: the walk must end up ACTIVE
 - tapOn:
@@ -36,7 +43,7 @@ name: Rapid and double taps
     text: "Resume"
     waitToSettleTimeoutMs: 50
 - extendedWaitUntil:
-    visible: "ACTIVE"
+    visible: "Recording"
     timeout: 10000
 # ... ending on Pause: the walk must end up PAUSED
 - tapOn:
@@ -49,11 +56,11 @@ name: Rapid and double taps
     text: "Pause"
     waitToSettleTimeoutMs: 50
 - extendedWaitUntil:
-    visible: "PAUSED"
+    visible: "Paused"
     timeout: 10000
 - waitForAnimationToEnd:
     timeout: 3000
-- assertVisible: "PAUSED"
+- assertVisible: "Paused"
 # Double tap on End job
 - tapOn:
     text: "End job"

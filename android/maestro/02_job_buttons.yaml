@@ -4,6 +4,13 @@ appId: app.fieldcapture
 name: Job buttons
 ---
 - launchApp
+# A job left open by an earlier failed flow would be resumed on launch: end it first.
+- tapOn:
+    text: "End job"
+    optional: true
+- tapOn:
+    text: "Show developer tools"
+    optional: true
 - scrollUntilVisible:
     element: "Test feed"
     direction: DOWN
@@ -13,15 +20,15 @@ name: Job buttons
     direction: UP
 - tapOn: "Start job"
 - extendedWaitUntil:
-    visible: "ACTIVE"
+    visible: "Recording"
     timeout: 15000
 - tapOn: "Pause"
 - extendedWaitUntil:
-    visible: "PAUSED"
+    visible: "Paused"
     timeout: 10000
 - tapOn: "Resume"
 - extendedWaitUntil:
-    visible: "ACTIVE"
+    visible: "Recording"
     timeout: 10000
 - tapOn: "End job"
 - extendedWaitUntil:
@@ -31,7 +38,7 @@ name: Job buttons
 # A second job straight after the first (the Start job button used to disappear after a job ended)
 - tapOn: "Start job"
 - extendedWaitUntil:
-    visible: "ACTIVE"
+    visible: "Recording"
     timeout: 15000
 - tapOn: "End job"
 - extendedWaitUntil:

@@ -3,6 +3,13 @@ appId: app.fieldcapture
 name: Leave the app mid-job and come back
 ---
 - launchApp
+# A job left open by an earlier failed flow would be resumed on launch: end it first.
+- tapOn:
+    text: "End job"
+    optional: true
+- tapOn:
+    text: "Show developer tools"
+    optional: true
 - scrollUntilVisible:
     element: "Test feed"
     direction: DOWN
@@ -12,7 +19,7 @@ name: Leave the app mid-job and come back
     direction: UP
 - tapOn: "Start job"
 - extendedWaitUntil:
-    visible: "ACTIVE"
+    visible: "Recording"
     timeout: 15000
 - pressKey: Home
 - waitForAnimationToEnd:
@@ -20,9 +27,13 @@ name: Leave the app mid-job and come back
 - launchApp:
     stopApp: false
 - extendedWaitUntil:
-    visible: "ACTIVE"
+    visible: "Recording"
     timeout: 20000
-- assertVisible: ".*[1-9]\\d*\\.\\d fps.*|.*fps=[1-9].*"
+# The live view shows a fresh picture again (it says "No picture from the glasses" when frames stop)
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertNotVisible: "No picture from the glasses"
+- assertVisible: "What the glasses see"
 - tapOn: "End job"
 - extendedWaitUntil:
     visible: "Start job"

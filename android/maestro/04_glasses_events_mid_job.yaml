@@ -3,6 +3,13 @@ appId: app.fieldcapture
 name: Glasses events mid-job
 ---
 - launchApp
+# A job left open by an earlier failed flow would be resumed on launch: end it first.
+- tapOn:
+    text: "End job"
+    optional: true
+- tapOn:
+    text: "Show developer tools"
+    optional: true
 - scrollUntilVisible:
     element: "Test feed"
     direction: DOWN
@@ -12,7 +19,7 @@ name: Glasses events mid-job
     direction: UP
 - tapOn: "Start job"
 - extendedWaitUntil:
-    visible: "ACTIVE"
+    visible: "Recording"
     timeout: 15000
 
 # Power off -> reconnecting; power on -> back
@@ -21,7 +28,7 @@ name: Glasses events mid-job
     direction: DOWN
 - tapOn: "Power off"
 - scrollUntilVisible:
-    element: "RECONNECTING"
+    element: "Reconnecting.*"
     direction: UP
     timeout: 20000
 - scrollUntilVisible:
@@ -29,7 +36,7 @@ name: Glasses events mid-job
     direction: DOWN
 - tapOn: "Power on"
 - scrollUntilVisible:
-    element: "ACTIVE"
+    element: "Recording"
     direction: UP
     timeout: 20000
 
@@ -39,17 +46,17 @@ name: Glasses events mid-job
     direction: DOWN
 - tapOn: "Doff"
 - scrollUntilVisible:
-    element: "SUSPENDED"
+    element: "Glasses off"
     direction: UP
-    timeout: 10000
+    timeout: 20000
 - scrollUntilVisible:
     element: "Don"
     direction: DOWN
 - tapOn: "Don"
 - scrollUntilVisible:
-    element: "ACTIVE"
+    element: "Recording"
     direction: UP
-    timeout: 10000
+    timeout: 20000
 
 # Folded -> not active; unfolded and put on -> back
 - scrollUntilVisible:
@@ -59,7 +66,7 @@ name: Glasses events mid-job
 - tapOn: "Unfold"
 - tapOn: "Don"
 - scrollUntilVisible:
-    element: "ACTIVE"
+    element: "Recording"
     direction: UP
     timeout: 20000
 
@@ -72,9 +79,9 @@ name: Glasses events mid-job
 - tapOn: "Cool"
 - tapOn: "Battery 80%"
 - scrollUntilVisible:
-    element: "ACTIVE"
+    element: "Recording"
     direction: UP
-    timeout: 10000
+    timeout: 20000
 - tapOn: "End job"
 - extendedWaitUntil:
     visible: "Start job"

@@ -69,6 +69,10 @@ data class WalkUi(
     val heard: String = "",
 )
 
+/** "1 capture, 2 notes": shown and spoken, so the grammar matters. */
+fun counts(captures: Int, notes: Int): String =
+    "$captures ${if (captures == 1) "capture" else "captures"}, $notes ${if (notes == 1) "note" else "notes"}"
+
 /**
  * Turns what the tech says into durable job data. Owns the capture loop:
  * 1. A command reaches back to frames from when the tech started speaking.
@@ -169,7 +173,7 @@ class WalkController(
     )
     roomTipGiven = true
     log.log("job", "resumed ${h.jobId} after an app restart (${open.captures} captures, ${open.notes} notes)")
-    speaker.say("Resumed your job. ${open.captures} captures, ${open.notes} notes so far.")
+    speaker.say("Resumed your job. ${counts(open.captures, open.notes)} so far.")
   }
 
   private fun begin(header: JobHeader, ui: WalkUi, room: String?, prior: List<EventRecord>) {
@@ -197,9 +201,9 @@ class WalkController(
     log.log("job", "ended ${ended.jobId}")
     kickUpload()
     val u = _ui.value
-    speaker.say("Job ended. ${u.captures} captures, ${u.notes} notes. Uploading when there's signal.")
+    speaker.say("Job ended. ${counts(u.captures, u.notes)}. Uploading when there's signal.")
     // No job id on screen means "no job": the Start job button comes back and the screen may sleep.
-    _ui.value = WalkUi(last = "Last job: ${u.room?.let { "$it, " } ?: ""}${u.captures} captures, ${u.notes} notes")
+    _ui.value = WalkUi(last = "Last job: ${u.room?.let { "$it, " } ?: ""}${counts(u.captures, u.notes)}")
     onJobActive(false)
   }
 
@@ -712,7 +716,7 @@ class WalkController(
     speaker.say(
         listOfNotNull(
                 room?.replaceFirstChar { it.uppercase() },
-                "${u.captures} captures, ${u.notes} notes",
+                counts(u.captures, u.notes),
                 if (q > 0) "$q waiting for signal" else "all uploaded",
             )
             .joinToString(". ") + ".",

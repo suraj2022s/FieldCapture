@@ -593,3 +593,45 @@ The user expected more bugs and approved installing Maestro (350 MB over their p
 
 ### Next
 The user films.
+
+## 2026-11-26 17:10 IST: the phone screen for a tech, and more test tools
+
+### Why
+The user asked for the four screen changes proposed at 14:53, and for more open-source tools to test the product with.
+
+### Screen (`ui/MainScreen.kt`)
+1. **Status in plain words.** The banner says "Ready", "Recording · Say a command.", "Paused", "Glasses off", "Reconnecting…", "Connect to Meta AI" or "Allow camera access", instead of enum names. Guidance repeating the title is trimmed ("Paused. Say …" becomes "Say …").
+2. **Live view.** During a job, the newest frame from the ring buffer (an owned copy, so the capture path is untouched) is shown at ~4 fps, half size, only while the screen is visible. When frames stop it says why: "Paused", "Glasses off", "Connecting to the glasses…" or "No picture from the glasses".
+3. **One button for what applies.** Pause *or* Resume, from a new `GlassesStatus.userPaused`. Resume is filled because it's what a paused tech needs. **End job is outlined, never highlighted** (no undo).
+4. **Developer tools folded away.** Glasses internals, settings, measure, Mock Device Kit controls and the event log sit under "Show developer tools", collapsed on every launch. Amber labels on the job card show when Dataset mode or the No-signal test is ON.
+- Also: "1 capture, 1 note" in the shown and **spoken** counts (`counts()`, plus a JVM test).
+
+### Checked on the phone
+- Screenshots idle, recording, paused and after a capture.
+- 5/5 Maestro flows, updated for the new words, the folded tools, and ending a job a previous failed flow left open.
+- 8/8 instrumented tests; `phone_smoke.ps1` PASS.
+
+**Two flow failures on the way, neither in the app:**
+- A 10 s scroll limit was too short with the taller job card.
+- A phone call's caller-ID pop-up covered the screen. That screenshot was deleted.
+
+**One mock finding:** after pause/resume, a *file* feed is smeared (HEVC restarted without a keyframe) and runs at 2× speed. The phone-camera feed was checked clean after pause/resume (29.6 fps; the screenshot showed the room and was deleted). RESEARCH §5a.
+
+### Test tools searched (licences from the projects' own pages)
+
+| Status | Tool | Licence | What it's for here |
+|---|---|---|---|
+| Used | Maestro | Apache-2.0 | UI flows |
+| Used | Toxiproxy | MIT | bad network |
+| Used | Schemathesis | MIT | API fuzz |
+| Used now | [Bandit](https://github.com/PyCQA/bandit) | Apache-2.0 | Back-office security lint. **0 real issues** in 1,450 lines; its one Low flag (`"qc_pass": 0.5` as a "hard-coded password") is a false positive. |
+| Recommended | [LeakCanary](https://github.com/square/leakcanary) | Apache-2.0 | Leaks over long walks on a 4 GB phone |
+| Recommended | [detekt](https://github.com/detekt/detekt) | Apache-2.0 | Kotlin static analysis |
+| Recommended | [Hypothesis](https://github.com/HypothesisWorks/hypothesis) | MPL-2.0 | Property tests for the line-item rules and the size maths |
+| Recommended | [Accessibility Test Framework for Android](https://github.com/google/Accessibility-Test-Framework-for-Android) | Apache-2.0 | Touch targets and contrast, for gloves |
+| Recommended | [Locust](https://github.com/locustio/locust) | MIT | Back-office load (many phones at once) |
+| Recommended | [mutmut](https://github.com/boxed/mutmut) | BSD-3 | How much the backend tests really catch |
+| Skipped | [promptfoo](https://github.com/promptfoo/promptfoo) | MIT | `eval/` already scores the extractors per field |
+| Skipped | [MobSF](https://github.com/MobSF/Mobile-Security-Framework-MobSF) | GPL-3.0 | Heavy install for a debug APK |
+| Skipped | DroidBot / Fastbot | — | Random taps can reach quick settings, which hold this PC's hotspot |
+| Skipped | nlpaug | unverified | Parser noise; a hand-made ASR-variant list fits better |

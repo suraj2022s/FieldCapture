@@ -107,6 +107,7 @@ flowchart LR
 | **Thresholds measured with the shipped code** | The phone records its own metrics in dataset mode; `eval/qc_thresholds.py` fits on tune scenes and tests on held-out scenes. |
 | **Rules, not prompts, for line items** | An estimator must be able to read and argue with them. Unknown quantities stay `null` + `needs_measurement`. |
 | **Claude via a back office** | The API key never ships in the APK, and the eval runs the same extractor code. |
+| **A phone screen that stays out of the way** | The tech talks to the glasses, so the screen is a glance. It shows the status in plain words ("Recording", "Glasses off", "Reconnecting…"), a live view of what the glasses see (~4 fps from the frame buffer), and one button per action: only Pause *or* Resume, never both. End job is not highlighted, because it can't be undone. Glasses internals, debug settings and the Mock Device Kit controls sit under "Show developer tools". |
 
 **Cut, on purpose**
 - Wake word: listening is continuous, but only grammar matches act.
@@ -134,7 +135,7 @@ These are the ones we know about; the full list is in [docs/MEMO.md](docs/MEMO.m
 - HFP mic contention.
 
 **Not done yet:**
-- Raw (YUV) DAT streams pause when the app is backgrounded, per Meta's sample. Pocket mode, with the screen off and a compressed stream plus our own software HEVC decode, is the next step. Until then, keep the screen on during a walk.
+- Raw (YUV) DAT streams pause when the app is backgrounded on real glasses, per Meta's sample. On Mock Device Kit they don't: a walk kept streaming and capturing for 2 minutes with the screen off (RESEARCH §5a). That can't be checked without glasses, so the app keeps the screen on during a walk. Pocket mode (a compressed stream plus our own software HEVC decode) is the next step.
 - Damage framing on device checks only exposure and blur. "Damage cut off" is flagged later by the back office.
 - Manufacture date is taken as printed. It isn't yet decoded from brand-specific serial formats.
 - A walk killed by the OS resumes on relaunch only if it saw activity in the last 30 minutes; older open jobs are closed and finalized instead. After a resume, "undo" only reaches captures made since the restart.

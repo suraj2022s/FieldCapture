@@ -7,7 +7,7 @@ in a home we have permission to film, and no people appear in frame. Any staged 
 
 ## 1. Collect (phone)
 
-1. Install the debug build, open **Settings (debug)** and turn **Dataset: ON**.
+1. Install the debug build, tap **Show developer tools**, then **Dataset: off** so it reads **Dataset: ON**. The job card then shows an amber "Dataset mode ON" label, so the mode stays visible after the developer tools are folded away again.
 2. Start a job and capture by voice as normal. In dataset mode, every frame the quality gate judged
    is saved for each capture, not only the one it kept: JPEG plus the phone's own metrics, verdict and OCR.
 3. Shot list (target ≈ 120 frames; the brief's minimum is 40 frames, 10 nameplates and 10 low-light):

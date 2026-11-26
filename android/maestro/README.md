@@ -20,6 +20,10 @@ powershell -ExecutionPolicy Bypass -File tools\maestro_run.ps1                 #
 powershell -ExecutionPolicy Bypass -File tools\maestro_run.ps1 -Flow 03_rapid_taps.yaml
 ```
 
+Each flow first ends any job a previous failed flow left open (the app resumes open jobs on launch),
+then opens "Show developer tools" for the Mock Device Kit buttons. Status checks use the plain words
+on the banner: "Recording", "Paused", "Glasses off", "Reconnecting…".
+
 The runner turns Maestro's analytics off, and mutes the phone mic whenever a job starts so room sound
 can't trigger commands. Maestro's `launchApp` also tries to grant every runtime permission; ColorOS
 refuses the shell's grant (logged, harmless, because the app's permissions are already granted). It selects the synthetic test feed, so nothing in the room is filmed, and puts the

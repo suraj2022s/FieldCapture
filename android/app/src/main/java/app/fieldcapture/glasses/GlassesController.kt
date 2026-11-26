@@ -105,6 +105,8 @@ data class GlassesStatus(
     /** One short sentence the tech should hear/see about the glasses, if any. */
     val guidance: String? = null,
     val lastError: String? = null,
+    /** The tech asked for a pause (the session may still be getting there): the screen offers Resume. */
+    val userPaused: Boolean = false,
 )
 
 sealed interface PhotoResult {
@@ -182,6 +184,10 @@ class GlassesController(
   @Volatile private var session: DeviceSession? = null
   @Volatile private var camera: Camera? = null
   @Volatile private var userPaused = false
+    set(value) {
+      field = value
+      _status.update { it.copy(userPaused = value) }
+    }
   /** We called pause() and the session hasn't come back to STARTED since (tells our pause from the device's). */
   @Volatile private var ourPause = false
   @Volatile private var cameraStarted = false
