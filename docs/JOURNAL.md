@@ -920,3 +920,12 @@ Damage sizes from the user. Then `run_extraction` (3 models, ~$5, waiting on the
   - This also suggests my "usable" label on some dim Mektron frames is generous: readable to a person zooming in, not to on-device OCR.
 - **Not shipped.** The false-retake rate stays a disclosed limitation.
   - Better levers: the glasses' full-resolution photo on real hardware (MDK gives 480×640), and a torch prompt in the dark.
+
+## 2026-11-27 02:25 IST: the back office over Wi-Fi
+
+- **Network:** the PC is on the phone's hotspot (PC 10.37.114.191, phone `ap0` 10.37.114.154). The address changed since 2026-11-25, so it is not fixed.
+- **Firewall:** with the user's OK, added an inbound Windows Firewall rule: TCP 8002, local subnet only, named "FieldCapture back office (TCP 8002, local subnet)". To remove it after submission: `Remove-NetFirewallRule -DisplayName "FieldCapture back office*"` (elevated).
+- **Back office:** :8002 restarted with `FIELDCAPTURE_HOST=0.0.0.0` and an access code, which lives in gitignored `private/backoffice_access_code.txt` and is passed only to this server, so localhost test scripts are unaffected. On start it logs the address to type on the phone.
+- **Checked from the PC:** `/healthz` is open, `/v1/jobs` without the code returns 401 and with it 200. **From the phone:** TCP to 10.37.114.191:8002 is reachable over Wi-Fi.
+- **USB route removed** (`adb reverse --remove tcp:8000`): uploads now depend on the app's Back office setting alone.
+- **Next:** the user enters the address and code in the app's Back office card and walks a job; the job should appear in the browser after the password prompt.
