@@ -40,11 +40,19 @@ def ocr_fallback_fields(ocr_lines: list[str]) -> dict:
     return fields
 
 
+# Fields whose absence is normal, so a blank one is not worth a reviewer's time: 12 of the 13 plate
+# labels in the test set print no date. A date that *was* read with low confidence is still flagged.
+QUIET_WHEN_BLANK = {("nameplate", "manufacture_date")}
+
+
 def _flags(kind: str, fields: dict, status: str) -> list[str]:
     flags = []
     for name in CORE.get(kind, ()):
         f = fields.get(name) or {}
-        if f.get("value") in (None, "") or float(f.get("confidence") or 0) < REVIEW_THRESHOLD:
+        blank = f.get("value") in (None, "")
+        if blank and ((kind, name) in QUIET_WHEN_BLANK or (kind, name) == ("damage", "room")):
+            continue  # a blank damage room gets the clearer "room_missing" from the caller
+        if blank or float(f.get("confidence") or 0) < REVIEW_THRESHOLD:
             flags.append(f"low_confidence:{name}")
     if status == "error":
         flags.append("extraction_failed")

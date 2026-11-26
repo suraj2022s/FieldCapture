@@ -929,3 +929,16 @@ Damage sizes from the user. Then `run_extraction` (3 models, ~$5, waiting on the
 - **Checked from the PC:** `/healthz` is open, `/v1/jobs` without the code returns 401 and with it 200. **From the phone:** TCP to 10.37.114.191:8002 is reachable over Wi-Fi.
 - **USB route removed** (`adb reverse --remove tcp:8000`): uploads now depend on the app's Back office setting alone.
 - **Next:** the user enters the address and code in the app's Back office card and walks a job; the job should appear in the browser after the password prompt.
+
+## 2026-11-27 02:45 IST: first walk with no USB cable; quieter review flags
+
+- **The user walked a job with the cable unplugged.** The app was set up in its Back office card (address and access code typed on the phone).
+  - All items arrived at :8002 from 10.37.114.154, the phone's Wi-Fi address. Server log: `POST /v1/jobs/32202fe6…/items 200/201`.
+  - Job `32202fe6`: 4 captures, 1 note, 6 draft line items. Extraction cost $0.069.
+  - Mektron read right: MEKTRON / MT450 / 450AW55230192 (serial confidence 0.60, so it goes to review).
+  - The microwave sticker was misread (model `MCR24SPB.DBCYLN`), but at confidence **0.09**, so it was flagged rather than trusted.
+  - "Capture damage in the room …" was flagged `room_missing` ("the room" isn't a room). A blurry kitchen shot that was kept anyway was flagged `quality_override:BLURRY`.
+- **The review flags were noisy:** 16 on 4 captures.
+  - A manufacture date that isn't printed is no longer flagged. 12 of the 13 plate labels in the test set have none. A date read with low confidence still is.
+  - A blank damage room gets only `room_missing`, not also `low_confidence:room`.
+  - Result: 16 → 13 flags, all actionable. New `test_review_flags.py` (4 tests); backend 93/93. The :8002 back office was restarted with the change.
