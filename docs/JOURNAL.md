@@ -1072,3 +1072,18 @@ The back office now runs on a fresh data folder (`backend/data/sample-walks`, gi
 - **Full instrumented suite on the phone: 10/10.** Accessibility, 7 lifecycle tests (start/stop, pause/resume, power loss → same walk, overheat, doff/don, fold, outdated glasses app) and 2 voice tests.
 - **Restored for the demo:** the release APK reinstalled (hash re-checked), phone camera feed, back office `http://10.37.114.191:8002` with the access code, USB routes removed, the phone can reach the back office over Wi-Fi.
 - **Minor, debug-only, not fixed after the tag:** the Back office card keeps showing the old address when the setting is changed by the adb `backend` command, until the app restarts. Changing it in the card itself is unaffected.
+
+## 2026-11-27 09:10 IST: a reviewer's clone without an API key
+
+- **The user's question:** will a reviewer's clone work without our API key and our firewall rule?
+- **Tested from the fresh clone,** with no `.env` and no key. We posted real sample walk 3 to its back office the way the phone does.
+  - The job record and office page worked, and the notes got offline fields.
+  - But extraction stayed **on**: every photo tried Claude and logged `TypeError: Could not resolve authentication method`.
+  - All 4 captures ended `extraction: error`, with 24 flags. Plates got no fields, not even the on-device OCR the README promised.
+  - The README's "everything else works without it" was wrong.
+- **Fix (back office only; the tagged APK is unaffected):**
+  - `FIELDCAPTURE_EXTRACT` now defaults to on only when `ANTHROPIC_API_KEY` is set.
+  - Start-up logs a clear "extraction is OFF (no ANTHROPIC_API_KEY)" message explaining what still works. Plates use the phone OCR fallback (low confidence); notes use rules.
+  - When it listens on the network from Windows, it prints the exact firewall command.
+  - New `test_no_api_key.py` (2 tests); backend 96/96.
+- **README:** a "what works with what" table (clone only / + phone / + key) and the firewall options per OS, including the USB route that needs no firewall change.

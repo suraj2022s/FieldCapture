@@ -16,7 +16,7 @@ from typing import Annotated
 from fastapi import FastAPI, File, Form, Header, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, PlainTextResponse
 
-from .config import settings
+from .config import has_api_key, settings
 from .llm import Llm
 from .process import Processor
 from .record import assemble
@@ -276,11 +276,21 @@ def main() -> None:
 
     host = os.environ.get("FIELDCAPTURE_HOST", "127.0.0.1")
     port = int(os.environ.get("FIELDCAPTURE_PORT", "8000"))
+    s = settings()
+    if not s.extract:
+        log.warning(
+            "Extraction is OFF%s: captures, notes, job records and the office page all work; plate fields come from "
+            "the phone's on-device OCR at low confidence and note fields from rules. Put ANTHROPIC_API_KEY in backend/.env "
+            "to turn Claude extraction on.", "" if has_api_key() else " (no ANTHROPIC_API_KEY)")
     if host not in ("127.0.0.1", "localhost", "::1"):
-        if not settings().token:
+        if not s.token:
             raise SystemExit("Refusing to listen on the network without an access code: set FIELDCAPTURE_TOKEN (backend/.env).")
         addrs = sorted({ai[4][0] for ai in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET)})
         log.info("On the phone, set Back office to one of: %s (port %d) and enter the access code.", ", ".join(f"http://{a}:{port}" for a in addrs), port)
+        if os.name == "nt":
+            log.info("If the phone can't connect, Windows Firewall is blocking port %d. Allow it for the local network once, "
+                     "in an admin PowerShell: New-NetFirewallRule -DisplayName 'FieldCapture %d' -Direction Inbound -Protocol TCP "
+                     "-LocalPort %d -RemoteAddress LocalSubnet -Action Allow", port, port, port)
     uvicorn.run("fieldcapture_backend.app:app", host=host, port=port, log_level="info")
 
 

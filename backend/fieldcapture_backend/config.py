@@ -47,13 +47,20 @@ class Settings:
     effort_nameplate: str = os.environ.get("FIELDCAPTURE_EFFORT_NAMEPLATE", "medium")
     effort_damage: str = os.environ.get("FIELDCAPTURE_EFFORT_DAMAGE", "medium")
     effort_note: str = os.environ.get("FIELDCAPTURE_EFFORT_NOTE", "low")
-    extract: bool = os.environ.get("FIELDCAPTURE_EXTRACT", "1") != "0"
+    # On when there's an API key (FIELDCAPTURE_EXTRACT=0 forces it off). Without a key, a reviewer's clone
+    # used to try Claude on every photo and log an auth error each time (found 2026-11-27); now it runs the
+    # offline path instead: plate fields from the phone's own OCR at low confidence, note fields by rules.
+    extract: bool = field(default_factory=lambda: os.environ.get("FIELDCAPTURE_EXTRACT", "1" if has_api_key() else "0") != "0")
     # Long edge sent to the model; keeps image tokens bounded (~1.6K tokens per image).
     max_image_edge: int = int(os.environ.get("FIELDCAPTURE_MAX_IMAGE_EDGE", "1568"))
     llm_cache_dir: Path = field(default_factory=lambda: _path("FIELDCAPTURE_LLM_CACHE", BACKEND_DIR / "data" / "llm-cache"))
     # Access code. When set, every route except /healthz needs it: the phone sends "Bearer <code>", a
     # browser gets a password prompt (any user name, the code as password). Required off loopback.
     token: str = os.environ.get("FIELDCAPTURE_TOKEN", "")
+
+
+def has_api_key() -> bool:
+    return bool(os.environ.get("ANTHROPIC_API_KEY", "").strip())
 
 
 def _path(env: str, default: Path) -> Path:

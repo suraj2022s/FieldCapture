@@ -60,16 +60,27 @@ flowchart LR
 
 **You need:** an Android 12+ phone, a PC on the same Wi-Fi, and [uv](https://docs.astral.sh/uv/). You don't need Android Studio, glasses or a USB cable.
 
+**What works with what** (each checked from a fresh clone on 2026-11-27):
+
+| You have | What you can check |
+|---|---|
+| Nothing but the clone | All tests, and the whole eval replayed from committed model responses: REPORT.md comes out identical, with no key and no spend (see *Without a phone*). |
+| + an Android phone | The full app: voice, glasses lifecycle, quality gate, offline queue, uploads, job records and the office page. **Without an API key** the back office says so at start-up and runs offline: plate fields come from the phone's own OCR at low confidence, note fields from rules, no errors. |
+| + your own `ANTHROPIC_API_KEY` | Claude extraction as in the demo (about $0.19 per typical job). The key lives only in `backend/.env` on your PC, never in the app. |
+
 1. **Back office** (on the PC):
    ```bash
    cd backend
    uv sync
-   cp .env.example .env    # put ANTHROPIC_API_KEY=... in .env for extraction; everything else works without it
+   cp .env.example .env    # optional: put ANTHROPIC_API_KEY=... in .env to turn Claude extraction on
    FIELDCAPTURE_HOST=0.0.0.0 FIELDCAPTURE_TOKEN=pick-a-code uv run fieldcapture-server
    ```
    - It prints the address for the phone, for example `http://192.168.1.20:8000`.
    - Without an access code it refuses to listen on the network.
-   - On Windows, allow inbound TCP on that port for the local network (Windows Firewall asks, or `New-NetFirewallRule -Direction Inbound -Protocol TCP -LocalPort 8000 -RemoteAddress LocalSubnet -Action Allow`).
+   - **Firewall:**
+     - **Windows** blocks incoming connections by default; the server prints the one-line command to allow the port for the local network. Run it once in an admin PowerShell.
+     - **macOS** may ask "accept incoming connections?": click Allow.
+     - **No firewall change at all:** use the USB cable instead (below).
 2. **App.** Download `app-debug.apk` from the [`demo-v1` release](../../releases/tag/demo-v1) and open it on the phone (allow installing from this source), or run `adb install -r app-debug.apk`.
 3. **Connect.** Open FieldCapture and allow the permissions. In the **Back office** card, tap **Change**, enter the address and the access code, then **Save and test**. It should say "Connected".
 4. **Walk.** Tap **Start job**, then speak:
