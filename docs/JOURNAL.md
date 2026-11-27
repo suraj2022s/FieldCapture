@@ -1030,3 +1030,14 @@ The back office now runs on a fresh data folder (`backend/data/sample-walks`, gi
   - a fuller "what doesn't work";
   - an updated two-more-weeks plan.
 - CLAUDE.md gains the new commands (Wi-Fi back office, sample export, spend, confidence). PLAN ticked.
+
+## 2026-11-27 05:15 IST: tag `demo-v1` and the release
+
+- **Clean build at `48bee8f`:** `clean :quality-core:test :app:testDebugUnitTest :app:assembleDebug` passes.
+- **APK:** 102.7 MB debug build, SHA-256 `BD1FC8E4…C927D`, thresholds `measured-n112`.
+- **Annotated tag `demo-v1` → `48bee8f`, pushed.** The GitHub release "demo-v1: submitted build" has `app-debug.apk` attached; the repo is still private.
+- **Next:**
+  1. Install this exact APK on the phone (needs the cable).
+  2. The user records the demo video from it.
+  3. Ask the user before making the repo public or adding reviewers.
+  4. Remove the Windows Firewall rule after submission.
