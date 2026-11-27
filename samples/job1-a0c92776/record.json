@@ -1,0 +1,824 @@
+{
+  "schema_version": "1.0",
+  "job_id": "a0c92776-7935-4ce6-8479-1bff06bbeba8",
+  "status": "complete",
+  "created_at": "2026-11-27T02:47:38.127627Z",
+  "ended_at": "2026-11-27T02:49:46.042930Z",
+  "device": {
+    "glasses": "Simulated Ray-Ban Meta #1",
+    "mock_device_kit": true,
+    "dat_sdk": "1.1.0",
+    "phone": "OPPO CPH2823",
+    "app_version": "0.1.0"
+  },
+  "session": {
+    "events": [
+      {
+        "at": "2026-11-27T02:47:38.201Z",
+        "type": "walk",
+        "detail": "started"
+      },
+      {
+        "at": "2026-11-27T02:47:38.205Z",
+        "type": "job",
+        "detail": "started a0c92776-7935-4ce6-8479-1bff06bbeba8"
+      },
+      {
+        "at": "2026-11-27T02:47:38.261Z",
+        "type": "phase",
+        "detail": "WAITING_FOR_GLASSES -> CONNECTING (Connecting to the glasses.)"
+      },
+      {
+        "at": "2026-11-27T02:47:38.262Z",
+        "type": "session",
+        "detail": "created on 28130aa59e7cd38bc8d3622d89561f61"
+      },
+      {
+        "at": "2026-11-27T02:47:38.269Z",
+        "type": "session_state",
+        "detail": "IDLE"
+      },
+      {
+        "at": "2026-11-27T02:47:38.274Z",
+        "type": "session_state",
+        "detail": "STARTING"
+      },
+      {
+        "at": "2026-11-27T02:47:38.321Z",
+        "type": "session_state",
+        "detail": "STARTED"
+      },
+      {
+        "at": "2026-11-27T02:47:38.343Z",
+        "type": "stream_state",
+        "detail": "STOPPED"
+      },
+      {
+        "at": "2026-11-27T02:47:38.370Z",
+        "type": "stream_state",
+        "detail": "STARTING"
+      },
+      {
+        "at": "2026-11-27T02:47:38.394Z",
+        "type": "camera",
+        "detail": "attached: HIGH @ 15 fps, compressed=false"
+      },
+      {
+        "at": "2026-11-27T02:47:38.567Z",
+        "type": "upload",
+        "detail": "job job-a0c9 stored"
+      },
+      {
+        "at": "2026-11-27T02:47:40.113Z",
+        "type": "stream_state",
+        "detail": "STREAMING"
+      },
+      {
+        "at": "2026-11-27T02:47:40.126Z",
+        "type": "phase",
+        "detail": "CONNECTING -> ACTIVE"
+      },
+      {
+        "at": "2026-11-27T02:47:40.731Z",
+        "type": "first_frame",
+        "detail": "2117 ms after createSession; 480x640, 460800 bytes (tight 4:2:0 would be 460800)"
+      },
+      {
+        "at": "2026-11-27T02:47:46.558Z",
+        "type": "command",
+        "detail": "CaptureNameplate conf=0.80 [from partial] speech->command=3518ms"
+      },
+      {
+        "at": "2026-11-27T02:47:48.607Z",
+        "type": "retake_prompt",
+        "detail": "nameplate: Label is cut off. Step back a little. ([CUT_OFF])"
+      },
+      {
+        "at": "2026-11-27T02:47:50.867Z",
+        "type": "photo",
+        "detail": "480x640 from heic, 70193 B, 828 ms"
+      },
+      {
+        "at": "2026-11-27T02:47:51.304Z",
+        "type": "capture",
+        "detail": "nameplate saved ab83863b: source=stream_frame 480x640 prompts=1 override=false frame 3355 ms, saved 4469 ms"
+      },
+      {
+        "at": "2026-11-27T02:47:51.558Z",
+        "type": "upload",
+        "detail": "capture ab83863b stored"
+      },
+      {
+        "at": "2026-11-27T02:47:51.645Z",
+        "type": "upload",
+        "detail": "events events-a stored"
+      },
+      {
+        "at": "2026-11-27T02:47:55.074Z",
+        "type": "command",
+        "detail": "not understood: \"Is capture the nameplate\""
+      },
+      {
+        "at": "2026-11-27T02:48:02.137Z",
+        "type": "command",
+        "detail": "PauseJob conf=0.80 [from partial] speech->command=1421ms"
+      },
+      {
+        "at": "2026-11-27T02:48:02.139Z",
+        "type": "walk",
+        "detail": "pause requested (session=STARTED)"
+      },
+      {
+        "at": "2026-11-27T02:48:02.139Z",
+        "type": "phase",
+        "detail": "ACTIVE -> PAUSED (Paused. Say \"resume job\" to continue.)"
+      },
+      {
+        "at": "2026-11-27T02:48:02.170Z",
+        "type": "session_state",
+        "detail": "PAUSED"
+      },
+      {
+        "at": "2026-11-27T02:48:02.186Z",
+        "type": "stream_state",
+        "detail": "PAUSED"
+      },
+      {
+        "at": "2026-11-27T02:48:45.628Z",
+        "type": "command",
+        "detail": "ResumeJob conf=0.80 [from partial] speech->command=808ms"
+      },
+      {
+        "at": "2026-11-27T02:48:45.632Z",
+        "type": "walk",
+        "detail": "resume requested (session=PAUSED)"
+      },
+      {
+        "at": "2026-11-27T02:48:45.663Z",
+        "type": "session_state",
+        "detail": "STARTED"
+      },
+      {
+        "at": "2026-11-27T02:48:47.033Z",
+        "type": "stream_state",
+        "detail": "STREAMING"
+      },
+      {
+        "at": "2026-11-27T02:48:47.035Z",
+        "type": "phase",
+        "detail": "PAUSED -> ACTIVE"
+      },
+      {
+        "at": "2026-11-27T02:48:51.826Z",
+        "type": "command",
+        "detail": "CaptureNameplate conf=0.80 [from partial] speech->command=1159ms"
+      },
+      {
+        "at": "2026-11-27T02:48:54.090Z",
+        "type": "photo",
+        "detail": "480x640 from heic, 79872 B, 692 ms"
+      },
+      {
+        "at": "2026-11-27T02:48:54.343Z",
+        "type": "capture",
+        "detail": "nameplate saved 756bb967: source=glasses_photo 480x640 prompts=0 override=false frame 1487 ms, saved 2333 ms"
+      },
+      {
+        "at": "2026-11-27T02:48:54.563Z",
+        "type": "upload",
+        "detail": "capture 756bb967 stored"
+      },
+      {
+        "at": "2026-11-27T02:48:54.659Z",
+        "type": "upload",
+        "detail": "events events-a stored"
+      },
+      {
+        "at": "2026-11-27T02:49:10.113Z",
+        "type": "command",
+        "detail": "CaptureDamage(room=living room, surface=wall, unparsed=wall in the living room) conf=0.80 speech->command=4992ms"
+      },
+      {
+        "at": "2026-11-27T02:49:10.120Z",
+        "type": "room",
+        "detail": "living room"
+      },
+      {
+        "at": "2026-11-27T02:49:11.294Z",
+        "type": "photo",
+        "detail": "480x640 from heic, 99395 B, 979 ms"
+      },
+      {
+        "at": "2026-11-27T02:49:11.496Z",
+        "type": "capture",
+        "detail": "damage saved 1cca132c: source=glasses_photo 480x640 prompts=0 override=false frame 1 ms, saved 1056 ms"
+      },
+      {
+        "at": "2026-11-27T02:49:11.761Z",
+        "type": "upload",
+        "detail": "capture 1cca132c stored"
+      },
+      {
+        "at": "2026-11-27T02:49:11.862Z",
+        "type": "upload",
+        "detail": "events events-a stored"
+      },
+      {
+        "at": "2026-11-27T02:49:27.981Z",
+        "type": "command",
+        "detail": "CaptureDamage(room=living room, surface=null, unparsed=wearing of paint in the living room) conf=0.68 speech->command=3525ms"
+      },
+      {
+        "at": "2026-11-27T02:49:29.296Z",
+        "type": "photo",
+        "detail": "480x640 from heic, 95388 B, 1185 ms"
+      },
+      {
+        "at": "2026-11-27T02:49:29.471Z",
+        "type": "capture",
+        "detail": "damage saved 1013ddb7: source=glasses_photo 480x640 prompts=0 override=false frame 13 ms, saved 1277 ms"
+      },
+      {
+        "at": "2026-11-27T02:49:29.770Z",
+        "type": "upload",
+        "detail": "capture 1013ddb7 stored"
+      },
+      {
+        "at": "2026-11-27T02:49:29.824Z",
+        "type": "upload",
+        "detail": "events events-a stored"
+      },
+      {
+        "at": "2026-11-27T02:49:39.615Z",
+        "type": "command",
+        "detail": "EndJob conf=0.80 speech->command=6004ms"
+      },
+      {
+        "at": "2026-11-27T02:49:39.615Z",
+        "type": "command",
+        "detail": "end job: waiting for confirmation"
+      },
+      {
+        "at": "2026-11-27T02:49:46.026Z",
+        "type": "command",
+        "detail": "EndJob conf=0.80 speech->command=1131ms"
+      },
+      {
+        "at": "2026-11-27T02:49:46.032Z",
+        "type": "walk",
+        "detail": "end requested"
+      }
+    ],
+    "disconnects": 0,
+    "retake_prompts": 1
+  },
+  "rooms": [
+    {
+      "name": "unassigned",
+      "captures": [
+        "ab83863b-3aa9-4a35-bd3f-54b92870dc33",
+        "756bb967-d7a8-4bc0-ac0c-e5d9eae1549f"
+      ],
+      "notes": []
+    },
+    {
+      "name": "living room",
+      "captures": [
+        "1cca132c-2d7b-460e-9d41-8debfd6e171d",
+        "1013ddb7-20eb-4ae1-b6ac-4e50d7b3b46c"
+      ],
+      "notes": []
+    }
+  ],
+  "captures": [
+    {
+      "capture_id": "ab83863b-3aa9-4a35-bd3f-54b92870dc33",
+      "type": "nameplate",
+      "captured_at": "2026-11-27T02:47:51.120520Z",
+      "room": null,
+      "surface": null,
+      "command": {
+        "transcript": "Please capture the name",
+        "asr_confidence": 0.8,
+        "unparsed_slots": null
+      },
+      "evidence": {
+        "url": "ab83863b-nameplate.jpg",
+        "stream_frame_url": "/files/jobs/a0c92776-7935-4ce6-8479-1bff06bbeba8/ab83863b-3aa9-4a35-bd3f-54b92870dc33_stream.jpg",
+        "source": "stream_frame",
+        "width": 480,
+        "height": 640,
+        "sha256": "52c5e073f2d65020e3f8dec9f75c2cfea4c7d85ec5e77ee627c6f9ce05fa27e6",
+        "photo_latency_ms": 828,
+        "photo_error": "still rejected by QC: [CUT_OFF]"
+      },
+      "quality": {
+        "passed": true,
+        "issues": [],
+        "prompts": 1,
+        "override": false,
+        "sharpness": 1636.7940113703391,
+        "mean_luma": 133.08109375,
+        "thresholds_version": "measured-n112"
+      },
+      "ocr_text": [
+        "MEKTRON TH",
+        "MODEL- MT450",
+        "CAPACITY -4KVA Automatic",
+        "IPV - 5OV TO 30OV.AC",
+        "OP- 220V- USE FOR AC1.5 TONE",
+        "450AW55230192",
+        "CUSTOMER CARE. +917031470200"
+      ],
+      "timing": {
+        "commandAt": "2026-11-27T02:47:51.126812Z",
+        "speechToCommandMs": 3518,
+        "commandToFrameMs": 3355,
+        "commandToSavedMs": 4469
+      },
+      "extraction_status": "done",
+      "extraction_error": null,
+      "fields": {
+        "make": {
+          "value": "MEKTRON",
+          "confidence": 0.967,
+          "source": "vision_model",
+          "evidence": "MEKTRON TM",
+          "features": {
+            "self": 0.93,
+            "ocr_agree": 1.0,
+            "format_ok": 1.0,
+            "legible": 1.0,
+            "qc_pass": 1.0
+          }
+        },
+        "model": {
+          "value": "MT450",
+          "confidence": 0.964,
+          "source": "vision_model",
+          "evidence": "MODEL- MT450",
+          "features": {
+            "self": 0.92,
+            "ocr_agree": 1.0,
+            "format_ok": 1.0,
+            "legible": 1.0,
+            "qc_pass": 1.0
+          }
+        },
+        "serial": {
+          "value": "450AW55230192",
+          "confidence": 0.599,
+          "source": "vision_model",
+          "evidence": "450AW55230192",
+          "features": {
+            "self": 0.6,
+            "ocr_agree": 1.0,
+            "format_ok": 1.0,
+            "legible": 1.0,
+            "qc_pass": 1.0
+          }
+        },
+        "manufacture_date": {
+          "value": null,
+          "confidence": 0.0,
+          "source": "vision_model",
+          "evidence": null
+        },
+        "capacity": {
+          "value": "4KVA",
+          "confidence": 0.964,
+          "source": "vision_model",
+          "evidence": "CAPACITY - 4KVA Automatic",
+          "features": {
+            "self": 0.92,
+            "ocr_agree": 0.5,
+            "format_ok": 0.0,
+            "legible": 1.0,
+            "qc_pass": 1.0
+          }
+        },
+        "fuel_or_power": {
+          "value": null,
+          "confidence": 0.0,
+          "source": "vision_model",
+          "evidence": null
+        },
+        "voltage": {
+          "value": "IPV - 50V TO 300V.AC; OP- 220V",
+          "confidence": 0.934,
+          "source": "vision_model",
+          "evidence": "IPV - 50V TO 300V.AC OP- 220V- USE FOR AC1.5 TONE",
+          "features": {
+            "self": 0.85,
+            "ocr_agree": 0.5,
+            "format_ok": 0.0,
+            "legible": 1.0,
+            "qc_pass": 1.0
+          }
+        },
+        "equipment_type": {
+          "value": "other",
+          "confidence": 0.9,
+          "source": "vision_model"
+        }
+      },
+      "review_flags": [
+        "low_confidence:serial"
+      ],
+      "replaces": null
+    },
+    {
+      "capture_id": "756bb967-d7a8-4bc0-ac0c-e5d9eae1549f",
+      "type": "nameplate",
+      "captured_at": "2026-11-27T02:48:54.210891Z",
+      "room": null,
+      "surface": null,
+      "command": {
+        "transcript": "Please capture the name",
+        "asr_confidence": 0.8,
+        "unparsed_slots": null
+      },
+      "evidence": {
+        "url": "756bb967-nameplate.jpg",
+        "stream_frame_url": "/files/jobs/a0c92776-7935-4ce6-8479-1bff06bbeba8/756bb967-d7a8-4bc0-ac0c-e5d9eae1549f_stream.jpg",
+        "source": "glasses_photo",
+        "width": 480,
+        "height": 640,
+        "sha256": "086e887e5e0453078875474565d0ca9baf83bf70cdc9891fe733378c0610f013",
+        "photo_latency_ms": 692,
+        "photo_error": null
+      },
+      "quality": {
+        "passed": true,
+        "issues": [],
+        "prompts": 0,
+        "override": false,
+        "sharpness": 1859.7925074578206,
+        "mean_luma": 114.72634837962963,
+        "thresholds_version": "measured-n112"
+      },
+      "ocr_text": [
+        "S.No:601NMOMO09844",
+        "MC2844SPB.DBKQILN"
+      ],
+      "timing": {
+        "commandAt": "2026-11-27T02:48:54.211709Z",
+        "speechToCommandMs": 1159,
+        "commandToFrameMs": 1487,
+        "commandToSavedMs": 2333
+      },
+      "extraction_status": "done",
+      "extraction_error": null,
+      "fields": {
+        "make": {
+          "value": null,
+          "confidence": 0.0,
+          "source": "vision_model",
+          "evidence": null
+        },
+        "model": {
+          "value": "MC2844SPB.DBKQILN",
+          "confidence": 0.488,
+          "source": "vision_model",
+          "evidence": "MC2844SPB.DBKQILN",
+          "features": {
+            "self": 0.55,
+            "ocr_agree": 1.0,
+            "format_ok": 1.0,
+            "legible": 0.5,
+            "qc_pass": 1.0
+          }
+        },
+        "serial": {
+          "value": "601NMQM009844",
+          "confidence": 0.378,
+          "source": "vision_model",
+          "evidence": "S.No:601NMQM009844",
+          "features": {
+            "self": 0.5,
+            "ocr_agree": 0.9,
+            "format_ok": 1.0,
+            "legible": 0.5,
+            "qc_pass": 1.0
+          }
+        },
+        "manufacture_date": {
+          "value": null,
+          "confidence": 0.0,
+          "source": "vision_model",
+          "evidence": null
+        },
+        "capacity": {
+          "value": null,
+          "confidence": 0.0,
+          "source": "vision_model",
+          "evidence": null
+        },
+        "fuel_or_power": {
+          "value": null,
+          "confidence": 0.0,
+          "source": "vision_model",
+          "evidence": null
+        },
+        "voltage": {
+          "value": null,
+          "confidence": 0.0,
+          "source": "vision_model",
+          "evidence": null
+        },
+        "equipment_type": {
+          "value": "microwave",
+          "confidence": 0.9,
+          "source": "vision_model"
+        }
+      },
+      "review_flags": [
+        "low_confidence:make",
+        "low_confidence:model",
+        "low_confidence:serial"
+      ],
+      "replaces": null
+    },
+    {
+      "capture_id": "1cca132c-2d7b-460e-9d41-8debfd6e171d",
+      "type": "damage",
+      "captured_at": "2026-11-27T02:49:11.317497Z",
+      "room": "living room",
+      "surface": "wall",
+      "command": {
+        "transcript": "Capture damaged wall in the living room",
+        "asr_confidence": 0.8,
+        "unparsed_slots": "wall in the living room"
+      },
+      "evidence": {
+        "url": "1cca132c-damage.jpg",
+        "stream_frame_url": "/files/jobs/a0c92776-7935-4ce6-8479-1bff06bbeba8/1cca132c-2d7b-460e-9d41-8debfd6e171d_stream.jpg",
+        "source": "glasses_photo",
+        "width": 480,
+        "height": 640,
+        "sha256": "eebe6892b198f306c2c1b3c3aac3d772bdd1eae3dcae243cd2b432e837b8c836",
+        "photo_latency_ms": 979,
+        "photo_error": null
+      },
+      "quality": {
+        "passed": true,
+        "issues": [],
+        "prompts": 0,
+        "override": false,
+        "sharpness": 1174.6496052899192,
+        "mean_luma": 106.07815393518518,
+        "thresholds_version": "measured-n112"
+      },
+      "ocr_text": [],
+      "timing": {
+        "commandAt": "2026-11-27T02:49:11.322352Z",
+        "speechToCommandMs": 4992,
+        "commandToFrameMs": 1,
+        "commandToSavedMs": 1056
+      },
+      "extraction_status": "done",
+      "extraction_error": null,
+      "fields": {
+        "room": {
+          "value": "living room",
+          "confidence": 0.8,
+          "source": "voice"
+        },
+        "surface": {
+          "value": "wall",
+          "confidence": 0.8,
+          "source": "voice"
+        },
+        "damage_type": {
+          "value": "peeling_bubbling_paint",
+          "confidence": 0.8,
+          "source": "vision_model"
+        },
+        "material": {
+          "value": "plaster",
+          "confidence": 0.6,
+          "source": "vision_model"
+        },
+        "severity": {
+          "value": "severe",
+          "confidence": 0.65,
+          "source": "vision_model"
+        },
+        "size": {
+          "value": {
+            "width_in": 120.0,
+            "height_in": 36.0,
+            "area_sqft": 30.0
+          },
+          "confidence": 0.2,
+          "source": "model_estimate",
+          "alternatives": [
+            {
+              "method": "model_estimate",
+              "width_in": 120.0,
+              "height_in": 36.0,
+              "area_sqft": 30.0,
+              "confidence": 0.2
+            }
+          ]
+        },
+        "description": {
+          "value": "Extensive peeling and flaking paint with exposed blue underlayer and staining across the upper portions of two plaster walls at the ceiling corner, consistent with long-term moisture.",
+          "confidence": 0.7,
+          "source": "vision_model"
+        }
+      },
+      "review_flags": [
+        "low_confidence:size"
+      ],
+      "replaces": null
+    },
+    {
+      "capture_id": "1013ddb7-20eb-4ae1-b6ac-4e50d7b3b46c",
+      "type": "damage",
+      "captured_at": "2026-11-27T02:49:29.323651Z",
+      "room": "living room",
+      "surface": null,
+      "command": {
+        "transcript": "Capture the wearing of paint in the living room",
+        "asr_confidence": 0.68,
+        "unparsed_slots": "wearing of paint in the living room"
+      },
+      "evidence": {
+        "url": "1013ddb7-damage.jpg",
+        "stream_frame_url": "/files/jobs/a0c92776-7935-4ce6-8479-1bff06bbeba8/1013ddb7-20eb-4ae1-b6ac-4e50d7b3b46c_stream.jpg",
+        "source": "glasses_photo",
+        "width": 480,
+        "height": 640,
+        "sha256": "88fb34d44e135578820ed01dab433cea61736cac9b15601d250af9ec35a7d118",
+        "photo_latency_ms": 1185,
+        "photo_error": null
+      },
+      "quality": {
+        "passed": true,
+        "issues": [],
+        "prompts": 0,
+        "override": false,
+        "sharpness": 519.1915267131164,
+        "mean_luma": 80.37747106481481,
+        "thresholds_version": "measured-n112"
+      },
+      "ocr_text": [],
+      "timing": {
+        "commandAt": "2026-11-27T02:49:29.326439Z",
+        "speechToCommandMs": 3525,
+        "commandToFrameMs": 13,
+        "commandToSavedMs": 1277
+      },
+      "extraction_status": "done",
+      "extraction_error": null,
+      "fields": {
+        "room": {
+          "value": "living room",
+          "confidence": 0.68,
+          "source": "voice"
+        },
+        "surface": {
+          "value": "wall",
+          "confidence": 0.68,
+          "source": "vision_model"
+        },
+        "damage_type": {
+          "value": "peeling_bubbling_paint",
+          "confidence": 0.8,
+          "source": "vision_model"
+        },
+        "material": {
+          "value": "plaster",
+          "confidence": 0.55,
+          "source": "vision_model"
+        },
+        "severity": {
+          "value": "moderate",
+          "confidence": 0.55,
+          "source": "vision_model"
+        },
+        "size": {
+          "value": {
+            "width_in": 120.0,
+            "height_in": 36.0,
+            "area_sqft": 30.0
+          },
+          "confidence": 0.2,
+          "source": "model_estimate",
+          "alternatives": [
+            {
+              "method": "reference_scaling",
+              "width_in": 290.9,
+              "height_in": 78.4,
+              "area_sqft": 158.38,
+              "references": [
+                "door"
+              ],
+              "confidence": 0.144
+            },
+            {
+              "method": "model_estimate",
+              "width_in": 120.0,
+              "height_in": 36.0,
+              "area_sqft": 30.0,
+              "confidence": 0.2
+            }
+          ]
+        },
+        "description": {
+          "value": "Widespread peeling and flaking paint exposing older blue paint layers across the upper portions of two plaster walls at the corner near the ceiling, likely moisture-related.",
+          "confidence": 0.7,
+          "source": "vision_model"
+        }
+      },
+      "review_flags": [
+        "low_confidence:size"
+      ],
+      "replaces": null
+    }
+  ],
+  "notes": [],
+  "line_items": [
+    {
+      "line_id": "L01",
+      "code": "MST-MAP",
+      "description": "Moisture mapping and documentation, per room",
+      "unit": "EA",
+      "room": "living room",
+      "quantity": 1.0,
+      "needs_measurement": false,
+      "confidence": 0.72,
+      "basis": "water-related damage in room",
+      "assumption": false,
+      "evidence": [
+        "1013ddb7-20eb-4ae1-b6ac-4e50d7b3b46c",
+        "1cca132c-2d7b-460e-9d41-8debfd6e171d"
+      ],
+      "status": "draft"
+    },
+    {
+      "line_id": "L02",
+      "code": "PNT-SPR",
+      "description": "Surface prep (scrape loose paint, fill minor cracks), stain-block prime and paint, 2 coats",
+      "unit": "SF",
+      "room": "living room",
+      "quantity": 120.0,
+      "needs_measurement": true,
+      "confidence": 0.612,
+      "basis": "peeling_bubbling_paint on plaster wall: finish damage, substrate assumed sound and dry (verify with a moisture reading); wall plus blend [size estimated from the photo at 0.20 confidence: measure]",
+      "assumption": false,
+      "evidence": [
+        "1013ddb7-20eb-4ae1-b6ac-4e50d7b3b46c",
+        "1cca132c-2d7b-460e-9d41-8debfd6e171d"
+      ],
+      "status": "draft"
+    }
+  ],
+  "review": {
+    "needs_review": true,
+    "flags": [
+      {
+        "item": "ab83863b-3aa9-4a35-bd3f-54b92870dc33",
+        "flag": "low_confidence:serial"
+      },
+      {
+        "item": "756bb967-d7a8-4bc0-ac0c-e5d9eae1549f",
+        "flag": "low_confidence:make"
+      },
+      {
+        "item": "756bb967-d7a8-4bc0-ac0c-e5d9eae1549f",
+        "flag": "low_confidence:model"
+      },
+      {
+        "item": "756bb967-d7a8-4bc0-ac0c-e5d9eae1549f",
+        "flag": "low_confidence:serial"
+      },
+      {
+        "item": "1cca132c-2d7b-460e-9d41-8debfd6e171d",
+        "flag": "low_confidence:size"
+      },
+      {
+        "item": "1013ddb7-20eb-4ae1-b6ac-4e50d7b3b46c",
+        "flag": "low_confidence:size"
+      },
+      {
+        "item": "L02",
+        "flag": "needs_measurement:PNT-SPR"
+      }
+    ]
+  },
+  "processing": {
+    "models": [
+      "claude-opus-5-5"
+    ],
+    "model_calls": 4,
+    "input_tokens": 8965,
+    "output_tokens": 1709,
+    "cost_usd": 0.07004,
+    "model_latency_ms_p50": 5796.0,
+    "capture_to_extracted_ms_p50": 6348.914500000001,
+    "capture_to_extracted_ms_max": 7394.109,
+    "schema_valid": true
+  }
+}

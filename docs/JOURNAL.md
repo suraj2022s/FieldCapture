@@ -981,3 +981,30 @@ The back office now runs on a fresh data folder (`backend/data/sample-walks`, gi
   - "centimetres" was dropped, so the measurement became 25 with no unit.
   - Possible lever, untested: Android 13's `EXTRA_BIASING_STRINGS` with trade words (seepage, plaster, nameplate).
 - **In both walks, every wrong or doubtful value was flagged;** nothing wrong was auto-accepted.
+
+## 2026-11-27 04:15 IST: walk 3 and the three sample job records
+
+### Walk 3, `77b09db1`: 5 captures, 3 notes, 2 line items, 11 flags, $0.099
+- **LG fridge:** LG / **GL-205KMG5** / **2012**, all right. The model is at 0.49 and the date at low confidence, so both are reviewed.
+- **V-Guard:** V-GUARD / **VE 400**, right at 0.96, so auto-accepted. No serial is printed; "serial not read" is flagged for the reviewer to confirm.
+- **Damage:**
+  - Kitchen ceiling: a crack.
+  - Kitchen window: peeling paint at 0.5 (flagged).
+  - Living-room AC: `other` / fixture (flagged).
+  - All sizes are flagged "measure".
+- **All 3 notes came through cleanly:**
+  - ceiling crack ~1 m, structural;
+  - kitchen window broken;
+  - AC not working, equipment.
+- **Privacy:** it was daylight, and the kitchen-window photo shows trees through the grille. The standing rule says no views through windows, so **that photo is withheld** from the repo; its fields stay. The ceiling shot shows only a blown-out sliver of the grille, so it's kept.
+
+### `samples/` (new `tools/export_samples.py`)
+- Jobs `a0c92776`, `69bb6343` and `77b09db1` were exported from the :8002 back office API: `record.json` plus the evidence photos, with links rewritten to the local files.
+- The script refuses to write a record containing the access code, and replaces private LAN URLs. A scan found neither in the output.
+- All 3 records are schema-valid. 13 captures, 6 notes, 12 photos (1 withheld).
+- **What they show, honestly:**
+  - Every wrong or doubtful value was flagged; nothing wrong was auto-accepted.
+  - The confident values that were auto-accepted (MEKTRON, MT450, LG, V-GUARD VE 400) are right.
+  - Sizes are always "measure".
+  - Walk 1 has no notes; walks 2 and 3 have 3 each.
+  - Walk 2 contains the "Capturing plate" misfile (since fixed in the parser).

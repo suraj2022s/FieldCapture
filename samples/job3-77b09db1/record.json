@@ -1,0 +1,1174 @@
+{
+  "schema_version": "1.0",
+  "job_id": "77b09db1-eaee-4159-a6d6-b0e97abcc01f",
+  "status": "complete",
+  "created_at": "2026-11-27T02:58:35.680814Z",
+  "ended_at": "2026-11-27T03:01:13.025595Z",
+  "device": {
+    "glasses": "Simulated Ray-Ban Meta #1",
+    "mock_device_kit": true,
+    "dat_sdk": "1.1.0",
+    "phone": "OPPO CPH2823",
+    "app_version": "0.1.0"
+  },
+  "session": {
+    "events": [
+      {
+        "at": "2026-11-27T02:58:35.725Z",
+        "type": "walk",
+        "detail": "started"
+      },
+      {
+        "at": "2026-11-27T02:58:35.728Z",
+        "type": "job",
+        "detail": "started 77b09db1-eaee-4159-a6d6-b0e97abcc01f"
+      },
+      {
+        "at": "2026-11-27T02:58:35.764Z",
+        "type": "phase",
+        "detail": "WAITING_FOR_GLASSES -> CONNECTING (Connecting to the glasses.)"
+      },
+      {
+        "at": "2026-11-27T02:58:35.764Z",
+        "type": "session",
+        "detail": "created on 28130aa59e7cd38bc8d3622d89561f61"
+      },
+      {
+        "at": "2026-11-27T02:58:35.767Z",
+        "type": "session_state",
+        "detail": "IDLE"
+      },
+      {
+        "at": "2026-11-27T02:58:35.769Z",
+        "type": "session_state",
+        "detail": "STARTING"
+      },
+      {
+        "at": "2026-11-27T02:58:35.787Z",
+        "type": "session_state",
+        "detail": "STARTED"
+      },
+      {
+        "at": "2026-11-27T02:58:35.791Z",
+        "type": "stream_state",
+        "detail": "STOPPED"
+      },
+      {
+        "at": "2026-11-27T02:58:35.814Z",
+        "type": "stream_state",
+        "detail": "STARTING"
+      },
+      {
+        "at": "2026-11-27T02:58:35.843Z",
+        "type": "camera",
+        "detail": "attached: HIGH @ 15 fps, compressed=false"
+      },
+      {
+        "at": "2026-11-27T02:58:36.006Z",
+        "type": "upload",
+        "detail": "job job-77b0 stored"
+      },
+      {
+        "at": "2026-11-27T02:58:37.239Z",
+        "type": "stream_state",
+        "detail": "STREAMING"
+      },
+      {
+        "at": "2026-11-27T02:58:37.240Z",
+        "type": "phase",
+        "detail": "CONNECTING -> ACTIVE"
+      },
+      {
+        "at": "2026-11-27T02:58:37.719Z",
+        "type": "first_frame",
+        "detail": "1797 ms after createSession; 480x640, 460800 bytes (tight 4:2:0 would be 460800)"
+      },
+      {
+        "at": "2026-11-27T02:58:48.188Z",
+        "type": "command",
+        "detail": "CaptureNameplate conf=0.80 [from partial] speech->command=983ms"
+      },
+      {
+        "at": "2026-11-27T02:58:50.324Z",
+        "type": "photo",
+        "detail": "480x640 from heic, 82803 B, 797 ms"
+      },
+      {
+        "at": "2026-11-27T02:58:50.783Z",
+        "type": "capture",
+        "detail": "nameplate saved 7a224e33: source=glasses_photo 480x640 prompts=0 override=false frame 1259 ms, saved 2375 ms"
+      },
+      {
+        "at": "2026-11-27T02:58:51.125Z",
+        "type": "upload",
+        "detail": "capture 7a224e33 stored"
+      },
+      {
+        "at": "2026-11-27T02:58:51.215Z",
+        "type": "upload",
+        "detail": "events events-7 stored"
+      },
+      {
+        "at": "2026-11-27T02:59:24.431Z",
+        "type": "command",
+        "detail": "CaptureNameplate conf=0.80 [from partial] speech->command=3313ms"
+      },
+      {
+        "at": "2026-11-27T02:59:26.424Z",
+        "type": "photo",
+        "detail": "480x640 from heic, 73915 B, 581 ms"
+      },
+      {
+        "at": "2026-11-27T02:59:26.749Z",
+        "type": "capture",
+        "detail": "nameplate saved 4626328e: source=glasses_photo 480x640 prompts=0 override=false frame 1317 ms, saved 2116 ms"
+      },
+      {
+        "at": "2026-11-27T02:59:27.023Z",
+        "type": "upload",
+        "detail": "capture 4626328e stored"
+      },
+      {
+        "at": "2026-11-27T02:59:27.073Z",
+        "type": "upload",
+        "detail": "events events-7 stored"
+      },
+      {
+        "at": "2026-11-27T03:00:06.198Z",
+        "type": "command",
+        "detail": "CaptureDamage(room=kitchen, surface=ceiling, unparsed=kitchen ceiling) conf=0.80 speech->command=2637ms"
+      },
+      {
+        "at": "2026-11-27T03:00:06.199Z",
+        "type": "room",
+        "detail": "kitchen"
+      },
+      {
+        "at": "2026-11-27T03:00:07.574Z",
+        "type": "photo",
+        "detail": "480x640 from heic, 96737 B, 1169 ms"
+      },
+      {
+        "at": "2026-11-27T03:00:07.748Z",
+        "type": "capture",
+        "detail": "damage saved 312a4016: source=glasses_photo 480x640 prompts=0 override=false frame 1 ms, saved 1282 ms"
+      },
+      {
+        "at": "2026-11-27T03:00:08.223Z",
+        "type": "upload",
+        "detail": "capture 312a4016 stored"
+      },
+      {
+        "at": "2026-11-27T03:00:08.302Z",
+        "type": "upload",
+        "detail": "events events-7 stored"
+      },
+      {
+        "at": "2026-11-27T03:00:16.600Z",
+        "type": "command",
+        "detail": "Note(text=crack along the kitchen ceiling about 1 m long) conf=0.80 speech->command=4142ms"
+      },
+      {
+        "at": "2026-11-27T03:00:16.804Z",
+        "type": "note",
+        "detail": "3f827bd4 \"crack along the kitchen ceiling about 1 m long\" room=kitchen"
+      },
+      {
+        "at": "2026-11-27T03:00:17.260Z",
+        "type": "upload",
+        "detail": "note 3f827bd4 stored"
+      },
+      {
+        "at": "2026-11-27T03:00:26.758Z",
+        "type": "command",
+        "detail": "CaptureDamage(room=kitchen, surface=window, unparsed=kitchen window) conf=0.80 speech->command=2115ms"
+      },
+      {
+        "at": "2026-11-27T03:00:27.632Z",
+        "type": "photo",
+        "detail": "480x640 from heic, 118229 B, 743 ms"
+      },
+      {
+        "at": "2026-11-27T03:00:27.759Z",
+        "type": "capture",
+        "detail": "damage saved 12440f98: source=glasses_photo 480x640 prompts=0 override=false frame 0 ms, saved 806 ms"
+      },
+      {
+        "at": "2026-11-27T03:00:27.978Z",
+        "type": "upload",
+        "detail": "capture 12440f98 stored"
+      },
+      {
+        "at": "2026-11-27T03:00:28.039Z",
+        "type": "upload",
+        "detail": "events events-7 stored"
+      },
+      {
+        "at": "2026-11-27T03:00:33.338Z",
+        "type": "command",
+        "detail": "Note(text=kitchen window is broken) conf=0.80 speech->command=1854ms"
+      },
+      {
+        "at": "2026-11-27T03:00:33.504Z",
+        "type": "note",
+        "detail": "2fec2afc \"kitchen window is broken\" room=kitchen"
+      },
+      {
+        "at": "2026-11-27T03:00:33.581Z",
+        "type": "upload",
+        "detail": "note 2fec2afc stored"
+      },
+      {
+        "at": "2026-11-27T03:00:50.533Z",
+        "type": "command",
+        "detail": "CaptureDamage(room=living room, surface=null, unparsed=living room ac) conf=0.68 speech->command=2666ms"
+      },
+      {
+        "at": "2026-11-27T03:00:50.534Z",
+        "type": "room",
+        "detail": "living room"
+      },
+      {
+        "at": "2026-11-27T03:00:51.715Z",
+        "type": "photo",
+        "detail": "480x640 from heic, 90483 B, 1077 ms"
+      },
+      {
+        "at": "2026-11-27T03:00:51.835Z",
+        "type": "capture",
+        "detail": "damage saved 7aa8d1de: source=glasses_photo 480x640 prompts=0 override=false frame 0 ms, saved 1127 ms"
+      },
+      {
+        "at": "2026-11-27T03:00:52.261Z",
+        "type": "upload",
+        "detail": "capture 7aa8d1de stored"
+      },
+      {
+        "at": "2026-11-27T03:00:52.386Z",
+        "type": "upload",
+        "detail": "events events-7 stored"
+      },
+      {
+        "at": "2026-11-27T03:00:58.807Z",
+        "type": "command",
+        "detail": "Note(text=air conditioner in the living room is not working) conf=0.80 speech->command=3135ms"
+      },
+      {
+        "at": "2026-11-27T03:00:58.896Z",
+        "type": "note",
+        "detail": "2104cb24 \"air conditioner in the living room is not working\" room=living room"
+      },
+      {
+        "at": "2026-11-27T03:00:59.321Z",
+        "type": "upload",
+        "detail": "note 2104cb24 stored"
+      },
+      {
+        "at": "2026-11-27T03:01:06.609Z",
+        "type": "command",
+        "detail": "EndJob conf=0.80 speech->command=1493ms"
+      },
+      {
+        "at": "2026-11-27T03:01:06.610Z",
+        "type": "command",
+        "detail": "end job: waiting for confirmation"
+      },
+      {
+        "at": "2026-11-27T03:01:12.998Z",
+        "type": "command",
+        "detail": "EndJob conf=0.80 speech->command=3363ms"
+      },
+      {
+        "at": "2026-11-27T03:01:13Z",
+        "type": "walk",
+        "detail": "end requested"
+      }
+    ],
+    "disconnects": 0,
+    "retake_prompts": 0
+  },
+  "rooms": [
+    {
+      "name": "unassigned",
+      "captures": [
+        "7a224e33-d229-4fc6-9167-62c5d3918dab",
+        "4626328e-8b2c-464a-863c-e1a033fa26bc"
+      ],
+      "notes": []
+    },
+    {
+      "name": "kitchen",
+      "captures": [
+        "312a4016-5baf-4b25-b3d0-0f46f25e813b",
+        "12440f98-707c-41a7-81e0-747f525ea6f7"
+      ],
+      "notes": [
+        "3f827bd4-799d-41cc-9ab0-521aba9c9797",
+        "2fec2afc-fb41-4549-8795-b04129cbb3c9"
+      ]
+    },
+    {
+      "name": "living room",
+      "captures": [
+        "7aa8d1de-1228-4cf6-b818-06d1a097ff4c"
+      ],
+      "notes": [
+        "2104cb24-38c4-419b-8b69-9682655674d3"
+      ]
+    }
+  ],
+  "captures": [
+    {
+      "capture_id": "7a224e33-d229-4fc6-9167-62c5d3918dab",
+      "type": "nameplate",
+      "captured_at": "2026-11-27T02:58:50.615837Z",
+      "room": null,
+      "surface": null,
+      "command": {
+        "transcript": "Capture name",
+        "asr_confidence": 0.8,
+        "unparsed_slots": null
+      },
+      "evidence": {
+        "url": "7a224e33-nameplate.jpg",
+        "stream_frame_url": "/files/jobs/77b09db1-eaee-4159-a6d6-b0e97abcc01f/7a224e33-d229-4fc6-9167-62c5d3918dab_stream.jpg",
+        "source": "glasses_photo",
+        "width": 480,
+        "height": 640,
+        "sha256": "4497ed165e312a2ba07815028e2543c77a920168c18560c645d0e485c87f7081",
+        "photo_latency_ms": 797,
+        "photo_error": null
+      },
+      "quality": {
+        "passed": true,
+        "issues": [],
+        "prompts": 0,
+        "override": false,
+        "sharpness": 1321.5738530491888,
+        "mean_luma": 71.52524305555555,
+        "thresholds_version": "measured-n112"
+      },
+      "ocr_text": [
+        "POWER SAVINGS",
+        "GUIDE",
+        "ELECTRIcITY CONSUMPTION",
+        "Appliance",
+        "MORE STARS",
+        "ORE SAVINGS",
+        "Brand",
+        "UNITS PER YEAR",
+        "Model/Year",
+        "Type",
+        "245*",
+        ": Refrigerator",
+        "LG",
+        ":GL-205KMGS/2012",
+        ": Direct Cool",
+        "Gross volume 1 190 Liter",
+        "Storage volume : 180 Liter",
+        "EEREYSLER",
+        "CANSERVE LIt",
+        "Under lest eondiions, when tested in aceordance with rlevant standads",
+        "Achual electricty consumplon wil depend on how the applance is used"
+      ],
+      "timing": {
+        "commandAt": "2026-11-27T02:58:50.623375Z",
+        "speechToCommandMs": 983,
+        "commandToFrameMs": 1259,
+        "commandToSavedMs": 2375
+      },
+      "extraction_status": "done",
+      "extraction_error": null,
+      "fields": {
+        "make": {
+          "value": "LG",
+          "confidence": 0.972,
+          "source": "vision_model",
+          "evidence": "Brand : LG",
+          "features": {
+            "self": 0.95,
+            "ocr_agree": 1.0,
+            "format_ok": 1.0,
+            "legible": 1.0,
+            "qc_pass": 1.0
+          }
+        },
+        "model": {
+          "value": "GL-205KMG5",
+          "confidence": 0.488,
+          "source": "vision_model",
+          "evidence": "Model/Year : GL-205KMG5/2012",
+          "features": {
+            "self": 0.55,
+            "ocr_agree": 0.9,
+            "format_ok": 1.0,
+            "legible": 1.0,
+            "qc_pass": 1.0
+          }
+        },
+        "serial": {
+          "value": null,
+          "confidence": 0.0,
+          "source": "vision_model",
+          "evidence": null
+        },
+        "manufacture_date": {
+          "value": "2012",
+          "confidence": 0.378,
+          "source": "vision_model",
+          "evidence": "Model/Year : GL-205KMG5/2012",
+          "features": {
+            "self": 0.5,
+            "ocr_agree": 0.5,
+            "format_ok": 1.0,
+            "legible": 1.0,
+            "qc_pass": 1.0
+          },
+          "normalized": "2012"
+        },
+        "capacity": {
+          "value": "190 Liter",
+          "confidence": 0.957,
+          "source": "vision_model",
+          "evidence": "Gross volume : 190 Liter",
+          "features": {
+            "self": 0.9,
+            "ocr_agree": 0.5,
+            "format_ok": 0.0,
+            "legible": 1.0,
+            "qc_pass": 1.0
+          }
+        },
+        "fuel_or_power": {
+          "value": null,
+          "confidence": 0.0,
+          "source": "vision_model",
+          "evidence": null
+        },
+        "voltage": {
+          "value": null,
+          "confidence": 0.0,
+          "source": "vision_model",
+          "evidence": null
+        },
+        "equipment_type": {
+          "value": "refrigerator",
+          "confidence": 0.9,
+          "source": "vision_model"
+        }
+      },
+      "review_flags": [
+        "low_confidence:model",
+        "low_confidence:serial",
+        "low_confidence:manufacture_date"
+      ],
+      "replaces": null
+    },
+    {
+      "capture_id": "4626328e-8b2c-464a-863c-e1a033fa26bc",
+      "type": "nameplate",
+      "captured_at": "2026-11-27T02:59:26.610937Z",
+      "room": null,
+      "surface": null,
+      "command": {
+        "transcript": "Capture name",
+        "asr_confidence": 0.8,
+        "unparsed_slots": null
+      },
+      "evidence": {
+        "url": "4626328e-nameplate.jpg",
+        "stream_frame_url": "/files/jobs/77b09db1-eaee-4159-a6d6-b0e97abcc01f/4626328e-8b2c-464a-863c-e1a033fa26bc_stream.jpg",
+        "source": "glasses_photo",
+        "width": 480,
+        "height": 640,
+        "sha256": "203cca3029ff33445494f350683ed5a4292bc1f8c800fa5a5a3416cf8398d214",
+        "photo_latency_ms": 581,
+        "photo_error": null
+      },
+      "quality": {
+        "passed": true,
+        "issues": [],
+        "prompts": 0,
+        "override": false,
+        "sharpness": 1131.6771666860252,
+        "mean_luma": 150.41699652777777,
+        "thresholds_version": "measured-n112"
+      },
+      "ocr_text": [
+        "V-GUARD",
+        "MODEL",
+        "CAPACITY",
+        "WORKING RANGE",
+        "TIME DELAY",
+        "ELECTRONIC VOLTAGE STABILIZER",
+        "VE 400",
+        "12 AMPERE",
+        "90 VAC- 300 VAC 50Hz",
+        "5225",
+        "OUTPUT VOLTAGE 200 VAC- 250 VAC FROM L00 VAC - 300 VAG PI",
+        "CALIBRATION ACCURACY E253",
+        "ONE AIR CONDITIONER UP TO 15 TON",
+        "APPLICATION",
+        "V-GUARD INDUSTRIES LTD., KOCHI- 28, INDIA"
+      ],
+      "timing": {
+        "commandAt": "2026-11-27T02:59:26.611611Z",
+        "speechToCommandMs": 3313,
+        "commandToFrameMs": 1317,
+        "commandToSavedMs": 2116
+      },
+      "extraction_status": "done",
+      "extraction_error": null,
+      "fields": {
+        "make": {
+          "value": "V-GUARD",
+          "confidence": 0.972,
+          "source": "vision_model",
+          "evidence": "V-GUARD ELECTRONIC VOLTAGE STABILIZER",
+          "features": {
+            "self": 0.95,
+            "ocr_agree": 1.0,
+            "format_ok": 1.0,
+            "legible": 1.0,
+            "qc_pass": 1.0
+          }
+        },
+        "model": {
+          "value": "VE 400",
+          "confidence": 0.957,
+          "source": "vision_model",
+          "evidence": "MODEL VE 400",
+          "features": {
+            "self": 0.9,
+            "ocr_agree": 1.0,
+            "format_ok": 1.0,
+            "legible": 1.0,
+            "qc_pass": 1.0
+          }
+        },
+        "serial": {
+          "value": null,
+          "confidence": 0.0,
+          "source": "vision_model",
+          "evidence": null
+        },
+        "manufacture_date": {
+          "value": null,
+          "confidence": 0.0,
+          "source": "vision_model",
+          "evidence": null
+        },
+        "capacity": {
+          "value": "12 AMPERE",
+          "confidence": 0.964,
+          "source": "vision_model",
+          "evidence": "CAPACITY 12 AMPERE",
+          "features": {
+            "self": 0.92,
+            "ocr_agree": 0.5,
+            "format_ok": 0.0,
+            "legible": 1.0,
+            "qc_pass": 1.0
+          }
+        },
+        "fuel_or_power": {
+          "value": null,
+          "confidence": 0.0,
+          "source": "vision_model",
+          "evidence": null
+        },
+        "voltage": {
+          "value": "90 VAC - 300 VAC, 50Hz",
+          "confidence": 0.934,
+          "source": "vision_model",
+          "evidence": "WORKING RANGE 90 VAC - 300 VAC, 50Hz",
+          "features": {
+            "self": 0.85,
+            "ocr_agree": 0.5,
+            "format_ok": 0.0,
+            "legible": 1.0,
+            "qc_pass": 1.0
+          }
+        },
+        "equipment_type": {
+          "value": "other",
+          "confidence": 0.9,
+          "source": "vision_model"
+        }
+      },
+      "review_flags": [
+        "low_confidence:serial"
+      ],
+      "replaces": null
+    },
+    {
+      "capture_id": "312a4016-5baf-4b25-b3d0-0f46f25e813b",
+      "type": "damage",
+      "captured_at": "2026-11-27T03:00:07.606912Z",
+      "room": "kitchen",
+      "surface": "ceiling",
+      "command": {
+        "transcript": "Capture damage kitchen ceiling",
+        "asr_confidence": 0.8,
+        "unparsed_slots": "kitchen ceiling"
+      },
+      "evidence": {
+        "url": "312a4016-damage.jpg",
+        "stream_frame_url": "/files/jobs/77b09db1-eaee-4159-a6d6-b0e97abcc01f/312a4016-5baf-4b25-b3d0-0f46f25e813b_stream.jpg",
+        "source": "glasses_photo",
+        "width": 480,
+        "height": 640,
+        "sha256": "bbdaaf690f3f97c645c90104c763bbda261db345fa1dc4173dc397ee8cbce0b9",
+        "photo_latency_ms": 1169,
+        "photo_error": null
+      },
+      "quality": {
+        "passed": true,
+        "issues": [],
+        "prompts": 0,
+        "override": false,
+        "sharpness": 215.8234422465702,
+        "mean_luma": 100.98221064814815,
+        "thresholds_version": "measured-n112"
+      },
+      "ocr_text": [],
+      "timing": {
+        "commandAt": "2026-11-27T03:00:07.608049Z",
+        "speechToCommandMs": 2637,
+        "commandToFrameMs": 1,
+        "commandToSavedMs": 1282
+      },
+      "extraction_status": "done",
+      "extraction_error": null,
+      "fields": {
+        "room": {
+          "value": "kitchen",
+          "confidence": 0.8,
+          "source": "voice"
+        },
+        "surface": {
+          "value": "ceiling",
+          "confidence": 0.8,
+          "source": "voice"
+        },
+        "damage_type": {
+          "value": "crack",
+          "confidence": 0.6,
+          "source": "vision_model"
+        },
+        "material": {
+          "value": "concrete",
+          "confidence": 0.55,
+          "source": "vision_model"
+        },
+        "severity": {
+          "value": "severe",
+          "confidence": 0.55,
+          "source": "vision_model"
+        },
+        "size": {
+          "value": {
+            "width_in": 96.0,
+            "height_in": 60.0,
+            "area_sqft": 40.0
+          },
+          "confidence": 0.2,
+          "source": "model_estimate",
+          "alternatives": [
+            {
+              "method": "model_estimate",
+              "width_in": 96.0,
+              "height_in": 60.0,
+              "area_sqft": 40.0,
+              "confidence": 0.2
+            }
+          ]
+        },
+        "description": {
+          "value": "Concrete ceiling slab edge shows long cracks with spalling plaster along the ceiling-wall junction, plus extensive dark mold/moisture staining and cracking across the walls below.",
+          "confidence": 0.7,
+          "source": "vision_model"
+        }
+      },
+      "review_flags": [
+        "low_confidence:size"
+      ],
+      "replaces": null
+    },
+    {
+      "capture_id": "12440f98-707c-41a7-81e0-747f525ea6f7",
+      "type": "damage",
+      "captured_at": "2026-11-27T03:00:27.659509Z",
+      "room": "kitchen",
+      "surface": "window",
+      "command": {
+        "transcript": "Capture damage kitchen window",
+        "asr_confidence": 0.8,
+        "unparsed_slots": "kitchen window"
+      },
+      "evidence": {
+        "url": null,
+        "stream_frame_url": "/files/jobs/77b09db1-eaee-4159-a6d6-b0e97abcc01f/12440f98-707c-41a7-81e0-747f525ea6f7_stream.jpg",
+        "source": "glasses_photo",
+        "width": 480,
+        "height": 640,
+        "sha256": "9defd72143712ef4891e3c6a4e8823fd3643de0c6ccb901255158a47cf38b083",
+        "photo_latency_ms": 743,
+        "photo_error": null,
+        "withheld": "photo not published: view outside through the window"
+      },
+      "quality": {
+        "passed": true,
+        "issues": [],
+        "prompts": 0,
+        "override": false,
+        "sharpness": 2565.993096449776,
+        "mean_luma": 107.28721643518519,
+        "thresholds_version": "measured-n112"
+      },
+      "ocr_text": [],
+      "timing": {
+        "commandAt": "2026-11-27T03:00:27.661436Z",
+        "speechToCommandMs": 2115,
+        "commandToFrameMs": 0,
+        "commandToSavedMs": 806
+      },
+      "extraction_status": "done",
+      "extraction_error": null,
+      "fields": {
+        "room": {
+          "value": "kitchen",
+          "confidence": 0.8,
+          "source": "voice"
+        },
+        "surface": {
+          "value": "window",
+          "confidence": 0.8,
+          "source": "voice"
+        },
+        "damage_type": {
+          "value": "peeling_bubbling_paint",
+          "confidence": 0.5,
+          "source": "vision_model"
+        },
+        "material": {
+          "value": "paint",
+          "confidence": 0.5,
+          "source": "vision_model"
+        },
+        "severity": {
+          "value": "minor",
+          "confidence": 0.6,
+          "source": "vision_model"
+        },
+        "size": {
+          "value": {
+            "width_in": 28.0,
+            "height_in": 2.0,
+            "area_sqft": 0.39
+          },
+          "confidence": 0.2,
+          "source": "model_estimate",
+          "alternatives": [
+            {
+              "method": "model_estimate",
+              "width_in": 28.0,
+              "height_in": 2.0,
+              "area_sqft": 0.39,
+              "confidence": 0.2
+            }
+          ]
+        },
+        "description": {
+          "value": "Minor peeling/chipped paint and plaster along the wall above the kitchen window and weathered paint on the green window frame; no structural damage evident.",
+          "confidence": 0.7,
+          "source": "vision_model"
+        }
+      },
+      "review_flags": [
+        "low_confidence:damage_type",
+        "low_confidence:size"
+      ],
+      "replaces": null
+    },
+    {
+      "capture_id": "7aa8d1de-1228-4cf6-b818-06d1a097ff4c",
+      "type": "damage",
+      "captured_at": "2026-11-27T03:00:51.727813Z",
+      "room": "living room",
+      "surface": null,
+      "command": {
+        "transcript": "Capture damage living room AC",
+        "asr_confidence": 0.68,
+        "unparsed_slots": "living room ac"
+      },
+      "evidence": {
+        "url": "7aa8d1de-damage.jpg",
+        "stream_frame_url": "/files/jobs/77b09db1-eaee-4159-a6d6-b0e97abcc01f/7aa8d1de-1228-4cf6-b818-06d1a097ff4c_stream.jpg",
+        "source": "glasses_photo",
+        "width": 480,
+        "height": 640,
+        "sha256": "6c237ba95a64b756645272ad9b4cec10d2e2b44230d3b7d3bc52cfeb6f4c84ec",
+        "photo_latency_ms": 1077,
+        "photo_error": null
+      },
+      "quality": {
+        "passed": true,
+        "issues": [],
+        "prompts": 0,
+        "override": false,
+        "sharpness": 727.1355270405732,
+        "mean_luma": 54.410561342592594,
+        "thresholds_version": "measured-n112"
+      },
+      "ocr_text": [],
+      "timing": {
+        "commandAt": "2026-11-27T03:00:51.728633Z",
+        "speechToCommandMs": 2666,
+        "commandToFrameMs": 0,
+        "commandToSavedMs": 1127
+      },
+      "extraction_status": "done",
+      "extraction_error": null,
+      "fields": {
+        "room": {
+          "value": "living room",
+          "confidence": 0.68,
+          "source": "voice"
+        },
+        "surface": {
+          "value": "fixture",
+          "confidence": 0.56,
+          "source": "vision_model"
+        },
+        "damage_type": {
+          "value": "other",
+          "confidence": 0.55,
+          "source": "vision_model"
+        },
+        "material": {
+          "value": "other",
+          "confidence": 0.6,
+          "source": "vision_model"
+        },
+        "severity": {
+          "value": "moderate",
+          "confidence": 0.45,
+          "source": "vision_model"
+        },
+        "size": {
+          "value": {
+            "width_in": 8.0,
+            "height_in": 11.0,
+            "area_sqft": 0.61
+          },
+          "confidence": 0.25,
+          "source": "model_estimate",
+          "alternatives": [
+            {
+              "method": "reference_scaling",
+              "width_in": 5.4,
+              "height_in": 6.6,
+              "area_sqft": 0.25,
+              "references": [
+                "outlet_or_switch_plate"
+              ],
+              "confidence": 0.193
+            },
+            {
+              "method": "model_estimate",
+              "width_in": 8.0,
+              "height_in": 11.0,
+              "area_sqft": 0.61,
+              "confidence": 0.25
+            }
+          ]
+        },
+        "description": {
+          "value": "Through-wall AC unit with broken and missing air louvers on the right vent and taped front grille edges; poster on the wood-panel wall above is torn along its bottom edge.",
+          "confidence": 0.7,
+          "source": "vision_model"
+        }
+      },
+      "review_flags": [
+        "low_confidence:surface",
+        "low_confidence:damage_type",
+        "low_confidence:size"
+      ],
+      "replaces": null
+    }
+  ],
+  "notes": [
+    {
+      "note_id": "3f827bd4-799d-41cc-9ab0-521aba9c9797",
+      "recorded_at": "2026-11-27T03:00:16.610092Z",
+      "room": "kitchen",
+      "transcript": "Note crack along the kitchen ceiling about 1 m long",
+      "text": "crack along the kitchen ceiling about 1 m long",
+      "asr_confidence": 0.8,
+      "extraction_status": "done",
+      "fields": {
+        "room": {
+          "value": "kitchen",
+          "confidence": 0.8,
+          "source": "context"
+        },
+        "category": {
+          "value": "structural",
+          "confidence": 0.8,
+          "source": "language_model"
+        },
+        "component": {
+          "value": "ceiling",
+          "confidence": 0.9,
+          "source": "language_model"
+        },
+        "condition": {
+          "value": "cracked",
+          "confidence": 0.85,
+          "source": "language_model"
+        },
+        "location": {
+          "value": "kitchen",
+          "confidence": 0.9,
+          "source": "language_model"
+        },
+        "severity": {
+          "value": "unknown",
+          "confidence": 0.5,
+          "source": "language_model"
+        },
+        "measurement": {
+          "value": {
+            "value": 1.0,
+            "unit": "m"
+          },
+          "confidence": 0.9,
+          "source": "language_model"
+        },
+        "follow_up_needed": {
+          "value": true,
+          "confidence": 0.7,
+          "source": "language_model"
+        },
+        "summary": {
+          "value": "Crack along the kitchen ceiling, approximately 1 m long.",
+          "confidence": 0.7,
+          "source": "language_model"
+        }
+      },
+      "review_flags": []
+    },
+    {
+      "note_id": "2fec2afc-fb41-4549-8795-b04129cbb3c9",
+      "recorded_at": "2026-11-27T03:00:33.339816Z",
+      "room": "kitchen",
+      "transcript": "Note kitchen window is broken",
+      "text": "kitchen window is broken",
+      "asr_confidence": 0.8,
+      "extraction_status": "done",
+      "fields": {
+        "room": {
+          "value": "kitchen",
+          "confidence": 0.8,
+          "source": "context"
+        },
+        "category": {
+          "value": "damage_observation",
+          "confidence": 0.85,
+          "source": "language_model"
+        },
+        "component": {
+          "value": "window",
+          "confidence": 0.9,
+          "source": "language_model"
+        },
+        "condition": {
+          "value": "broken",
+          "confidence": 0.9,
+          "source": "language_model"
+        },
+        "location": {
+          "value": "kitchen",
+          "confidence": 0.9,
+          "source": "language_model"
+        },
+        "severity": {
+          "value": "unknown",
+          "confidence": 0.4,
+          "source": "language_model"
+        },
+        "measurement": {
+          "value": null,
+          "confidence": 0.0,
+          "source": "language_model"
+        },
+        "follow_up_needed": {
+          "value": true,
+          "confidence": 0.7,
+          "source": "language_model"
+        },
+        "summary": {
+          "value": "Kitchen window is broken.",
+          "confidence": 0.7,
+          "source": "language_model"
+        }
+      },
+      "review_flags": []
+    },
+    {
+      "note_id": "2104cb24-38c4-419b-8b69-9682655674d3",
+      "recorded_at": "2026-11-27T03:00:58.813698Z",
+      "room": "living room",
+      "transcript": "Note air conditioner in the living room is not working",
+      "text": "air conditioner in the living room is not working",
+      "asr_confidence": 0.8,
+      "extraction_status": "done",
+      "fields": {
+        "room": {
+          "value": "living room",
+          "confidence": 0.8,
+          "source": "context"
+        },
+        "category": {
+          "value": "equipment",
+          "confidence": 0.9,
+          "source": "language_model"
+        },
+        "component": {
+          "value": "air conditioner",
+          "confidence": 0.9,
+          "source": "language_model"
+        },
+        "condition": {
+          "value": "not working",
+          "confidence": 0.9,
+          "source": "language_model"
+        },
+        "location": {
+          "value": "living room",
+          "confidence": 0.95,
+          "source": "language_model"
+        },
+        "severity": {
+          "value": "unknown",
+          "confidence": 0.5,
+          "source": "language_model"
+        },
+        "measurement": {
+          "value": null,
+          "confidence": 0.0,
+          "source": "language_model"
+        },
+        "follow_up_needed": {
+          "value": true,
+          "confidence": 0.7,
+          "source": "language_model"
+        },
+        "summary": {
+          "value": "Air conditioner in the living room is not working.",
+          "confidence": 0.7,
+          "source": "language_model"
+        }
+      },
+      "review_flags": []
+    }
+  ],
+  "line_items": [
+    {
+      "line_id": "L01",
+      "code": "MST-MAP",
+      "description": "Moisture mapping and documentation, per room",
+      "unit": "EA",
+      "room": "kitchen",
+      "quantity": 1.0,
+      "needs_measurement": false,
+      "confidence": 0.45,
+      "basis": "water-related damage in room",
+      "assumption": false,
+      "evidence": [
+        "12440f98-707c-41a7-81e0-747f525ea6f7"
+      ],
+      "status": "draft"
+    },
+    {
+      "line_id": "L02",
+      "code": "PNT-SPR",
+      "description": "Surface prep (scrape loose paint, fill minor cracks), stain-block prime and paint, 2 coats",
+      "unit": "SF",
+      "room": "kitchen",
+      "quantity": 80.0,
+      "needs_measurement": true,
+      "confidence": 0.54,
+      "basis": "crack on concrete ceiling: repair in place and repaint; ceiling plus blend [size estimated from the photo at 0.20 confidence: measure]",
+      "assumption": false,
+      "evidence": [
+        "312a4016-5baf-4b25-b3d0-0f46f25e813b"
+      ],
+      "status": "draft"
+    }
+  ],
+  "review": {
+    "needs_review": true,
+    "flags": [
+      {
+        "item": "7a224e33-d229-4fc6-9167-62c5d3918dab",
+        "flag": "low_confidence:model"
+      },
+      {
+        "item": "7a224e33-d229-4fc6-9167-62c5d3918dab",
+        "flag": "low_confidence:serial"
+      },
+      {
+        "item": "7a224e33-d229-4fc6-9167-62c5d3918dab",
+        "flag": "low_confidence:manufacture_date"
+      },
+      {
+        "item": "4626328e-8b2c-464a-863c-e1a033fa26bc",
+        "flag": "low_confidence:serial"
+      },
+      {
+        "item": "312a4016-5baf-4b25-b3d0-0f46f25e813b",
+        "flag": "low_confidence:size"
+      },
+      {
+        "item": "12440f98-707c-41a7-81e0-747f525ea6f7",
+        "flag": "low_confidence:damage_type"
+      },
+      {
+        "item": "12440f98-707c-41a7-81e0-747f525ea6f7",
+        "flag": "low_confidence:size"
+      },
+      {
+        "item": "7aa8d1de-1228-4cf6-b818-06d1a097ff4c",
+        "flag": "low_confidence:surface"
+      },
+      {
+        "item": "7aa8d1de-1228-4cf6-b818-06d1a097ff4c",
+        "flag": "low_confidence:damage_type"
+      },
+      {
+        "item": "7aa8d1de-1228-4cf6-b818-06d1a097ff4c",
+        "flag": "low_confidence:size"
+      },
+      {
+        "item": "L02",
+        "flag": "needs_measurement:PNT-SPR"
+      }
+    ]
+  },
+  "processing": {
+    "models": [
+      "claude-haiku-5-5",
+      "claude-opus-5-5"
+    ],
+    "model_calls": 8,
+    "input_tokens": 15156,
+    "output_tokens": 3101,
+    "cost_usd": 0.09935,
+    "model_latency_ms_p50": 5155.5,
+    "capture_to_extracted_ms_p50": 8212.163,
+    "capture_to_extracted_ms_max": 9374.187,
+    "schema_valid": true
+  }
+}

@@ -1,0 +1,1011 @@
+{
+  "schema_version": "1.0",
+  "job_id": "69bb6343-95fc-4755-8d77-2cea2664fc7e",
+  "status": "complete",
+  "created_at": "2026-11-27T02:52:42.949984Z",
+  "ended_at": "2026-11-27T02:55:42.534668Z",
+  "device": {
+    "glasses": "Simulated Ray-Ban Meta #1",
+    "mock_device_kit": true,
+    "dat_sdk": "1.1.0",
+    "phone": "OPPO CPH2823",
+    "app_version": "0.1.0"
+  },
+  "session": {
+    "events": [
+      {
+        "at": "2026-11-27T02:52:43.046Z",
+        "type": "walk",
+        "detail": "started"
+      },
+      {
+        "at": "2026-11-27T02:52:43.053Z",
+        "type": "job",
+        "detail": "started 69bb6343-95fc-4755-8d77-2cea2664fc7e"
+      },
+      {
+        "at": "2026-11-27T02:52:43.107Z",
+        "type": "phase",
+        "detail": "WAITING_FOR_GLASSES -> CONNECTING (Connecting to the glasses.)"
+      },
+      {
+        "at": "2026-11-27T02:52:43.109Z",
+        "type": "session",
+        "detail": "created on 28130aa59e7cd38bc8d3622d89561f61"
+      },
+      {
+        "at": "2026-11-27T02:52:43.114Z",
+        "type": "session_state",
+        "detail": "IDLE"
+      },
+      {
+        "at": "2026-11-27T02:52:43.125Z",
+        "type": "session_state",
+        "detail": "STARTING"
+      },
+      {
+        "at": "2026-11-27T02:52:43.138Z",
+        "type": "session_state",
+        "detail": "STARTED"
+      },
+      {
+        "at": "2026-11-27T02:52:43.139Z",
+        "type": "stream_state",
+        "detail": "STOPPED"
+      },
+      {
+        "at": "2026-11-27T02:52:43.144Z",
+        "type": "stream_state",
+        "detail": "STARTING"
+      },
+      {
+        "at": "2026-11-27T02:52:43.151Z",
+        "type": "camera",
+        "detail": "attached: HIGH @ 15 fps, compressed=false"
+      },
+      {
+        "at": "2026-11-27T02:52:43.322Z",
+        "type": "upload",
+        "detail": "job job-69bb stored"
+      },
+      {
+        "at": "2026-11-27T02:52:44.593Z",
+        "type": "stream_state",
+        "detail": "STREAMING"
+      },
+      {
+        "at": "2026-11-27T02:52:44.593Z",
+        "type": "phase",
+        "detail": "CONNECTING -> ACTIVE"
+      },
+      {
+        "at": "2026-11-27T02:52:45.062Z",
+        "type": "first_frame",
+        "detail": "1852 ms after createSession; 480x640, 460800 bytes (tight 4:2:0 would be 460800)"
+      },
+      {
+        "at": "2026-11-27T02:53:31.319Z",
+        "type": "command",
+        "detail": "CaptureNameplate conf=0.80 [from partial] speech->command=2453ms"
+      },
+      {
+        "at": "2026-11-27T02:53:35.352Z",
+        "type": "retake_prompt",
+        "detail": "nameplate: Label is cut off. Step back a little. ([CUT_OFF])"
+      },
+      {
+        "at": "2026-11-27T02:53:39.414Z",
+        "type": "retake_prompt",
+        "detail": "nameplate: Label is cut off. Step back a little. ([CUT_OFF])"
+      },
+      {
+        "at": "2026-11-27T02:53:41.488Z",
+        "type": "capture",
+        "detail": "nameplate: kept least-bad frame (timeout)"
+      },
+      {
+        "at": "2026-11-27T02:53:43.548Z",
+        "type": "photo",
+        "detail": "480x640 from heic, 79462 B, 1778 ms"
+      },
+      {
+        "at": "2026-11-27T02:53:45.314Z",
+        "type": "capture",
+        "detail": "nameplate saved 03a149c8: source=stream_frame 480x640 prompts=2 override=true frame 9972 ms, saved 13576 ms"
+      },
+      {
+        "at": "2026-11-27T02:53:46.120Z",
+        "type": "upload",
+        "detail": "capture 03a149c8 stored"
+      },
+      {
+        "at": "2026-11-27T02:53:46.171Z",
+        "type": "upload",
+        "detail": "events events-6 stored"
+      },
+      {
+        "at": "2026-11-27T02:53:54.407Z",
+        "type": "command",
+        "detail": "CaptureDamage(room=null, surface=null, unparsed=plate) conf=0.56 speech->command=1261ms"
+      },
+      {
+        "at": "2026-11-27T02:53:55.607Z",
+        "type": "photo",
+        "detail": "480x640 from heic, 85746 B, 968 ms"
+      },
+      {
+        "at": "2026-11-27T02:53:55.827Z",
+        "type": "capture",
+        "detail": "damage saved fe228450: source=glasses_photo 480x640 prompts=0 override=false frame 86 ms, saved 1128 ms"
+      },
+      {
+        "at": "2026-11-27T02:53:56.557Z",
+        "type": "upload",
+        "detail": "capture fe228450 stored"
+      },
+      {
+        "at": "2026-11-27T02:53:56.856Z",
+        "type": "upload",
+        "detail": "events events-6 stored"
+      },
+      {
+        "at": "2026-11-27T02:54:12.350Z",
+        "type": "command",
+        "detail": "CaptureDamage(room=bathroom, surface=wall, unparsed=bathroom wall) conf=0.80 speech->command=2372ms"
+      },
+      {
+        "at": "2026-11-27T02:54:12.352Z",
+        "type": "room",
+        "detail": "bathroom"
+      },
+      {
+        "at": "2026-11-27T02:54:13.900Z",
+        "type": "photo",
+        "detail": "480x640 from heic, 122728 B, 1328 ms"
+      },
+      {
+        "at": "2026-11-27T02:54:14.227Z",
+        "type": "capture",
+        "detail": "damage saved 6fc87e15: source=glasses_photo 480x640 prompts=0 override=false frame 4 ms, saved 1508 ms"
+      },
+      {
+        "at": "2026-11-27T02:54:14.730Z",
+        "type": "upload",
+        "detail": "capture 6fc87e15 stored"
+      },
+      {
+        "at": "2026-11-27T02:54:14.832Z",
+        "type": "upload",
+        "detail": "events events-6 stored"
+      },
+      {
+        "at": "2026-11-27T02:54:24.353Z",
+        "type": "command",
+        "detail": "Note(text=c page on the bathroom wall about 1 m wide) conf=0.80 speech->command=3858ms"
+      },
+      {
+        "at": "2026-11-27T02:54:24.562Z",
+        "type": "upload",
+        "detail": "note a37789fa stored"
+      },
+      {
+        "at": "2026-11-27T02:54:24.701Z",
+        "type": "note",
+        "detail": "a37789fa \"c page on the bathroom wall about 1 m wide\" room=bathroom"
+      },
+      {
+        "at": "2026-11-27T02:54:51.815Z",
+        "type": "command",
+        "detail": "Note(text=plaster broken above the water heater about 25) conf=0.80 speech->command=5961ms"
+      },
+      {
+        "at": "2026-11-27T02:54:51.934Z",
+        "type": "note",
+        "detail": "ff73555a \"plaster broken above the water heater about 25\" room=bathroom"
+      },
+      {
+        "at": "2026-11-27T02:54:52.101Z",
+        "type": "upload",
+        "detail": "note ff73555a stored"
+      },
+      {
+        "at": "2026-11-27T02:55:08.453Z",
+        "type": "command",
+        "detail": "CaptureDamage(room=bathroom, surface=null, unparsed=bathroom ventilator) conf=0.68"
+      },
+      {
+        "at": "2026-11-27T02:55:09.561Z",
+        "type": "photo",
+        "detail": "480x640 from heic, 75990 B, 964 ms"
+      },
+      {
+        "at": "2026-11-27T02:55:09.811Z",
+        "type": "capture",
+        "detail": "damage saved 536050e8: source=glasses_photo 480x640 prompts=0 override=false frame 3 ms, saved 1114 ms"
+      },
+      {
+        "at": "2026-11-27T02:55:10.098Z",
+        "type": "upload",
+        "detail": "capture 536050e8 stored"
+      },
+      {
+        "at": "2026-11-27T02:55:10.212Z",
+        "type": "upload",
+        "detail": "events events-6 stored"
+      },
+      {
+        "at": "2026-11-27T02:55:17.469Z",
+        "type": "command",
+        "detail": "Note(text=bathroom ventilator is broken and needs replacing) conf=0.80 speech->command=3822ms"
+      },
+      {
+        "at": "2026-11-27T02:55:17.628Z",
+        "type": "note",
+        "detail": "0326d563 \"bathroom ventilator is broken and needs replacing\" room=bathroom"
+      },
+      {
+        "at": "2026-11-27T02:55:17.731Z",
+        "type": "upload",
+        "detail": "note 0326d563 stored"
+      },
+      {
+        "at": "2026-11-27T02:55:26.733Z",
+        "type": "command",
+        "detail": "EndJob conf=0.80 speech->command=5131ms"
+      },
+      {
+        "at": "2026-11-27T02:55:26.734Z",
+        "type": "command",
+        "detail": "end job: waiting for confirmation"
+      },
+      {
+        "at": "2026-11-27T02:55:38.514Z",
+        "type": "command",
+        "detail": "EndJob conf=0.80 speech->command=2776ms"
+      },
+      {
+        "at": "2026-11-27T02:55:38.536Z",
+        "type": "command",
+        "detail": "end job: waiting for confirmation"
+      },
+      {
+        "at": "2026-11-27T02:55:42.524Z",
+        "type": "command",
+        "detail": "EndJob conf=0.80 speech->command=828ms"
+      },
+      {
+        "at": "2026-11-27T02:55:42.525Z",
+        "type": "walk",
+        "detail": "end requested"
+      }
+    ],
+    "disconnects": 0,
+    "retake_prompts": 2
+  },
+  "rooms": [
+    {
+      "name": "unassigned",
+      "captures": [
+        "03a149c8-d043-48ee-b1ef-13d5c0e219ab",
+        "fe228450-a419-4b27-a55b-7ecb6d8c6c0b"
+      ],
+      "notes": []
+    },
+    {
+      "name": "bathroom",
+      "captures": [
+        "6fc87e15-5c3c-4077-ba2b-ed131687b1c1",
+        "536050e8-60ba-4db0-9fd6-add50c83596a"
+      ],
+      "notes": [
+        "a37789fa-2262-4e48-9936-390c07f433dc",
+        "ff73555a-0e65-496e-9870-9ece7db8c363",
+        "0326d563-3581-4ed9-b7f6-efcf88ad35ee"
+      ]
+    }
+  ],
+  "captures": [
+    {
+      "capture_id": "03a149c8-d043-48ee-b1ef-13d5c0e219ab",
+      "type": "nameplate",
+      "captured_at": "2026-11-27T02:53:45.086380Z",
+      "room": null,
+      "surface": null,
+      "command": {
+        "transcript": "Capture name",
+        "asr_confidence": 0.8,
+        "unparsed_slots": null
+      },
+      "evidence": {
+        "url": "03a149c8-nameplate.jpg",
+        "stream_frame_url": "/files/jobs/69bb6343-95fc-4755-8d77-2cea2664fc7e/03a149c8-d043-48ee-b1ef-13d5c0e219ab_stream.jpg",
+        "source": "stream_frame",
+        "width": 480,
+        "height": 640,
+        "sha256": "7f5e5ea019a2f978e1543d3d39223feb7e2c1746ff8266a42d1b42f502fb5dc3",
+        "photo_latency_ms": 1778,
+        "photo_error": "still rejected by QC: [CUT_OFF]"
+      },
+      "quality": {
+        "passed": false,
+        "issues": [
+          "CUT_OFF"
+        ],
+        "prompts": 2,
+        "override": true,
+        "sharpness": 1792.6723849904836,
+        "mean_luma": 133.18461226851852,
+        "thresholds_version": "measured-n112"
+      },
+      "ocr_text": [
+        "READ INSTRUCTION BEFORE INSTALLATION",
+        "4547, VEER NARIMAN ROAD, MUMBAI- 400 001.",
+        "Marketed by: Bajaj Electricals Limited",
+        "MADE IN CHINA",
+        "AJAJ Majesty",
+        "SERIAL NO. G155",
+        "INPUT 2.0Kw",
+        "STANDING LOSS1.138 kWh/24h/45°C Dif.",
+        "MAX WATER HEAD 80M RATED PRESSURE0.80Mpa",
+        "MODEL15GPU (150714) TYPE CLOSED CAPACITY 15 LITER",
+        "VOLTS 230V-50Hz CLASS1 IPX4",
+        "091605027",
+        "STATIONARY STORAGE TYPE ELECTRIC WATER HEATER",
+        "BAJAJ Majesty"
+      ],
+      "timing": {
+        "commandAt": "2026-11-27T02:53:45.092233Z",
+        "speechToCommandMs": 2453,
+        "commandToFrameMs": 9972,
+        "commandToSavedMs": 13576
+      },
+      "extraction_status": "done",
+      "extraction_error": null,
+      "fields": {
+        "make": {
+          "value": "Bajaj",
+          "confidence": 0.972,
+          "source": "vision_model",
+          "evidence": "BAJAJ Majesty / Marketed by: Bajaj Electricals Limited",
+          "features": {
+            "self": 0.95,
+            "ocr_agree": 1.0,
+            "format_ok": 1.0,
+            "legible": 0.5,
+            "qc_pass": 0.0
+          }
+        },
+        "model": {
+          "value": "15GPU (150T74)",
+          "confidence": 0.378,
+          "source": "vision_model",
+          "evidence": "MODEL 15GPU (150T74)",
+          "features": {
+            "self": 0.5,
+            "ocr_agree": 0.909,
+            "format_ok": 1.0,
+            "legible": 0.5,
+            "qc_pass": 0.0
+          }
+        },
+        "serial": {
+          "value": "G155 091605027",
+          "confidence": 0.279,
+          "source": "vision_model",
+          "evidence": "SERIAL NO. G155 [sticker] 091605027",
+          "features": {
+            "self": 0.45,
+            "ocr_agree": 0.692,
+            "format_ok": 1.0,
+            "legible": 0.5,
+            "qc_pass": 0.0
+          }
+        },
+        "manufacture_date": {
+          "value": null,
+          "confidence": 0.0,
+          "source": "vision_model",
+          "evidence": null
+        },
+        "capacity": {
+          "value": "15 LITER",
+          "confidence": 0.957,
+          "source": "vision_model",
+          "evidence": "CAPACITY 15 LITER",
+          "features": {
+            "self": 0.9,
+            "ocr_agree": 0.5,
+            "format_ok": 0.0,
+            "legible": 0.5,
+            "qc_pass": 0.0
+          }
+        },
+        "fuel_or_power": {
+          "value": "2.0KW",
+          "confidence": 0.949,
+          "source": "vision_model",
+          "evidence": "INPUT 2.0KW",
+          "features": {
+            "self": 0.88,
+            "ocr_agree": 0.5,
+            "format_ok": 0.0,
+            "legible": 0.5,
+            "qc_pass": 0.0
+          }
+        },
+        "voltage": {
+          "value": "230V~50Hz",
+          "confidence": 0.9,
+          "source": "vision_model",
+          "evidence": "VOLTS 230V~50Hz",
+          "features": {
+            "self": 0.8,
+            "ocr_agree": 0.5,
+            "format_ok": 0.0,
+            "legible": 0.5,
+            "qc_pass": 0.0
+          }
+        },
+        "equipment_type": {
+          "value": "water_heater",
+          "confidence": 0.9,
+          "source": "vision_model"
+        }
+      },
+      "review_flags": [
+        "low_confidence:model",
+        "low_confidence:serial",
+        "quality_override:CUT_OFF"
+      ],
+      "replaces": null
+    },
+    {
+      "capture_id": "fe228450-a419-4b27-a55b-7ecb6d8c6c0b",
+      "type": "damage",
+      "captured_at": "2026-11-27T02:53:55.640752Z",
+      "room": null,
+      "surface": null,
+      "command": {
+        "transcript": "Capturing plate",
+        "asr_confidence": 0.5599999999999999,
+        "unparsed_slots": "plate"
+      },
+      "evidence": {
+        "url": "fe228450-damage.jpg",
+        "stream_frame_url": "/files/jobs/69bb6343-95fc-4755-8d77-2cea2664fc7e/fe228450-a419-4b27-a55b-7ecb6d8c6c0b_stream.jpg",
+        "source": "glasses_photo",
+        "width": 480,
+        "height": 640,
+        "sha256": "fdfacd59eba9f1c411dbaa67e1829e259ad780ca9907421ccaf44817fafd74f2",
+        "photo_latency_ms": 968,
+        "photo_error": null
+      },
+      "quality": {
+        "passed": true,
+        "issues": [],
+        "prompts": 0,
+        "override": false,
+        "sharpness": 1459.924115018949,
+        "mean_luma": 120.32019097222222,
+        "thresholds_version": "measured-n112"
+      },
+      "ocr_text": [],
+      "timing": {
+        "commandAt": "2026-11-27T02:53:55.644731Z",
+        "speechToCommandMs": 1261,
+        "commandToFrameMs": 86,
+        "commandToSavedMs": 1128
+      },
+      "extraction_status": "done",
+      "extraction_error": null,
+      "fields": {
+        "room": {
+          "value": null,
+          "confidence": 0.0,
+          "source": "voice"
+        },
+        "surface": {
+          "value": "fixture",
+          "confidence": 0.64,
+          "source": "vision_model"
+        },
+        "damage_type": {
+          "value": "none",
+          "confidence": 0.375,
+          "source": "vision_model"
+        },
+        "material": {
+          "value": "other",
+          "confidence": 0.3,
+          "source": "vision_model"
+        },
+        "severity": {
+          "value": "minor",
+          "confidence": 0.25,
+          "source": "vision_model"
+        },
+        "size": {
+          "value": null,
+          "confidence": 0.0,
+          "source": null,
+          "alternatives": []
+        },
+        "description": {
+          "value": "Close-up of a Bajaj Majesty 15L electric water heater rating label (model 15GPU, 2.0kW, 230V, serial G155 / 091605027); only light surface dirt is visible and no building damage is shown.",
+          "confidence": 0.7,
+          "source": "vision_model"
+        }
+      },
+      "review_flags": [
+        "low_confidence:damage_type",
+        "low_confidence:size",
+        "room_missing"
+      ],
+      "replaces": null
+    },
+    {
+      "capture_id": "6fc87e15-5c3c-4077-ba2b-ed131687b1c1",
+      "type": "damage",
+      "captured_at": "2026-11-27T02:54:13.979852Z",
+      "room": "bathroom",
+      "surface": "wall",
+      "command": {
+        "transcript": "Capture the damaged bathroom wall",
+        "asr_confidence": 0.8,
+        "unparsed_slots": "bathroom wall"
+      },
+      "evidence": {
+        "url": "6fc87e15-damage.jpg",
+        "stream_frame_url": "/files/jobs/69bb6343-95fc-4755-8d77-2cea2664fc7e/6fc87e15-5c3c-4077-ba2b-ed131687b1c1_stream.jpg",
+        "source": "glasses_photo",
+        "width": 480,
+        "height": 640,
+        "sha256": "a5a16f6ce478de92915232e0d8625a1bf3d8ef63d93d1583246b89567acbea94",
+        "photo_latency_ms": 1328,
+        "photo_error": null
+      },
+      "quality": {
+        "passed": true,
+        "issues": [],
+        "prompts": 0,
+        "override": false,
+        "sharpness": 430.17805419076353,
+        "mean_luma": 119.67498263888889,
+        "thresholds_version": "measured-n112"
+      },
+      "ocr_text": [],
+      "timing": {
+        "commandAt": "2026-11-27T02:54:14.019539Z",
+        "speechToCommandMs": 2372,
+        "commandToFrameMs": 4,
+        "commandToSavedMs": 1508
+      },
+      "extraction_status": "done",
+      "extraction_error": null,
+      "fields": {
+        "room": {
+          "value": "bathroom",
+          "confidence": 0.8,
+          "source": "voice"
+        },
+        "surface": {
+          "value": "wall",
+          "confidence": 0.8,
+          "source": "voice"
+        },
+        "damage_type": {
+          "value": "peeling_bubbling_paint",
+          "confidence": 0.8,
+          "source": "vision_model"
+        },
+        "material": {
+          "value": "plaster",
+          "confidence": 0.55,
+          "source": "vision_model"
+        },
+        "severity": {
+          "value": "severe",
+          "confidence": 0.6,
+          "source": "vision_model"
+        },
+        "size": {
+          "value": {
+            "width_in": 60.0,
+            "height_in": 60.0,
+            "area_sqft": 25.0
+          },
+          "confidence": 0.2,
+          "source": "model_estimate",
+          "alternatives": [
+            {
+              "method": "model_estimate",
+              "width_in": 60.0,
+              "height_in": 60.0,
+              "area_sqft": 25.0,
+              "confidence": 0.2
+            }
+          ]
+        },
+        "description": {
+          "value": "Extensive peeling and flaking blue paint over most of a plaster/masonry bathroom wall with hairline cracking and exposed substrate, consistent with long-term moisture exposure.",
+          "confidence": 0.7,
+          "source": "vision_model"
+        }
+      },
+      "review_flags": [
+        "low_confidence:size"
+      ],
+      "replaces": null
+    },
+    {
+      "capture_id": "536050e8-60ba-4db0-9fd6-add50c83596a",
+      "type": "damage",
+      "captured_at": "2026-11-27T02:55:09.623939Z",
+      "room": "bathroom",
+      "surface": null,
+      "command": {
+        "transcript": "Capture damage bathroom ventilator",
+        "asr_confidence": 0.68,
+        "unparsed_slots": "bathroom ventilator"
+      },
+      "evidence": {
+        "url": "536050e8-damage.jpg",
+        "stream_frame_url": "/files/jobs/69bb6343-95fc-4755-8d77-2cea2664fc7e/536050e8-60ba-4db0-9fd6-add50c83596a_stream.jpg",
+        "source": "glasses_photo",
+        "width": 480,
+        "height": 640,
+        "sha256": "197d19543743e1814c4765df9fec61b629118533c5ea2ae6248068bef7eab44a",
+        "photo_latency_ms": 964,
+        "photo_error": null
+      },
+      "quality": {
+        "passed": true,
+        "issues": [],
+        "prompts": 0,
+        "override": false,
+        "sharpness": 197.13571235237671,
+        "mean_luma": 116.98621527777777,
+        "thresholds_version": "measured-n112"
+      },
+      "ocr_text": [],
+      "timing": {
+        "commandAt": "2026-11-27T02:55:09.628892Z",
+        "speechToCommandMs": null,
+        "commandToFrameMs": 3,
+        "commandToSavedMs": 1114
+      },
+      "extraction_status": "done",
+      "extraction_error": null,
+      "fields": {
+        "room": {
+          "value": "bathroom",
+          "confidence": 0.68,
+          "source": "voice"
+        },
+        "surface": {
+          "value": "wall",
+          "confidence": 0.68,
+          "source": "vision_model"
+        },
+        "damage_type": {
+          "value": "peeling_bubbling_paint",
+          "confidence": 0.7,
+          "source": "vision_model"
+        },
+        "material": {
+          "value": "plaster",
+          "confidence": 0.6,
+          "source": "vision_model"
+        },
+        "severity": {
+          "value": "severe",
+          "confidence": 0.6,
+          "source": "vision_model"
+        },
+        "size": {
+          "value": {
+            "width_in": 96.0,
+            "height_in": 96.0,
+            "area_sqft": 64.0
+          },
+          "confidence": 0.2,
+          "source": "model_estimate",
+          "alternatives": [
+            {
+              "method": "model_estimate",
+              "width_in": 96.0,
+              "height_in": 96.0,
+              "area_sqft": 64.0,
+              "confidence": 0.2
+            }
+          ]
+        },
+        "description": {
+          "value": "Widespread peeling blue paint over plaster on bathroom walls with ceiling cracks, dark vertical streaking below a small window suggesting water runoff, and deteriorated window recess.",
+          "confidence": 0.7,
+          "source": "vision_model"
+        }
+      },
+      "review_flags": [
+        "low_confidence:size"
+      ],
+      "replaces": null
+    }
+  ],
+  "notes": [
+    {
+      "note_id": "a37789fa-2262-4e48-9936-390c07f433dc",
+      "recorded_at": "2026-11-27T02:54:24.373107Z",
+      "room": "bathroom",
+      "transcript": "Note C page on the bathroom wall about 1 m wide",
+      "text": "c page on the bathroom wall about 1 m wide",
+      "asr_confidence": 0.8,
+      "extraction_status": "done",
+      "fields": {
+        "room": {
+          "value": "bathroom",
+          "confidence": 0.8,
+          "source": "context"
+        },
+        "category": {
+          "value": "damage_observation",
+          "confidence": 0.5,
+          "source": "language_model"
+        },
+        "component": {
+          "value": "wall",
+          "confidence": 0.6,
+          "source": "language_model"
+        },
+        "condition": {
+          "value": null,
+          "confidence": 0.0,
+          "source": "language_model"
+        },
+        "location": {
+          "value": "bathroom wall",
+          "confidence": 0.7,
+          "source": "language_model"
+        },
+        "severity": {
+          "value": "unknown",
+          "confidence": 0.4,
+          "source": "language_model"
+        },
+        "measurement": {
+          "value": {
+            "value": 1.0,
+            "unit": "m"
+          },
+          "confidence": 0.6,
+          "source": "language_model"
+        },
+        "follow_up_needed": {
+          "value": true,
+          "confidence": 0.7,
+          "source": "language_model"
+        },
+        "summary": {
+          "value": "Possible damage on bathroom wall, about 1 m wide; 'c page' likely a transcription error, exact damage type unclear.",
+          "confidence": 0.7,
+          "source": "language_model"
+        }
+      },
+      "review_flags": [
+        "low_confidence:category"
+      ]
+    },
+    {
+      "note_id": "ff73555a-0e65-496e-9870-9ece7db8c363",
+      "recorded_at": "2026-11-27T02:54:51.816238Z",
+      "room": "bathroom",
+      "transcript": "Note plaster broken above the water heater about 25",
+      "text": "plaster broken above the water heater about 25",
+      "asr_confidence": 0.8,
+      "extraction_status": "done",
+      "fields": {
+        "room": {
+          "value": "bathroom",
+          "confidence": 0.8,
+          "source": "context"
+        },
+        "category": {
+          "value": "damage_observation",
+          "confidence": 0.8,
+          "source": "language_model"
+        },
+        "component": {
+          "value": "plaster",
+          "confidence": 0.85,
+          "source": "language_model"
+        },
+        "condition": {
+          "value": "broken",
+          "confidence": 0.85,
+          "source": "language_model"
+        },
+        "location": {
+          "value": "above the water heater",
+          "confidence": 0.8,
+          "source": "language_model"
+        },
+        "severity": {
+          "value": "unknown",
+          "confidence": 0.5,
+          "source": "language_model"
+        },
+        "measurement": {
+          "value": {
+            "value": 25.0,
+            "unit": null
+          },
+          "confidence": 0.4,
+          "source": "language_model"
+        },
+        "follow_up_needed": {
+          "value": false,
+          "confidence": 0.7,
+          "source": "language_model"
+        },
+        "summary": {
+          "value": "Plaster broken above the water heater in the bathroom, about 25 (unit not stated).",
+          "confidence": 0.7,
+          "source": "language_model"
+        }
+      },
+      "review_flags": []
+    },
+    {
+      "note_id": "0326d563-3581-4ed9-b7f6-efcf88ad35ee",
+      "recorded_at": "2026-11-27T02:55:17.470623Z",
+      "room": "bathroom",
+      "transcript": "Note bathroom ventilator is broken and needs replacing",
+      "text": "bathroom ventilator is broken and needs replacing",
+      "asr_confidence": 0.8,
+      "extraction_status": "done",
+      "fields": {
+        "room": {
+          "value": "bathroom",
+          "confidence": 0.8,
+          "source": "context"
+        },
+        "category": {
+          "value": "equipment",
+          "confidence": 0.8,
+          "source": "language_model"
+        },
+        "component": {
+          "value": "bathroom exhaust fan",
+          "confidence": 0.6,
+          "source": "language_model"
+        },
+        "condition": {
+          "value": "broken",
+          "confidence": 0.85,
+          "source": "language_model"
+        },
+        "location": {
+          "value": "bathroom",
+          "confidence": 0.9,
+          "source": "language_model"
+        },
+        "severity": {
+          "value": "medium",
+          "confidence": 0.5,
+          "source": "language_model"
+        },
+        "measurement": {
+          "value": null,
+          "confidence": 0.0,
+          "source": "language_model"
+        },
+        "follow_up_needed": {
+          "value": true,
+          "confidence": 0.7,
+          "source": "language_model"
+        },
+        "summary": {
+          "value": "Bathroom ventilator is broken and needs replacement.",
+          "confidence": 0.7,
+          "source": "language_model"
+        }
+      },
+      "review_flags": []
+    }
+  ],
+  "line_items": [
+    {
+      "line_id": "L01",
+      "code": "MST-MAP",
+      "description": "Moisture mapping and documentation, per room",
+      "unit": "EA",
+      "room": "bathroom",
+      "quantity": 1.0,
+      "needs_measurement": false,
+      "confidence": 0.72,
+      "basis": "water-related damage in room",
+      "assumption": false,
+      "evidence": [
+        "536050e8-60ba-4db0-9fd6-add50c83596a",
+        "6fc87e15-5c3c-4077-ba2b-ed131687b1c1"
+      ],
+      "status": "draft"
+    },
+    {
+      "line_id": "L02",
+      "code": "PNT-SPR",
+      "description": "Surface prep (scrape loose paint, fill minor cracks), stain-block prime and paint, 2 coats",
+      "unit": "SF",
+      "room": "bathroom",
+      "quantity": 178.0,
+      "needs_measurement": true,
+      "confidence": 0.612,
+      "basis": "peeling_bubbling_paint on plaster wall: finish damage, substrate assumed sound and dry (verify with a moisture reading); wall plus blend [size estimated from the photo at 0.20 confidence: measure]",
+      "assumption": false,
+      "evidence": [
+        "536050e8-60ba-4db0-9fd6-add50c83596a",
+        "6fc87e15-5c3c-4077-ba2b-ed131687b1c1"
+      ],
+      "status": "draft"
+    }
+  ],
+  "review": {
+    "needs_review": true,
+    "flags": [
+      {
+        "item": "03a149c8-d043-48ee-b1ef-13d5c0e219ab",
+        "flag": "low_confidence:model"
+      },
+      {
+        "item": "03a149c8-d043-48ee-b1ef-13d5c0e219ab",
+        "flag": "low_confidence:serial"
+      },
+      {
+        "item": "03a149c8-d043-48ee-b1ef-13d5c0e219ab",
+        "flag": "quality_override:CUT_OFF"
+      },
+      {
+        "item": "fe228450-a419-4b27-a55b-7ecb6d8c6c0b",
+        "flag": "low_confidence:damage_type"
+      },
+      {
+        "item": "fe228450-a419-4b27-a55b-7ecb6d8c6c0b",
+        "flag": "low_confidence:size"
+      },
+      {
+        "item": "fe228450-a419-4b27-a55b-7ecb6d8c6c0b",
+        "flag": "room_missing"
+      },
+      {
+        "item": "6fc87e15-5c3c-4077-ba2b-ed131687b1c1",
+        "flag": "low_confidence:size"
+      },
+      {
+        "item": "a37789fa-2262-4e48-9936-390c07f433dc",
+        "flag": "low_confidence:category"
+      },
+      {
+        "item": "536050e8-60ba-4db0-9fd6-add50c83596a",
+        "flag": "low_confidence:size"
+      },
+      {
+        "item": "L02",
+        "flag": "needs_measurement:PNT-SPR"
+      }
+    ]
+  },
+  "processing": {
+    "models": [
+      "claude-haiku-5-5",
+      "claude-opus-5-5"
+    ],
+    "model_calls": 7,
+    "input_tokens": 13338,
+    "output_tokens": 1965,
+    "cost_usd": 0.06828,
+    "model_latency_ms_p50": 3796,
+    "capture_to_extracted_ms_p50": 5165.1044999999995,
+    "capture_to_extracted_ms_max": 9126.62,
+    "schema_valid": true
+  }
+}

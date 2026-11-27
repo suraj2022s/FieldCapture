@@ -468,5 +468,5 @@ If time is short, the cut order is: pocket mode → DAT Speech path → serial d
 - [ ] Demo video ≤ 5 min, from tagged build `demo-v1`, including caught failure + recovery
 - [ ] `eval/REPORT.md`: test set, per-field accuracy, five worst failures with causes, QC thresholds and how they were chosen
 - [ ] `docs/MEMO.md` (1 page): glasses can / can't for field estimation; SDK findings beyond the docs; first hardware change, backed by our data
-- [ ] `samples/`: 3 JSON job records from real walk-throughs
+- [x] `samples/`: 3 JSON job records from real walk-throughs (2026-11-27, over Wi-Fi with no cable; `tools/export_samples.py`)
 - [ ] Receipts for any API or parts spend (≤ $50)
