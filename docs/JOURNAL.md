@@ -1128,3 +1128,13 @@ The back office now runs on a fresh data folder (`backend/data/sample-walks`, gi
 - **Privacy:** the kitchen-window shot shows trees through the grille. That breaks the user's "no views through windows" rule, though the risk is low (leaves only). The user decides whether to blur it in YouTube Studio. The photo is not in the repo; `samples/` holds only the three sample walks.
 - README links the video; PLAN ticked.
 - **User's decision (10:50 IST):** keep the demo video as uploaded, including the kitchen-window view (trees only, no buildings, signs or people). Not blurred.
+
+## 2026-11-27 11:00 IST: the repo is public
+
+- **The user's choice:** public, as it is. They were told every commit's author details carry their personal Gmail address; offered collaborators-only or rewriting the author email first, they chose neither.
+- **Re-scanned the whole history first:** no API key, no access code, no phone digits, no location names, no private files; `main` equal to `origin/main`.
+- `gh repo edit --visibility public`. Checked without logging in: repo page, `demo-v1` release, APK download and raw README all return 200.
+- **Still to do after the review:**
+  - Remove the Windows Firewall rule "FieldCapture back office (TCP 8002, local subnet)". Keep it if the live session needs the phone on Wi-Fi.
+  - Stop the :8002 back office.
+  - The receipts (invoice PDFs) go privately with the submission email.

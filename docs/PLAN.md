@@ -437,11 +437,11 @@ The brief arrived 2026-11-24 and is **due 2026-11-27**.
   - [x] Re-run the 8 instrumented MDK tests on the phone after that audit: 8/8 pass (24 s)
   - [x] Bug scan 2026-11-26: UI driver over every button and voice command, Android lint, Schemathesis API fuzz, Maestro flows (5/5), Toxiproxy bad-signal runs (`eval/chaos/toxiproxy-*`), fast taps, screen off for 2 min, 30-capture memory soak. 7 bugs fixed (JOURNAL 14:53–16:35); 8/8 instrumented tests after.
 - [x] **M8 — Real walk-throughs** (~1.5 h): 3 sample job records; demo video from tag `demo-v1` (4:48: https://www.youtube.com/watch?v=JIp_C6zVdfw)
-- [ ] **M9 — Docs and submission** (~1.5 h)
+- [x] **M9 — Docs and submission** (~1.5 h)
   - [x] Phone screen for a tech: plain-word status, live view, one Pause/Resume, End job not highlighted, developer tools folded (2026-11-26)
   - [x] README (setup < 10 min, diagram, two more weeks, tools used, limitations)
   - [x] `eval/REPORT.md`; `docs/MEMO.md`; APK in Releases (APK: attached to the demo-v1 release)
-  - [ ] Make the repo public or add the reviewers
+  - [x] Make the repo public or add the reviewers
 
 If time is short, the cut order is: pocket mode → DAT Speech path → serial date decoding → voice-command noise test. The core is never cut.
 
