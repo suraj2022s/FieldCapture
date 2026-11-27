@@ -1138,3 +1138,11 @@ The back office now runs on a fresh data folder (`backend/data/sample-walks`, gi
   - Remove the Windows Firewall rule "FieldCapture back office (TCP 8002, local subnet)". Keep it if the live session needs the phone on Wi-Fi.
   - Stop the :8002 back office.
   - The receipts (invoice PDFs) go privately with the submission email.
+
+## 2026-11-27 11:20 IST: receipts corrected from the actual invoices
+
+- **The user's two Anthropic documents replace the earlier round figures:**
+  - API credits: **$29.50 paid** ($25.00 credit + $4.50 GST at 18%), receipt 2215-1694-8412.
+  - Claude Pro (2026-11-24 to 12-24): invoice ST4QOD1L-0010, ₹2,160.12 including tax, of which **₹1,921.24** was charged after an account balance. It's an invoice, not a payment receipt: the user should add the paid receipt or a card statement line.
+- `docs/RECEIPTS.md` and the README updated, amounts only. **The PDFs are not committed**: the API receipt carries the home address, which must stay out of the public repo. They go privately with the submission email.
+- With Pro converted, the total may slightly exceed $50; the brief repays up to $50. The API part alone ($29.50) is under the cap.

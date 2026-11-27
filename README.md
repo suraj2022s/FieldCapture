@@ -171,7 +171,7 @@ flowchart LR
 - **Notes:** Claude Haiku 5.5, $0.0002 per note.
 - **A typical job** (3 plates, 6 damage photos, 6 notes): about **$0.19**.
 - **To halve it:** Sonnet 5.5 costs 42% of Opus per photo and is faster (p50 2.9 s), but reads 16 fewer of the 280 printed plate fields. We kept accuracy.
-- **Spend while building:** $6.06 of API usage (counted by [`tools/api_spend.py`](tools/api_spend.py)), within $45 paid in total. See [docs/RECEIPTS.md](docs/RECEIPTS.md).
+- **Spend while building:** $6.06 of API usage (counted by [`tools/api_spend.py`](tools/api_spend.py)), out of $29.50 of API credit bought (incl. GST). The Claude Pro subscription for the coding tool is listed separately. See [docs/RECEIPTS.md](docs/RECEIPTS.md).
 
 ## What doesn't work (known limitations)
 

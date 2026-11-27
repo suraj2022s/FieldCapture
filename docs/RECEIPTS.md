@@ -1,13 +1,14 @@
 # Spend and receipts
 
-Budget in the brief: **$50** for APIs or parts. The receipts themselves (invoices with name and card details) are sent privately with the submission, not committed here.
+Budget in the brief: **$50** for APIs or parts. The receipts themselves are sent privately with the submission, not committed here: they carry the name, billing address and card details.
 
 | Item | Paid | Receipt | Notes |
 |---|---|---|---|
-| Anthropic API credits | $25.00 | Anthropic console invoice (sent privately) | Prepaid. Measured usage below: **$6.06** so far, the rest unspent. |
-| Claude Pro subscription | $20.00 | Anthropic invoice (sent privately) | The AI coding tool used to build this (Claude Code). Listed for transparency; the brief only promises to repay APIs and parts, so this one is at the reviewers' discretion. |
+| Anthropic API credits | **$29.50**: $25.00 credit + $4.50 GST (18%), paid 2026-11-25 | Anthropic receipt 2215-1694-8412 (tax invoice WL9G2ERU-0002), sent privately | Prepaid. Measured usage below: **$6.06** so far, the rest unspent. |
+| Claude Pro subscription, 2026-11-24 to 12-24 | **₹1,921.24** charged: ₹2,033.05 + ₹127.07 tax = ₹2,160.12, less a ₹238.88 account balance | Anthropic invoice ST4QOD1L-0010, sent privately | The AI coding tool used to build this (Claude Code). Listed for transparency; the brief only promises to repay APIs and parts, so this one is at the reviewers' discretion. |
 | Parts | $0 | none | Nothing bought: the ruler, torch and phone were already at home. |
-| **Total paid** | **$45.00** | | Under the $50 cap. |
+
+The API spend, the part the brief covers, is $29.50, under the $50 cap. With the Pro subscription converted at the card's rate, the total may come slightly over $50; the brief repays up to $50.
 
 ## API usage, measured
 
