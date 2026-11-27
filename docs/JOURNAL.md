@@ -1127,3 +1127,4 @@ The back office now runs on a fresh data folder (`backend/data/sample-walks`, gi
   - **Caught failure 2:** glasses powered off mid-walk; a note was taken while they were off; reconnected.
 - **Privacy:** the kitchen-window shot shows trees through the grille. That breaks the user's "no views through windows" rule, though the risk is low (leaves only). The user decides whether to blur it in YouTube Studio. The photo is not in the repo; `samples/` holds only the three sample walks.
 - README links the video; PLAN ticked.
+- **User's decision (10:50 IST):** keep the demo video as uploaded, including the kitchen-window view (trees only, no buildings, signs or people). Not blurred.
