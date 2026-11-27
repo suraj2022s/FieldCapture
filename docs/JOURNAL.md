@@ -1008,3 +1008,25 @@ The back office now runs on a fresh data folder (`backend/data/sample-walks`, gi
   - Sizes are always "measure".
   - Walk 1 has no notes; walks 2 and 3 have 3 each.
   - Walk 2 contains the "Capturing plate" misfile (since fixed in the parser).
+
+## 2026-11-27 05:00 IST: memo, report provenance, receipts, README
+
+- **`docs/MEMO.md` (one page).**
+  - What the glasses can and can't do, from our numbers.
+  - SDK behaviour the docs leave out (measured).
+  - The first hardware change: **a work light switched by the gate.** Evidence from new `eval/torch_pairs.py`: on the same 8 plates shot dark and then torch-lit, gate pass went 22% → 79% and usable frames 44% → 85%. What Opus reads didn't change (42% → 40%), and the memo says so.
+  - Second change: a single-zone ToF rangefinder for scale.
+- **REPORT.**
+  - New §3a: plates by capture condition.
+  - New "who made which labels" paragraph. Plate truth: Claude-drafted, user-checked against the items. Sizes: the user's ruler, after seeing Claude's guesses. Damage type, material and surface: Claude's drafts, **not confirmed**. Conditions and frame labels: Claude, by eye.
+- **Receipts.**
+  - The user paid $25 for API credits and $20 for Claude Pro (the coding tool). Measured API usage is **$6.06** (new `tools/api_spend.py`: 729 cached calls). The 11-26 rehearsal isn't counted; its cache wasn't kept.
+  - `docs/RECEIPTS.md` lists both purchases. Claude Pro is marked as reimbursable at the reviewers' discretion, since the brief promises only APIs and parts. Invoices with personal details go privately with the submission, not in the repo.
+- **README rewritten** for submission:
+  - results at a glance;
+  - Wi-Fi setup with the access code and the office web page;
+  - model choice with numbers, and how cost could be halved (Sonnet, at the price of 16 fewer plate fields read);
+  - tried-and-rejected ideas;
+  - a fuller "what doesn't work";
+  - an updated two-more-weeks plan.
+- CLAUDE.md gains the new commands (Wi-Fi back office, sample export, spend, confidence). PLAN ticked.

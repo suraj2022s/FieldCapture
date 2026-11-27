@@ -53,6 +53,17 @@ def section_testset(rows, qc) -> str:
     lines += [f"| {p} | {cond} | {n} |" for (p, cond), n in sorted(by.items())]
     lines += ["", "Split: by scene (`common.split_of`). The quality thresholds (§2) are fitted on **tune** scenes and checked on held-out **test** scenes. "
               "Extraction (§3–5, §8) fits nothing on these labels, so it is reported on **all** scenes; confidence calibration uses leave-one-scene-out.", ""]
+    lines += [
+        "**Who made which labels** (all frames are our own captures, filmed by the user in a home we have permission to film):",
+        "",
+        "- *Nameplate ground truth*: drafted by Claude from the sharpest frames, then checked and corrected by the user against each physical item. "
+        "`?` marks a brand that is not printed but can be inferred (not scored); `not_in_view` records facts the frames don't show.",
+        "- *Damage sizes*: the user's ruler measurements. The user had seen Claude's by-eye guesses (`labels/claude_size_guesses.json`) before measuring.",
+        "- *Damage type, material and surface*: drafted by Claude from the frames, **not confirmed by the user**. Three of the five worst failures (§5) are about these labels.",
+        "- *Scenes, capture conditions and frame labels* (usable / blurry / dark …): drafted by Claude by looking at each frame, reviewable in `eval/label_app.py`.",
+        "- *Left out for privacy*: 11 captures (a phone label with IMEIs, the electricity meter, a TV showing a person, a laptop screen, a leg, a framed photo); reasons in `labels/captures.json`.",
+        "",
+    ]
     return "\n".join(lines)
 
 
@@ -79,6 +90,30 @@ Operating point: {qc['operating_point']}. Metrics are the phone's own numbers fo
 
 Median metrics by label: {json.dumps(qc['medians_by_label'])}
 """
+
+
+def section_conditions(rows, deployed) -> str:
+    """Nameplates by capture condition: how often a frame is readable, and how often the deployed model reads
+    the printed fields exactly. The low_light vs low_light_with_torch pair is the evidence for a work light."""
+    rs = [r for r in rows if r["model"] == deployed and r["purpose"] == "nameplate" and r.get("scores")]
+    order = ["good", "low_light", "low_light_with_torch", "motion", "angle", "far"]
+    out = ["### 3a. Nameplates by capture condition (`" + deployed + "`, all scenes)", "",
+           "| Condition | Frames | Frames labelled usable | Printed fields read exactly | Printed fields left blank | Median luma |",
+           "|---|---|---|---|---|---|"]
+    for cond in order + sorted({r["condition"] for r in rs} - set(order)):
+        cr = [r for r in rs if r["condition"] == cond]
+        if not cr:
+            continue
+        printed = [s for r in cr for s in r["scores"].values() if isinstance(s, dict) and s.get("truth")]
+        usable = sum(r["label"] == "usable" for r in cr)
+        out.append(
+            f"| {cond} | {len(cr)} | {usable}/{len(cr)} ({pct(usable / len(cr))}) | "
+            f"{sum(s['correct'] for s in printed)}/{len(printed)} ({pct(sum(s['correct'] for s in printed) / len(printed) if printed else None)}) | "
+            f"{sum(s['abstained'] for s in printed)}/{len(printed)} | {statistics.median(r['luma'] for r in cr):.0f} |"
+        )
+    out += ["", "_Conditions were labelled from the frames (what the scene looked like), not from the gate's metrics. "
+            "The torch and no-torch shots are of the same plates, minutes apart, but not every plate has both._"]
+    return "\n".join(out) + "\n"
 
 
 def section_extraction(rows, models) -> str:
@@ -275,6 +310,7 @@ def main() -> None:
         section_testset(rows, qc),
         section_qc(qc),
         section_extraction(rows, models),
+        section_conditions(rows, args.deployed),
         section_confidence(rows, models, calib),
         section_failures(rows, args.deployed),
         section_size(rows, args.deployed),

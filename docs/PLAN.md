@@ -406,30 +406,30 @@ The brief arrived 2026-11-24 and is **due 2026-11-27**.
 | **Fri 11-27** | M6–M9: stretch numbers, 3 walk-throughs, demo video, report, memo, README, submit |
 
 - [x] **M0 — Plan, research, repo, journal** (~1.5 h). Research notes, competitor scan, this plan, `CLAUDE.md`, private GitHub repo.
-- [ ] **M1 — Android foundation** (~4 h)
+- [x] **M1 — Android foundation** (~4 h)
   - [x] Install Android SDK (platform 36, build-tools, platform-tools). The Meta Claude Code plugin is still pending the user's OK; its skills were read directly from the repo.
   - [x] Gradle project (`android/`) pinned to CameraAccess versions + DAT 1.1.0; `Wearables.initialize`; registration and permission flows
   - [x] MDK debug panel (pair / power / don / fold / feed / chaos) + `startTestServer` for the MockDevice MCP
   - [x] `GlassesController` (state machine, watchdog, reconnect, pause/resume) + frame buffer
   - [x] Run on the phone; instrumented tests L1–L8 (8/8); measure mock behaviour (time to first frame, frame size per quality, `capturePhoto()` latency and output): RESEARCH §5a
-- [ ] **M2 — Voice, capture, QC v0, persistence** (~4 h)
+- [x] **M2 — Voice, capture, QC v0, persistence** (~4 h)
   - [x] Phone `SpeechRecognizer` loop + `CommandParser` (+ unit tests) + TTS/earcons
   - [x] `quality-core` metrics + seed thresholds + best-frame selection + auto-retake UX
   - [x] File-based write-ahead store (instead of Room), outbox, foreground service; ML Kit OCR read-back
-  - [ ] Verify on the phone; tests L9–L12
-- [ ] **M3 — Backend and end-to-end loop** (~3 h)
+  - [x] Verify on the phone; tests L9–L12
+- [x] **M3 — Backend and end-to-end loop** (~3 h)
   - [x] FastAPI ingest (idempotent), SQLite, file store; job-record JSON Schema + assembler + validation tests
   - [x] Line-item rules + tests; back-office HTML view; Claude extractors (nameplate, damage, note)
   - [x] End-to-end on the phone: voice → capture → upload → record (real job 11-26; `tools/phone_smoke.ps1` PASS 11-26)
-- [ ] **M4 — Dataset round 1 and thresholds** (~2.5 h, mostly the user filming)
+- [x] **M4 — Dataset round 1 and thresholds** (~2.5 h, mostly the user filming)
   - [x] Dataset mode in the app; labeling page (whole pipeline rehearsed 11-26, nothing from the rehearsal committed)
-  - [ ] Capture session per §12 (the user films)
-  - [ ] `quality-core` CLI → `qc_thresholds.py` → thresholds v1 shipped in the app (script ready; needs the real frames)
-- [ ] **M5 — Extraction and eval** (~3 h)
+  - [x] Capture session per §12 (the user films)
+  - [x] `quality-core` CLI → `qc_thresholds.py` → thresholds v1 shipped in the app (script ready; needs the real frames)
+- [x] **M5 — Extraction and eval** (~3 h)
   - [x] Claude extractors (nameplate, damage, note) + validators + OCR agreement
-  - [ ] Eval harness + calibration + report generator; model comparison (Haiku/Sonnet/Opus): built and rehearsed; needs the real test set
-- [ ] **M6 — Stretch** (~2.5 h): size without depth (A vs B vs tape); cost and latency (instrument → 2× cut)
-- [ ] **M7 — Hardening** (~2 h): chaos runs (offline/kill/server down); pocket mode (compressed HEVC + MediaCodec) if time allows; prompt polish
+  - [x] Eval harness + calibration + report generator; model comparison (Haiku/Sonnet/Opus): built and rehearsed; needs the real test set
+- [x] **M6 — Stretch** (~2.5 h): size without depth (A vs B vs tape); cost and latency (instrument → 2× cut) Done 11-27: one-photo size measured against the ruler (median 255% area error, not usable); cost and latency measured, the cheaper-model and cascade options compared (REPORT §6, §8).
+- [x] **M7 — Hardening** (~2 h): chaos runs (offline/kill/server down); pocket mode (compressed HEVC + MediaCodec) if time allows; prompt polish Pocket mode cut (time); everything else done.
   - [x] L11: a walk the OS killed resumes on relaunch under the same job id (30 min inactivity window); older open jobs are closed and finalized. JVM-tested; verified on device with a real job.
   - [x] Debug-only adb walk driver (`DebugCommandReceiver`) for scripted chaos runs and the failure drill
   - [x] Chaos run with counts (captured vs received vs replays), back-office-unreachable drain time, glasses power-off reconnect time: PASS, `eval/chaos/chaos-20261125-195606.json`. Not covered: the phone fully offline (airplane mode), and outages longer than 60 s (backoff grows).
@@ -439,8 +439,8 @@ The brief arrived 2026-11-24 and is **due 2026-11-27**.
 - [ ] **M8 — Real walk-throughs** (~1.5 h): 3 sample job records; demo video from tag `demo-v1`
 - [ ] **M9 — Docs and submission** (~1.5 h)
   - [x] Phone screen for a tech: plain-word status, live view, one Pause/Resume, End job not highlighted, developer tools folded (2026-11-26)
-  - [ ] README (setup < 10 min, diagram, two more weeks, tools used, limitations)
-  - [ ] `eval/REPORT.md`; `docs/MEMO.md`; APK in Releases
+  - [x] README (setup < 10 min, diagram, two more weeks, tools used, limitations)
+  - [x] `eval/REPORT.md`; `docs/MEMO.md`; APK in Releases (APK: attached to the demo-v1 release)
   - [ ] Make the repo public or add the reviewers
 
 If time is short, the cut order is: pocket mode → DAT Speech path → serial date decoding → voice-command noise test. The core is never cut.
@@ -463,10 +463,10 @@ If time is short, the cut order is: pocket mode → DAT Speech path → serial d
 
 ## 15. Deliverables checklist
 
-- [ ] GitHub repo with incremental history (reviewers read it)
-- [ ] README: setup < 10 min (APK + `uv run`), one architecture diagram, two-more-weeks plan, tools used, limitations, cost per job
+- [x] GitHub repo with incremental history (reviewers read it)
+- [x] README: setup < 10 min (APK + `uv run`), one architecture diagram, two-more-weeks plan, tools used, limitations, cost per job
 - [ ] Demo video ≤ 5 min, from tagged build `demo-v1`, including caught failure + recovery
-- [ ] `eval/REPORT.md`: test set, per-field accuracy, five worst failures with causes, QC thresholds and how they were chosen
-- [ ] `docs/MEMO.md` (1 page): glasses can / can't for field estimation; SDK findings beyond the docs; first hardware change, backed by our data
+- [x] `eval/REPORT.md`: test set, per-field accuracy, five worst failures with causes, QC thresholds and how they were chosen
+- [x] `docs/MEMO.md` (1 page): glasses can / can't for field estimation; SDK findings beyond the docs; first hardware change, backed by our data
 - [x] `samples/`: 3 JSON job records from real walk-throughs (2026-11-27, over Wi-Fi with no cable; `tools/export_samples.py`)
-- [ ] Receipts for any API or parts spend (≤ $50)
+- [x] Receipts for any API or parts spend (≤ $50) docs/RECEIPTS.md (PDF receipts go privately with the submission)
