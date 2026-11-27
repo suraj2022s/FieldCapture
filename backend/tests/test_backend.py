@@ -103,7 +103,9 @@ def test_offline_record_is_schema_valid_with_line_items(client):
     codes = {li["code"] for li in r["line_items"]}
     assert {"SBF-RR", "FLC-RR", "CAB-DR"} <= codes  # from "subfloor soft by the cabinet"
     assert all(li["needs_measurement"] for li in r["line_items"] if li["code"] == "SBF-RR")
-    assert client.get(f"/jobs/{JOB}").status_code == 200  # back-office page renders
+    page = client.get(f"/jobs/{JOB}")
+    assert page.status_code == 200  # back-office page renders
+    assert 'http-equiv="refresh"' not in page.text  # a finished job doesn't reload under the reader
 
 
 def test_job_list_shows_real_jobs_and_hides_empty_ones(client):

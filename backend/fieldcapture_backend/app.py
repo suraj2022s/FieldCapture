@@ -176,7 +176,9 @@ def create_app(data_dir: Path | None = None, extract: bool | None = None, token:
     def job_page(job_id: str):
         if not store.items(job_id):
             raise HTTPException(404, "no such job")
-        return _page(f"Job {job_id[:8]}", render_job(assemble(store, job_id, s.extract)), refresh=5)
+        r = assemble(store, job_id, s.extract)
+        # Refresh only while the job is still arriving; a finished job holds still so the office can read it.
+        return _page(f"Job {job_id[:8]}", render_job(r), refresh=None if r["status"] == "complete" else 5)
 
     return app
 
