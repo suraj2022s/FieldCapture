@@ -45,6 +45,14 @@ class CommandParserTest {
         .forEach { assertEquals(it, Command.CaptureNameplate, cmd(it)) }
   }
 
+  /** Sample walk 2 (2026-11-27): the recogniser dropped "name"; the photo was filed as damage. */
+  @Test
+  fun plateOnItsOwnIsANameplate() {
+    listOf("Capturing plate", "capture the plate", "capture plate").forEach { assertEquals(it, Command.CaptureNameplate, cmd(it)) }
+    assertTrue(cmd("capture damage kitchen plate glass") is Command.CaptureDamage)
+    assertTrue(cmd("capture the broken plate rack") is Command.CaptureDamage)
+  }
+
   @Test
   fun captureNotesIsNotADamagePhoto() {
     assertNull(cmd("Please capture notes"))

@@ -54,6 +54,9 @@ object CommandParser {
           IntentSpec("nameplate", Regex("^$VERB\\b.*\\b$NAMEPLATE_WORD\\b.*")) { Command.CaptureNameplate },
           // "capture the name": the end of "nameplate" lost (same walk).
           IntentSpec("nameplate_cut", Regex("^$VERB (?:the |a )?name$")) { Command.CaptureNameplate },
+          // "Capturing plate": the start of "nameplate" lost (sample walk 2, 2026-11-27); filed as damage,
+          // a sharp Bajaj plate got no plate fields. Only "plate" on its own: "damage ... plate glass" stays damage.
+          IntentSpec("nameplate_head_cut", Regex("^$VERB (?:the |a )?plates?$")) { Command.CaptureNameplate },
           IntentSpec("damage", Regex("^$VERB (?:the |some )?damage[sd]?\\b(.*)$")) { m ->
             val rest = m.groupValues[1].trim()
             val room = Vocabulary.findRoom(rest)

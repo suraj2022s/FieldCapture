@@ -956,3 +956,28 @@ Damage sizes from the user. Then `run_extraction` (3 models, ~$5, waiting on the
   - New `test_job_list_shows_real_jobs_and_hides_empty_ones`; backend 94/94.
   - On :8002 it lists 24 jobs. Most are earlier smoke-test jobs on the synthetic feed.
   - Opened in the user's browser at http://localhost:8002 (password prompt: any user name, the access code). Any laptop on the same network can use http://10.37.114.191:8002.
+
+## 2026-11-27 03:40 IST: sample walks 1 and 2 (Wi-Fi, no cable), and what they showed
+
+The back office now runs on a fresh data folder (`backend/data/sample-walks`, gitignored), so the portal shows only the real sample walks. Both walks were done with the USB cable unplugged. Photos privacy-checked (walls, labels, a ventilator; no people, screens or meter).
+
+### Walk 1, `a0c92776`: 4 captures, 0 notes, 2 line items, 7 flags, $0.070
+- **Mektron:** read right (serial 0.60, so it's reviewed).
+- **Microwave sticker:** model read **exactly** this time, at 0.49 (flagged). The serial is one letter off (Q for O), at 0.38 (flagged).
+- **Living-room wall, 2 photos of the same wall:** the repaint is counted twice (120 SF), but the line item is `needs_measurement`.
+  - Limitation: the app can't tell two photos of one spot apart.
+
+### Walk 2, `69bb6343`: 4 captures, 3 notes, 2 line items, 10 flags, $0.068
+- **Bajaj:**
+  - Serial `G155 091605027` read **right**, but at 0.28 (flagged).
+  - Model `15GPU (150T74)` is one digit off, at 0.38 (flagged).
+  - The tech kept a cut-off frame (override flagged).
+- **"Capturing plate":** a second, sharp shot of the same plate, **filed as damage**. The recogniser lost "name", so no plate fields were extracted.
+  - **Fix:** `nameplate_head_cut` takes "capture/capturing (the) plate" on its own as a nameplate; "damage … plate glass" stays damage.
+  - `CommandParserTest.plateOnItsOwnIsANameplate`; parser tests pass. Not on the phone until the next install (needs the cable).
+- **Ventilator:** described as the stained wall around it (peeling paint, 8×8 ft at 0.2), the same as in the eval.
+- **Notes: speech recognition errors in practice.**
+  - "seepage" was heard as **"c page"**, so the category was only `damage_observation` at low confidence (flagged).
+  - "centimetres" was dropped, so the measurement became 25 with no unit.
+  - Possible lever, untested: Android 13's `EXTRA_BIASING_STRINGS` with trade words (seepage, plaster, nameplate).
+- **In both walks, every wrong or doubtful value was flagged;** nothing wrong was auto-accepted.
