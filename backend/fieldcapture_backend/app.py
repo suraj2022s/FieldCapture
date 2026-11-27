@@ -144,10 +144,33 @@ def create_app(data_dir: Path | None = None, extract: bool | None = None, token:
 
     @app.get("/", response_class=HTMLResponse)
     def index():
-        rows = "".join(
-            f'<tr><td><a href="/jobs/{html.escape(j)}">{html.escape(j)}</a></td><td>{html.escape(t)}</td></tr>' for j, t in store.job_ids()
-        )
-        return _page("FieldCapture back office", f"<h1>Jobs</h1><table><tr><th>Job</th><th>First upload</th></tr>{rows}</table>")
+        # The office's view: newest job first, with what needs a human before the estimate goes out.
+        cards, empty = [], 0
+        for j, t in sorted(store.job_ids(), key=lambda x: x[1], reverse=True):
+            try:
+                r = assemble(store, j, s.extract)
+            except Exception as e:  # one broken job must not take the whole list down
+                log.warning("job %s: %s", j, e)
+                cards.append(f"<tr><td colspan='6'>{html.escape(j[:8])}: could not be assembled</td></tr>")
+                continue
+            if not r["captures"] and not r["notes"]:
+                empty += 1  # started and ended with nothing in it: noise for the office
+                continue
+            thumb = next((c["evidence"]["url"] for c in r["captures"] if c["evidence"].get("url")), None)
+            img = f"<img src='{html.escape(thumb)}' class='thumb'>" if thumb else ""
+            rooms = sorted({str(c.get("room")) for c in r["captures"] if c.get("room")})
+            n_flags = len(r["review"]["flags"])
+            flag_cell = f"<span class='flag'>{n_flags} to review</span>" if n_flags else "<span class='muted'>nothing to review</span>"
+            cards.append(
+                f"<tr><td>{img}</td><td><a href='/jobs/{html.escape(j)}'><b>Job {html.escape(j[:8])}</b></a><br>"
+                f"<span class='muted'>{html.escape(str(r.get('created_at') or t)[:16].replace('T', ' '))} UTC · {html.escape(r['status'])}</span></td>"
+                f"<td>{_n(len(r['captures']), 'capture')} · {_n(len(r['notes']), 'note')}<br><span class='muted'>{html.escape(', '.join(rooms) or 'no rooms named')}</span></td>"
+                f"<td>{_n(len(r['line_items']), 'draft line item')}</td><td>{flag_cell}</td>"
+                f"<td><a href='/v1/jobs/{html.escape(j)}/record'>JSON</a></td></tr>"
+            )
+        table = "<table><tr><th></th><th>Job</th><th>What was captured</th><th>Estimate</th><th>Review</th><th></th></tr>" + "".join(cards) + "</table>"
+        hidden = f" {_n(empty, 'empty job')} (nothing captured) not shown." if empty else ""
+        return _page("FieldCapture back office", f"<h1>Jobs</h1><p class='muted'>Newest first; refreshes every 10 s.{hidden}</p>{table}", refresh=10)
 
     @app.get("/jobs/{job_id}", response_class=HTMLResponse, responses={404: {"description": "no such job"}})
     def job_page(job_id: str):
@@ -159,6 +182,10 @@ def create_app(data_dir: Path | None = None, extract: bool | None = None, token:
 
 
 # ---------------------------------------------------------------------- HTML
+
+
+def _n(n: int, word: str) -> str:
+    return f"{n} {word}{'' if n == 1 else 's'}"
 
 
 def _conf_badge(c: float | None) -> str:
@@ -237,7 +264,7 @@ table{{border-collapse:collapse;width:100%;margin:6px 0;background:#fff}} td,th{
 .card{{display:flex;gap:12px;background:#fff;border:1px solid #e3e6ea;border-radius:10px;padding:10px;margin:10px 0}}
 .card img{{width:240px;height:auto;border-radius:6px;object-fit:contain;background:#000}} .card>div{{flex:1}}
 .badge{{color:#fff;border-radius:6px;padding:1px 6px;font-size:12px}} .flag{{display:inline-block;background:#fdecea;color:#b71c1c;border-radius:6px;padding:1px 6px;margin:2px;font-size:12px}}
-.muted{{color:#5f6b76;font-size:13px}} h3{{margin:2px 0}} @media(max-width:700px){{.card{{flex-direction:column}}.card img{{width:100%}}}}
+.muted{{color:#5f6b76;font-size:13px}} h3{{margin:2px 0}} .thumb{{width:72px;height:72px;object-fit:cover;border-radius:6px;background:#000}} @media(max-width:700px){{.card{{flex-direction:column}}.card img{{width:100%}}}}
 </style></head><body>{body}</body></html>"""
 
 

@@ -942,3 +942,17 @@ Damage sizes from the user. Then `run_extraction` (3 models, ~$5, waiting on the
   - A manufacture date that isn't printed is no longer flagged. 12 of the 13 plate labels in the test set have none. A date read with low confidence still is.
   - A blank damage room gets only `room_missing`, not also `low_confidence:room`.
   - Result: 16 → 13 flags, all actionable. New `test_review_flags.py` (4 tests); backend 93/93. The :8002 back office was restarted with the change.
+
+## 2026-11-27 03:00 IST: the back office front page is a real job list
+
+- **The user's point:** in real life, the office looks at captures in a browser, not through Claude Code. The back office was already that portal (job page with photos, fields, confidence, line items, flags, and JSON). But its front page listed bare job IDs.
+- **The front page (`/`) is now the office's job list:**
+  - Newest first, with a thumbnail of the first capture.
+  - Date and status, then capture and note counts and the rooms named.
+  - Draft line items, the number of things to review, and a JSON link.
+  - It refreshes every 10 s.
+  - Jobs with nothing in them are hidden and counted: 28 empty test jobs on :8002.
+- **Verified:**
+  - New `test_job_list_shows_real_jobs_and_hides_empty_ones`; backend 94/94.
+  - On :8002 it lists 24 jobs. Most are earlier smoke-test jobs on the synthetic feed.
+  - Opened in the user's browser at http://localhost:8002 (password prompt: any user name, the access code). Any laptop on the same network can use http://10.37.114.191:8002.

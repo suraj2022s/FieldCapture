@@ -106,6 +106,17 @@ def test_offline_record_is_schema_valid_with_line_items(client):
     assert client.get(f"/jobs/{JOB}").status_code == 200  # back-office page renders
 
 
+def test_job_list_shows_real_jobs_and_hides_empty_ones(client):
+    post(client, "capture", "dm9", capture_meta("dm9", "damage", room="kitchen", surface="wall"))
+    empty = {"id": "job-empty", "kind": "job", "jobId": "empty-job", "metaFile": "x", "createdAt": "2026-11-25T09:00:00Z"}
+    client.post("/v1/jobs/empty-job/items", data={"item": json.dumps(empty)},
+                files={"meta": ("m.json", json.dumps({"jobId": "empty-job", "createdAt": "2026-11-25T09:00:00Z"}), "application/json")},
+                headers={"Idempotency-Key": "job-empty"})
+    page = client.get("/").text
+    assert f"/jobs/{JOB}" in page and "1 capture · 0 notes" in page and "kitchen" in page
+    assert "/jobs/empty-job" not in page and "1 empty job (nothing captured) not shown" in page
+
+
 def _items(dtype, material, surface, area=None, size_conf=0.7):
     fields = {
         "damage_type": {"value": dtype, "confidence": 0.9},
