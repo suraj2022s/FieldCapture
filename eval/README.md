@@ -47,7 +47,7 @@ Run from the repo root, in this order (rehearsed end to end on 2026-11-26):
 ```
 uv run --project backend python eval/freeze.py                 # labelled captures -> eval/dataset (committed)
 uv run --project backend python eval/qc_thresholds.py --write-app
-uv run --project backend python eval/run_extraction.py         # 3 models x 2 frames per capture, 4 calls at a time
+uv run --project backend python eval/run_extraction.py --db backend/data/dataset-walks/fieldcapture.db   # 3 models x the 3 committed frames per capture, 4 calls at a time
 uv run --project backend python eval/calibrate.py --model claude-haiku-5-5
 uv run --project backend python eval/calibrate.py --model claude-opus-5-5 --write
 uv run --project backend python eval/report.py                 # -> eval/REPORT.md
@@ -61,10 +61,12 @@ uv run --project backend python eval/report.py                 # -> eval/REPORT.
   scene id, so no frame of a scene lands in both halves). Within the false-retake cap it takes the
   middle of the gap between usable and bad frames, not the edge of the usable ones (see `fit_lower`).
   `--write-app` writes `android/app/src/main/assets/thresholds.json`; rebuild the app to ship it.
-- **run_extraction.py** scores the frame the app chose plus the worst-scoring frame of each capture
-  (`common.sample_frames`). Dataset mode saves ~10 frames per capture, so `--per-capture 0` (every
-  frame) costs ~10x for near-duplicates. Rehearsal cost: Haiku $0.0005, Sonnet $0.008, Opus $0.016 per frame.
-  Responses are cached in `eval/llm-cache/` (committed).
+- **run_extraction.py** scores the frames freeze.py committed: the one the app chose, the worst-scoring
+  one and the median one of each capture (`common.sample_frames`). Dataset mode saves ~10 frames per
+  capture, so `--per-capture 0` (every frame of the raw pull) costs ~3x more for near-duplicates.
+  Measured cost: Haiku $0.0005, Sonnet $0.0067, Opus $0.016 per frame. Responses are cached in
+  `eval/llm-cache/` (committed). The scripted notes, as the phone heard them, are read from the walks'
+  back-office DB and written to `eval/dataset/notes_heard.json` (committed), which `--cached` replays.
 - **calibrate.py** measures out-of-fold (leave one scene out) and needs at least 3 wrong answers; a
   model that is never confidently wrong is reported as such rather than fitted. `--write` ships the
   coefficients to `backend/calibration.json`.
@@ -73,4 +75,5 @@ uv run --project backend python eval/report.py                 # -> eval/REPORT.
   `eval/labels/failure_causes.json` as `{"<frame key>#<field>": "cause"}` and re-run it.
 
 **Reproduce without an API key:** `run_extraction.py --cached` replays the committed responses
-against the committed frames, then `report.py`.
+against the committed frames and notes, then `report.py`. Checked from a fresh clone on 2026-11-27:
+REPORT.md comes out identical (the result files differ only in each call's `from_cache` flag).

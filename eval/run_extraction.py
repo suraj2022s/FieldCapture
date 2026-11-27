@@ -23,7 +23,7 @@ EVAL_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(EVAL_DIR))
 sys.path.insert(0, str(EVAL_DIR.parent / "backend"))
 
-from common import LABELS, RESULTS, labels, load_json, raw_captures, sample_frames, source_root, split_of  # noqa: E402
+from common import DATASET, FREEZE_PER_CAPTURE, LABELS, RESULTS, labels, load_json, raw_captures, sample_frames, save_json, source_root, split_of  # noqa: E402
 from fieldcapture_backend import damage, nameplate, note  # noqa: E402
 from fieldcapture_backend.llm import ExtractionError, Llm  # noqa: E402
 from fieldcapture_backend.textmatch import norm_code, normalize_date  # noqa: E402
@@ -232,21 +232,32 @@ def run_frames(llm: Llm, models: list[str], which: str, effort: str, per_capture
     return out
 
 
-def run_notes(llm: Llm, models: list[str], db: Path) -> list[dict]:
-    truth = load_json(LABELS / "notes_truth.json", {})
-    lines = {k: v for k, v in truth.items() if not k.startswith("_")}
+NOTES_HEARD = DATASET / "notes_heard.json"  # the scripted notes as the phone's recogniser heard them (committed)
+
+
+def heard_notes(db: Path, prefer_committed: bool) -> list[dict]:
+    """The notes to score: from the committed test set when replaying (so a clone reproduces the report and a
+    local back-office DB can't change it), otherwise from the dataset walks' back-office DB."""
+    if NOTES_HEARD.exists() and (prefer_committed or not db.exists()):
+        return load_json(NOTES_HEARD, [])
     if not db.exists():
-        print(f"no back-office DB at {db}; skipping notes")
+        print(f"no back-office DB at {db} and no {NOTES_HEARD.name}; skipping notes")
         return []
     con = sqlite3.connect(db)
-    notes = [json.loads(m) for (m,) in con.execute("SELECT meta_json FROM items WHERE kind='note'")]
-    out = []
-    for n in notes:
+    return [{"text": m.get("text", ""), "room": m.get("room")} for m in (json.loads(x) for (x,) in con.execute("SELECT meta_json FROM items WHERE kind='note'"))]
+
+
+def run_notes(llm: Llm, models: list[str], db: Path, prefer_committed: bool = False) -> list[dict]:
+    truth = load_json(LABELS / "notes_truth.json", {})
+    lines = {k: v for k, v in truth.items() if not k.startswith("_")}
+    out, scripted = [], []
+    for n in heard_notes(db, prefer_committed):
         text = n.get("text", "")
         best = max(lines.items(), key=lambda kv: SequenceMatcher(None, text.lower(), kv[1]["text"]).ratio())
         sim = SequenceMatcher(None, text.lower(), best[1]["text"]).ratio()
         if sim < 0.6:
-            continue  # free-form note, not from the script
+            continue  # free-form note, not from the script: never scored, never committed
+        scripted.append({"text": text, "room": n.get("room")})
         t = best[1]
         wer = word_error_rate(text.lower(), t["text"])
         for model in models:
@@ -258,6 +269,8 @@ def run_notes(llm: Llm, models: list[str], db: Path) -> list[dict]:
             except ExtractionError as e:
                 rec["error"] = str(e)
             out.append(rec)
+    if scripted and not prefer_committed:
+        save_json(NOTES_HEARD, scripted)
     return out
 
 
@@ -299,8 +312,9 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--models", default="claude-haiku-5-5,claude-sonnet-5-5,claude-opus-5-5")
     ap.add_argument("--frames", choices=["all", "usable", "chosen"], default="all")
-    ap.add_argument("--per-capture", type=int, default=2,
-                    help="frames per capture sent to the models: the app's chosen frame, then the worst one (0 = every frame; costs ~10x)")
+    ap.add_argument("--per-capture", type=int, default=FREEZE_PER_CAPTURE,
+                    help="frames per capture sent to the models: the app's chosen frame, the worst, the median "
+                         "(default: all the frames freeze.py committed; 0 = every frame of the raw pull)")
     ap.add_argument("--effort", default="medium")
     ap.add_argument("--workers", type=int, default=4, help="model calls in flight at once")
     ap.add_argument("--cached", action="store_true", help="only replay committed responses (no API key needed)")
@@ -317,7 +331,7 @@ def main() -> None:
             f.write(json.dumps(r, default=str) + "\n")
     print(f"wrote {len(rows)} rows to eval/results/extraction.jsonl")
     if not args.skip_notes:
-        notes = run_notes(llm, models, Path(args.db))
+        notes = run_notes(llm, models, Path(args.db), prefer_committed=args.cached)
         with (RESULTS / "notes.jsonl").open("w", encoding="utf-8") as f:
             for r in notes:
                 f.write(json.dumps(r, default=str) + "\n")

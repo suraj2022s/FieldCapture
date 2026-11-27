@@ -1041,3 +1041,21 @@ The back office now runs on a fresh data folder (`backend/data/sample-walks`, gi
   2. The user records the demo video from it.
   3. Ask the user before making the repo public or adding reviewers.
   4. Remove the Windows Firewall rule after submission.
+
+## 2026-11-27 05:40 IST: end-to-end repo check, which found a reproducibility gap
+
+- **Fresh clone from GitHub, README steps:**
+  - No `.env`, `local.properties`, `private/`, `backend/data` or `eval/raw` in the repo.
+  - `uv sync` plus 94/94 backend tests pass.
+- **History scan, all 51 commits:** no API key, access code, email, phone digits or location names.
+  - Every commit's metadata carries the author's personal Gmail address. That becomes public with the repo, so the user is to decide (collaborators vs public; rewriting history would change the tag).
+- **Links:** 48/48 relative links in tracked Markdown resolve.
+- **Release asset:** the SHA-256 matches the local build from `demo-v1` (`48bee8f`); no code changed since the tag.
+- **Gap found: the README's no-key replay did not reproduce the report.**
+  - `--per-capture` defaulted to 2 (133 frames), but the published run used 3 (201).
+  - Notes were read only from the gitignored back-office DB, so a clone got 0 note rows and no §7.
+  - **Fixes:**
+    - The default is now `FREEZE_PER_CAPTURE` (3).
+    - The 18 scripted notes, as the phone heard them, are committed in `eval/dataset/notes_heard.json`, and `--cached` replays from it, ignoring any local DB.
+    - `freeze.py` keeps that file across a re-freeze.
+  - Local replay: **REPORT.md identical**. The result files differ only in each call's `from_cache` flag, so the live-run files stay committed.

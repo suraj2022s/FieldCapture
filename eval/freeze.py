@@ -25,8 +25,13 @@ def main() -> None:
     captures = raw_captures(RAW)
     if not captures:
         sys.exit("eval/raw is empty: pull the dataset first (eval/pull_dataset.ps1)")
+    notes = DATASET / "notes_heard.json"  # written by run_extraction.py from the walks' DB; keep it across a re-freeze
+    kept_notes = notes.read_bytes() if notes.exists() else None
     if DATASET.exists():
         shutil.rmtree(DATASET)
+    if kept_notes is not None:
+        DATASET.mkdir(parents=True, exist_ok=True)
+        notes.write_bytes(kept_notes)
     kept = images = skipped_no_scene = skipped_no_truth = 0
     for c in captures:
         scene = (caps.get(c["captureId"]) or {}).get("scene")
