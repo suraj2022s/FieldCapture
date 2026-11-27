@@ -436,7 +436,7 @@ The brief arrived 2026-11-24 and is **due 2026-11-27**.
   - [x] Session supervisor audited against Meta's DAT skills + docs MCP: 5 gaps fixed (subscribe-before-start, failed attach/stream start, permission check, pause settling, stream restart)
   - [x] Re-run the 8 instrumented MDK tests on the phone after that audit: 8/8 pass (24 s)
   - [x] Bug scan 2026-11-26: UI driver over every button and voice command, Android lint, Schemathesis API fuzz, Maestro flows (5/5), Toxiproxy bad-signal runs (`eval/chaos/toxiproxy-*`), fast taps, screen off for 2 min, 30-capture memory soak. 7 bugs fixed (JOURNAL 14:53–16:35); 8/8 instrumented tests after.
-- [ ] **M8 — Real walk-throughs** (~1.5 h): 3 sample job records; demo video from tag `demo-v1`
+- [x] **M8 — Real walk-throughs** (~1.5 h): 3 sample job records; demo video from tag `demo-v1` (4:48: https://www.youtube.com/watch?v=JIp_C6zVdfw)
 - [ ] **M9 — Docs and submission** (~1.5 h)
   - [x] Phone screen for a tech: plain-word status, live view, one Pause/Resume, End job not highlighted, developer tools folded (2026-11-26)
   - [x] README (setup < 10 min, diagram, two more weeks, tools used, limitations)
@@ -465,7 +465,7 @@ If time is short, the cut order is: pocket mode → DAT Speech path → serial d
 
 - [x] GitHub repo with incremental history (reviewers read it)
 - [x] README: setup < 10 min (APK + `uv run`), one architecture diagram, two-more-weeks plan, tools used, limitations, cost per job
-- [ ] Demo video ≤ 5 min, from tagged build `demo-v1`, including caught failure + recovery
+- [x] Demo video ≤ 5 min, from tagged build `demo-v1`, including caught failure + recovery
 - [x] `eval/REPORT.md`: test set, per-field accuracy, five worst failures with causes, QC thresholds and how they were chosen
 - [x] `docs/MEMO.md` (1 page): glasses can / can't for field estimation; SDK findings beyond the docs; first hardware change, backed by our data
 - [x] `samples/`: 3 JSON job records from real walk-throughs (2026-11-27, over Wi-Fi with no cable; `tools/export_samples.py`)
