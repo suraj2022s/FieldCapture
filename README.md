@@ -82,7 +82,7 @@ flowchart LR
      - **macOS** may ask "accept incoming connections?": click Allow.
      - **No firewall change at all:** use the USB cable instead (below).
 2. **App.** Download `app-debug.apk` from the [`demo-v1` release](../../releases/tag/demo-v1) and open it on the phone (allow installing from this source), or run `adb install -r app-debug.apk`.
-3. **Connect.** Open FieldCapture and allow the permissions. In the **Back office** card, tap **Change**, enter the address and the access code, then **Save and test**. It should say "Connected".
+3. **Connect.** Open FieldCapture and allow the permissions. In the **Back office** card, tap **Change**, enter the address and the access code, close the keyboard, then tap **Save and test**. It should say "Connected"; a wrong code says so.
 4. **Walk.** Tap **Start job**, then speak:
    - `capture nameplate`
    - `capture damage <room> <surface>`
@@ -97,7 +97,7 @@ flowchart LR
 **With a USB cable instead:** skip step 3, start the back office without `FIELDCAPTURE_HOST`, and run `adb reverse tcp:8000 tcp:8000`. The app's default address, `127.0.0.1:8000`, then reaches the PC over the cable.
 
 **Without a phone**
-- Run the tests: `cd backend && uv run pytest -q` (94 tests), and `cd android && ./gradlew :quality-core:test :app:testDebugUnitTest`. CI runs both on every push.
+- Run the tests: `cd backend && uv run pytest -q`, and `cd android && ./gradlew :quality-core:test :app:testDebugUnitTest` (the Android side needs JDK 17 and the Android SDK, found through `ANDROID_HOME`). CI runs both, and builds the APK, from a clean checkout on every push.
 - Replay the whole eval from committed model responses, with no key and no spend:
   ```bash
   uv run --project backend python eval/run_extraction.py --cached
@@ -175,6 +175,7 @@ flowchart LR
 - **Small print:** Opus leaves about half of the printed plate fields blank. Mock Device Kit streams only 480×640, so this is a pessimistic bound.
 - **The quality gate asks for a retake on 20% of usable frames.** Most of these are frames a person can read but on-device OCR can't.
 - **Speech recognition errors in practice:** "seepage" heard as "c page", units dropped from "25 centimetres". The fixes are in the parser, not the recogniser.
+- **First voice commands after a fresh install, on some phones.** On our test phone, Android's on-device recogniser records but returns no words. The app notices after about 3 tries (15–20 s), switches to Google's speech service and remembers it, but the first commands go unheard. Seen again on a clean reinstall on 2026-11-27.
 - **Two photos of the same spot are both counted** in a line-item quantity. This is caught by "needs measurement", not by the app.
 - **A damage command without a room reuses the last room.** The app now says so out loud.
 

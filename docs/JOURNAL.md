@@ -1087,3 +1087,34 @@ The back office now runs on a fresh data folder (`backend/data/sample-walks`, gi
   - When it listens on the network from Windows, it prints the exact firewall command.
   - New `test_no_api_key.py` (2 tests); backend 96/96.
 - **README:** a "what works with what" table (clone only / + phone / + key) and the firewall options per OS, including the USB route that needs no firewall change.
+
+## 2026-11-27 09:45 IST: second full check, from a fresh clone and a fresh app install
+
+### Fresh clone: 13/13 pass (`fresh_check.ps1`, scratchpad)
+- Deliverables present; no private files; no key in `.env.example`.
+- 3 samples with 12 photos; a 204-frame test set.
+- `uv sync`; 96 backend tests pass.
+- Server:
+  - with no key, it starts and says extraction is off;
+  - on the network, the access code is required, and the address and firewall hint are printed;
+  - on the network without a code, it refuses to start.
+- The no-key eval replay reproduces REPORT.md.
+- Android unit tests and the APK build work from the clone.
+- Docs cross-checked: one stale number (the README's back-office test count, 94 → 96). It's now worded without a count.
+
+### Fresh app install on the phone (the user agreed)
+- Checked first: 0 uploads pending, and all 79 dataset captures already on the PC.
+- Uninstalled, then installed the `demo-v1` APK (hash matches the release).
+- **First launch:**
+  - all 4 permissions granted;
+  - the mock glasses pair, power on, get worn, and stream from the phone camera;
+  - registered; thresholds `measured-n112`;
+  - the card shows the default `127.0.0.1:8000 (no access code)`.
+- **The user's path, driven through the screen:** Change → type the address and code → close the keyboard → **Save and test → "Connected"**.
+  - The keyboard covers the button until it's closed; this is now in the README's setup step.
+  - My first scripted attempt typed the code into the wrong place; the card correctly said "access code is wrong".
+- **Scripted job on the fresh install** (test feed, throwaway back office :8007): nameplate after 2 prompts, damage kitchen/wall, note, "end job" confirmed, all uploaded, the record complete and schema-valid.
+- **Finding:** a fresh install starts on the on-device speech engine. On this phone that engine returns no words, so the first commands go unheard for ~15–20 s until the app falls back and remembers it.
+  - Disclosed in the README.
+  - For the demo, the app's own preference (`on_device_failed=true`) was restored on this phone; a job now starts on Google's service.
+- **Restored afterwards:** the Wi-Fi back office with the code, the phone camera, USB routes removed. The portal still holds exactly the 3 sample jobs.
