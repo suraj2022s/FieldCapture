@@ -1059,3 +1059,16 @@ The back office now runs on a fresh data folder (`backend/data/sample-walks`, gi
     - The 18 scripted notes, as the phone heard them, are committed in `eval/dataset/notes_heard.json`, and `--cached` replays from it, ignoring any local DB.
     - `freeze.py` keeps that file across a re-freeze.
   - Local replay: **REPORT.md identical**. The result files differ only in each call's `from_cache` flag, so the live-run files stay committed.
+
+## 2026-11-27 08:55 IST: end-to-end check of the app (the exact release APK)
+
+- **Installed `demo-v1`'s `app-debug.apk`.** The on-phone SHA-256 matches the release. It starts `Ready` with `thresholds=measured-n112`, and the user's Back office settings survived the update.
+- **Scripted job on that APK** (synthetic test feed, uploads to a throwaway extraction-off back office on :8005, so nothing was filmed and the user's portal was untouched):
+  - "capture nameplate" got 2 retake prompts on the soft synthetic clip, then the least-bad frame was kept and flagged.
+  - "capture damage kitchen wall" → kitchen / wall.
+  - The note was saved.
+  - **One "end job" asked for confirmation and the job kept running; the second ended it.**
+  - Uploads drained. The record is complete and schema-valid; the job page returns 200.
+- **Full instrumented suite on the phone: 10/10.** Accessibility, 7 lifecycle tests (start/stop, pause/resume, power loss → same walk, overheat, doff/don, fold, outdated glasses app) and 2 voice tests.
+- **Restored for the demo:** the release APK reinstalled (hash re-checked), phone camera feed, back office `http://10.37.114.191:8002` with the access code, USB routes removed, the phone can reach the back office over Wi-Fi.
+- **Minor, debug-only, not fixed after the tag:** the Back office card keeps showing the old address when the setting is changed by the adb `backend` command, until the app restarts. Changing it in the card itself is unaffected.
