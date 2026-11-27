@@ -1118,3 +1118,12 @@ The back office now runs on a fresh data folder (`backend/data/sample-walks`, gi
   - Disclosed in the README.
   - For the demo, the app's own preference (`on_device_failed=true`) was restored on this phone; a job now starts on Google's service.
 - **Restored afterwards:** the Wi-Fi back office with the code, the phone camera, USB routes removed. The portal still holds exactly the 3 sample jobs.
+
+## 2026-11-27 10:45 IST: the demo video
+
+- **Recorded by the user** on the phone (screen recording) from the installed `demo-v1` APK (hash checked earlier), and uploaded to YouTube: https://www.youtube.com/watch?v=JIp_C6zVdfw. Length **4:48** (`lengthSeconds` 288), inside the 5-minute limit.
+- **Its job on the back office, `e6b1a659`:** complete, 4 captures, 2 notes, 3 draft line items, 8 review flags, **1 disconnect**, 3 retake prompts, $0.074.
+  - **Caught failure 1 (dark):** the first Mektron attempt got 2 "too dark" prompts. The light came too late, so the least-bad frame was kept and flagged. It was still read right: MEKTRON / MT450 / 450AW55230192. The retry with the light on passed after 1 prompt.
+  - **Caught failure 2:** glasses powered off mid-walk; a note was taken while they were off; reconnected.
+- **Privacy:** the kitchen-window shot shows trees through the grille. That breaks the user's "no views through windows" rule, though the risk is low (leaves only). The user decides whether to blur it in YouTube Studio. The photo is not in the repo; `samples/` holds only the three sample walks.
+- README links the video; PLAN ticked.

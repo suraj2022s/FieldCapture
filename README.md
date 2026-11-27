@@ -4,6 +4,12 @@
 
 Built on **Meta Wearables Device Access Toolkit (DAT) 1.1.0** for Android. It runs on **Mock Device Kit**, which uses the phone's camera as the glasses camera, so no glasses are needed.
 
+**Demo video (4:48):** https://www.youtube.com/watch?v=JIp_C6zVdfw. It shows one walk in a real home, recorded on the `demo-v1` APK. It includes two caught failures:
+- Too dark → "Turn on your light" → the light goes on → the capture is accepted by itself.
+- The glasses are powered off mid-walk → notes still work → "Glasses back".
+
+It ends with the job in the office web page.
+
 **Submitted build:** tag [`demo-v1`](../../releases/tag/demo-v1) (APK attached). Every number below comes from a committed script and committed data: [eval/REPORT.md](eval/REPORT.md). How we got here, decision by decision: [docs/JOURNAL.md](docs/JOURNAL.md). One-page research memo: [docs/MEMO.md](docs/MEMO.md).
 
 ## Results at a glance
